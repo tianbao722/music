@@ -13,6 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Music">
+        <activity android:name=".ui.activity.XiTongSheZhiActivity"></activity>
+        <activity android:name=".ui.activity.LianXiGuJiActivity" />
+        <activity android:name=".ui.activity.JiePaiQiActivity" />
+        <activity android:name=".ui.activity.WenJianGuanLiActivity" />
+        <activity android:name=".ui.activity.DaoRuQuPuActivity" />
+        <activity android:name=".ui.activity.XiaZaiYinYueActivity" />
+        <activity android:name=".ui.activity.BenDiQuPuActivity" />
         <activity android:name=".ui.activity.ZhongGuoYuPuWangActivity" />
         <activity android:name=".ui.activity.I7JiTaWangActivity" />
         <activity android:name=".ui.activity.CiQuWangActivity" />

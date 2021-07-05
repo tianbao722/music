@@ -395,14 +395,14 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
 
     //切歌
     private void changeMusic(int position) {
-        Log.e("MainActivity", "position:" + position);
+        Log.e("BenDiYinYueActivity", "position:" + position);
         if (position < 0) {
             mCurrentPosition = position = mList.size() - 1;
-            Log.e("MainActivity", "mList.size:" + mList.size());
+            Log.e("BenDiYinYueActivity", "mList.size:" + mList.size());
         } else if (position > mList.size() - 1) {//如果当前播放的是最后一首歌，则把下标改成0
             mCurrentPosition = position = 0;
         }
-        Log.e("MainActivity", "position:" + position);
+        Log.e("BenDiYinYueActivity", "position:" + position);
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setOnCompletionListener(this);//监听音乐播放完毕事件，自动下一曲
