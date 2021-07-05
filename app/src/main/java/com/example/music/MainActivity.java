@@ -20,11 +20,11 @@ import com.example.music.ui.activity.LianXiGuJiActivity;
 import com.example.music.ui.activity.WenJianGuanLiActivity;
 import com.example.music.ui.activity.XiTongSheZhiActivity;
 import com.example.music.ui.activity.XiaZaiYinYueActivity;
+import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
     private LinearLayout mTvXiaZai;
     private LinearLayout mTvBenDiYinYue;
     private LinearLayout mLLBenDiQuPu;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StatusBarUtil.transparencyBar(this);
         initView();
     }
 

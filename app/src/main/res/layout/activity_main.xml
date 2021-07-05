@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_160"
+        android:layout_marginTop="@dimen/dp_200"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -240,7 +240,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="系统设置"
-        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_20"
         android:textColor="#ffffff"
         android:textSize="@dimen/sp_20"
         android:textStyle="bold" />
