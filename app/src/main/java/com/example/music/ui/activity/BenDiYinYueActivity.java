@@ -367,8 +367,8 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         yinDiaoBeans.add(new YinDiaoBean("降E", 0.65f, false));
         yinDiaoBeans.add(new YinDiaoBean("E调", 0.80f, false));
         yinDiaoBeans.add(new YinDiaoBean("F调", 0.95f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降G", 1.10f, false));
-        yinDiaoBeans.add(new YinDiaoBean("G调", 1.25f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降g", 1.10f, false));
+        yinDiaoBeans.add(new YinDiaoBean("g调", 1.25f, false));
         yinDiaoBeans.add(new YinDiaoBean("降A", 1.50f, false));
         yinDiaoBeans.add(new YinDiaoBean("A调", 1.65f, false));
         yinDiaoBeans.add(new YinDiaoBean("降B", 1.80f, false));
@@ -384,8 +384,8 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         yinDiaoBeans.add(new YinDiaoBean("降E", 0.65f, false));
         yinDiaoBeans.add(new YinDiaoBean("E调", 0.80f, false));
         yinDiaoBeans.add(new YinDiaoBean("F调", 0.95f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降G", 1.10f, false));
-        yinDiaoBeans.add(new YinDiaoBean("G调", 1.25f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降g", 1.10f, false));
+        yinDiaoBeans.add(new YinDiaoBean("g调", 1.25f, false));
         yinDiaoBeans.add(new YinDiaoBean("降A", 1.50f, false));
         yinDiaoBeans.add(new YinDiaoBean("A调", 1.65f, false));
         yinDiaoBeans.add(new YinDiaoBean("降B", 1.80f, false));
