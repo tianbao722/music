@@ -126,6 +126,7 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     });
     private ArrayList<YinDiaoBean> yuanDiaoList;
     private ArrayList<YinDiaoBean> xinDiaoList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -479,7 +480,25 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     //播放完成之后自动下一曲
     @Override
     public void onCompletion(MediaPlayer mp) {
-        changeMusic(++mCurrentPosition);
+        if (mPattern == 1) {//单曲循环
+            changeMusic(mCurrentPosition);
+        } else if (mPattern == 2) {//单曲播放
+            if (mediaPlayer != null) {
+                mediaPlayer.reset();
+                mediaPlayer.stop();
+                mediaPlayer = null;
+                timeSeekBar.setProgress(0);
+                timeSeekBar.setMax(0);
+                tvTotalTime.setText(parseTime(0));
+                tvPlayTime.setText(parseTime(0));
+                playStateLay.setVisibility(View.GONE);
+            }
+            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
+            return;
+        } else {//列表循环
+            changeMusic(++mCurrentPosition);
+        }
     }
 
     private boolean setPlaySpeed(float speed) {
