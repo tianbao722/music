@@ -24,12 +24,14 @@ import android.widget.Toast;
 import com.example.music.R;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.SPListBean;
 import com.example.music.ui.activity.BenDiQuPuActivity;
+import com.example.music.utils.PreferenceUtil;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class TuPianYuePuFragment extends Fragment implements View.OnClickListener {
-
     private RecyclerView mRecTuPianYuePu;
     private TextView mTvXinZheng;
     private ArrayList<BenDiYuePuBean> strings;
@@ -50,11 +52,15 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         mRecTuPianYuePu = inflate.findViewById(R.id.rec_tupianyuepy);
         mTvXinZheng = inflate.findViewById(R.id.tv_xinzeng);
         mTvXinZheng.setOnClickListener(this);
-        strings = new ArrayList<>();
+        ArrayList<BenDiYuePuBean> spList = getSPList();
+        if (spList != null) {
+            strings = spList;
+        } else {
+            strings = new ArrayList<>();
+        }
         tuPianYuePuAdapter = new TuPianYuePuAdapter(mContext, strings);
         mRecTuPianYuePu.setLayoutManager(new LinearLayoutManager(mContext));
         mRecTuPianYuePu.setAdapter(tuPianYuePuAdapter);
-
         tuPianYuePuAdapter.setOnItemClickListener(new TuPianYuePuAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -113,7 +119,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }
-
+                                    setSPList(strings);
                                 } else {
                                     Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
                                 }
@@ -124,6 +130,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }
+                                setSPList(strings);
                             }
                         } else {
                             Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
@@ -141,5 +148,25 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 });
                 break;
         }
+    }
+
+    public void setSPList(ArrayList<BenDiYuePuBean> list) {
+        SPListBean spListBean = new SPListBean(list);
+        String json = new Gson().toJson(spListBean);
+        PreferenceUtil.getInstance().saveString("tupianqupu", json);
+    }
+
+    public ArrayList<BenDiYuePuBean> getSPList() {
+        String json = PreferenceUtil.getInstance().getString("tupianqupu", null);
+        if (!TextUtils.isEmpty(json)) {
+            SPListBean spListBean = new Gson().fromJson(json, SPListBean.class);
+            ArrayList<BenDiYuePuBean> list = spListBean.getList();
+            if (list != null) {
+                return list;
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 }
