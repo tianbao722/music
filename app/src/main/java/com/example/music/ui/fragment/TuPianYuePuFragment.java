@@ -27,6 +27,7 @@ import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.SPListBean;
 import com.example.music.ui.activity.BenDiQuPuActivity;
 import com.example.music.utils.PreferenceUtil;
+import com.example.music.utils.SPBeanUtile;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         mRecTuPianYuePu = inflate.findViewById(R.id.rec_tupianyuepy);
         mTvXinZheng = inflate.findViewById(R.id.tv_xinzeng);
         mTvXinZheng.setOnClickListener(this);
-        ArrayList<BenDiYuePuBean> spList = getSPList();
+        ArrayList<BenDiYuePuBean> spList = SPBeanUtile.getSPList();
         if (spList != null) {
             strings = spList;
         } else {
@@ -119,7 +120,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }
-                                    setSPList(strings);
+                                    SPBeanUtile.setSPList(strings);
                                 } else {
                                     Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
                                 }
@@ -130,7 +131,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }
-                                setSPList(strings);
+                                SPBeanUtile.setSPList(strings);
                             }
                         } else {
                             Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
@@ -148,25 +149,5 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 });
                 break;
         }
-    }
-
-    public void setSPList(ArrayList<BenDiYuePuBean> list) {
-        SPListBean spListBean = new SPListBean(list);
-        String json = new Gson().toJson(spListBean);
-        PreferenceUtil.getInstance().saveString("tupianqupu", json);
-    }
-
-    public ArrayList<BenDiYuePuBean> getSPList() {
-        String json = PreferenceUtil.getInstance().getString("tupianqupu", null);
-        if (!TextUtils.isEmpty(json)) {
-            SPListBean spListBean = new Gson().fromJson(json, SPListBean.class);
-            ArrayList<BenDiYuePuBean> list = spListBean.getList();
-            if (list != null) {
-                return list;
-            } else {
-                return null;
-            }
-        }
-        return null;
     }
 }

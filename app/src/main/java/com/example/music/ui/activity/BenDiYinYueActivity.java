@@ -362,18 +362,18 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
 
     private ArrayList<YinDiaoBean> getYuanDiaoList() {
         ArrayList<YinDiaoBean> yinDiaoBeans = new ArrayList<>();
-        yinDiaoBeans.add(new YinDiaoBean("C调", 0.20f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降D", 0.35f, false));
-        yinDiaoBeans.add(new YinDiaoBean("D调", 0.50f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降E", 0.65f, false));
-        yinDiaoBeans.add(new YinDiaoBean("E调", 0.80f, false));
-        yinDiaoBeans.add(new YinDiaoBean("F调", 0.95f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降g", 1.10f, false));
-        yinDiaoBeans.add(new YinDiaoBean("g调", 1.25f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降A", 1.50f, false));
-        yinDiaoBeans.add(new YinDiaoBean("A调", 1.65f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降B", 1.80f, false));
-        yinDiaoBeans.add(new YinDiaoBean("B调", 2.00f, false));
+        yinDiaoBeans.add(new YinDiaoBean("C调", 1.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降D", 1.5f, false));
+        yinDiaoBeans.add(new YinDiaoBean("D调", 2.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降E", 2.5f, false));
+        yinDiaoBeans.add(new YinDiaoBean("E调", 3.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("F调", 4.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降g", 4.5f, false));
+        yinDiaoBeans.add(new YinDiaoBean("g调", 5.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降A", 5.5f, false));
+        yinDiaoBeans.add(new YinDiaoBean("A调", 6.0f, false));
+        yinDiaoBeans.add(new YinDiaoBean("降B", 6.5f, false));
+        yinDiaoBeans.add(new YinDiaoBean("B调", 7.0f, false));
         return yinDiaoBeans;
     }
 
