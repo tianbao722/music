@@ -14,4 +14,5 @@
     <color name="color_transparent_10">#1F000000</color>
     <color name="baise">#ffffff</color>
     <color name="select">#4E816E</color>
+    <color name="colorPrimary">#DCDCDC</color>
 </resources>

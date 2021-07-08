@@ -1,15 +1,17 @@
 package com.example.music.ui.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,10 +33,9 @@ import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
 import com.example.music.utils.SPBeanUtile;
-import com.github.dfqin.grantor.PermissionListener;
-import com.github.dfqin.grantor.PermissionsUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView mRecDaoRuQuPu;
@@ -78,9 +79,11 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
 
         imagelist = new ArrayList<>();
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
-        mRecDaoRuQuPuImg.addItemDecoration(new SpaceItemDecoration(dp2px(10)));
+        mRecDaoRuQuPuImg.addItemDecoration(new SpaceItemDecoration(dp2px(0)));
         mRecDaoRuQuPuImg.setLayoutManager(new GridLayoutManager(mContext, 4));
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
+        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());
+        mItemTouchHelper.attachToRecyclerView(mRecDaoRuQuPuImg);
     }
 
     private void initListener() {
@@ -110,7 +113,8 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         imageDaoRuQuPuAdapter.setOnItemClickListener(new ImageDaoRuQuPuAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
-
+                imagelist.remove(position);
+                imageDaoRuQuPuAdapter.notifyDataSetChanged();
             }
         });
         //图片添加监听
@@ -262,4 +266,90 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private int dp2px(float value) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
     }
+
+    private ItemTouchHelper mItemTouchHelper;
+
+    public class MyItemTouchHelper extends ItemTouchHelper.Callback {
+
+        @Override
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                final int swipeFlags = 0;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            } else {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                final int swipeFlags = 0;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+        }
+
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            //得到当拖拽的viewHolder的Position
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            //拿到当前拖拽到的item的viewHolder
+            if (toPosition == imagelist.size() || fromPosition == imagelist.size()) {
+                imageDaoRuQuPuAdapter.notifyItemMoved(fromPosition, toPosition);
+            } else {
+                if (fromPosition < toPosition) {
+                    for (int i = fromPosition; i < toPosition; i++) {
+                        Collections.swap(imagelist, i, i + 1);
+                    }
+                } else {
+                    for (int i = fromPosition; i > toPosition; i--) {
+                        Collections.swap(imagelist, i, i - 1);
+                    }
+                }
+                imageDaoRuQuPuAdapter.notifyItemMoved(fromPosition, toPosition);
+            }
+            return true;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+
+
+        /**
+         * 长按选中Item的时候开始调用
+         *
+         * @param viewHolder
+         * @param actionState
+         */
+        @Override
+        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+//                viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
+            }
+            super.onSelectedChanged(viewHolder, actionState);
+        }
+
+        /**
+         * 手指松开的时候还原
+         *
+         * @param recyclerView
+         * @param viewHolder
+         */
+        @Override
+        public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+//            viewHolder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+        }
+
+        /**
+         * 重写拖拽不可用
+         *
+         * @return
+         */
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return true;
+        }
+    }
+
+
 }
