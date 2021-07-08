@@ -33,10 +33,10 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 public class TuPianYuePuFragment extends Fragment implements View.OnClickListener {
+    private Context mContext;
+    private ArrayList<BenDiYuePuBean> strings;
     private RecyclerView mRecTuPianYuePu;
     private TextView mTvXinZheng;
-    private ArrayList<BenDiYuePuBean> strings;
-    private Context mContext;
     private boolean classify = false;
     private TuPianYuePuAdapter tuPianYuePuAdapter;
 
