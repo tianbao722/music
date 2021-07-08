@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLJiePaiQi.setOnClickListener(this);
         mLLLianXiGuJi.setOnClickListener(this);
         mTvSystemSetting.setOnClickListener(this);
+        String[] strings = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,};
         PermissionsUtil.requestPermission(this, new PermissionListener() {
             @Override
             public void permissionGranted(@NonNull String[] permission) {
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void permissionDenied(@NonNull String[] permission) {
                 Log.i("TAG", "permissionDenied: " + "权限请求失败");
             }
-        }, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA});
+        }, strings);
     }
 
     @Override

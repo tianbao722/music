@@ -24,12 +24,12 @@ import java.io.File;
  */
 public class MyApplication extends Application {
     private static MyApplication myApplication;
+
     @Override
     public void onCreate() {
         super.onCreate();
         myApplication = this;
     }
-
 
     public static MyApplication getInstance() {
         return myApplication;
@@ -37,5 +37,11 @@ public class MyApplication extends Application {
 
     public static Context context() {
         return myApplication.getApplicationContext();
+    }
+
+    //获取图片曲谱根路径
+    public static File getTuPianYuePuFile() {
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.TuPianYuePu);
+        return tupianyuepu;
     }
 }

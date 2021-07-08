@@ -67,7 +67,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPuImg = findViewById(R.id.rec_daoruqupu_img);
         mTvEnterDaoRuQuPu = findViewById(R.id.tv_enter_daoruyuepu);
         mivBack.setOnClickListener(this);
-        list = SPBeanUtile.getSPList();
+        list = SPBeanUtile.getTuPianQuPuFileList();
         if (list == null) {
             list = new ArrayList<BenDiYuePuBean>();
         }
@@ -181,29 +181,39 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                             }
                         }
                         if (classify) {
-                            for (int i = 0; i < list.size(); i++) {
-                                BenDiYuePuBean benDiYuePuBean = list.get(i);
-                                benDiYuePuBean.setSelected(false);
-                                list.set(i, benDiYuePuBean);
+                            boolean tuPiQuPuFile = SPBeanUtile.createTuPiQuPuFile(text);
+                            if (tuPiQuPuFile) {
+                                for (int i = 0; i < list.size(); i++) {
+                                    BenDiYuePuBean benDiYuePuBean = list.get(i);
+                                    benDiYuePuBean.setSelected(false);
+                                    list.set(i, benDiYuePuBean);
+                                }
+                                BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
+                                list.add(0, benDiYuePuBean);
+                                daoRuQuPuAdaper.notifyDataSetChanged();
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
                             }
+                        } else {
+                            Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        boolean tuPiQuPuFile = SPBeanUtile.createTuPiQuPuFile(text);
+                        if (tuPiQuPuFile) {
                             BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                             list.add(0, benDiYuePuBean);
                             daoRuQuPuAdaper.notifyDataSetChanged();
                             if (alertDialog != null) {
                                 alertDialog.dismiss();
                             }
-                            SPBeanUtile.setSPList(list);
+                            Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                        list.add(0, benDiYuePuBean);
-                        daoRuQuPuAdaper.notifyDataSetChanged();
-                        if (alertDialog != null) {
-                            alertDialog.dismiss();
-                        }
-                        SPBeanUtile.setSPList(list);
                     }
                 } else {
                     Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();

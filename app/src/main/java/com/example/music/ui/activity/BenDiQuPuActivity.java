@@ -38,7 +38,6 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
         initListener();
     }
 
-
     private void initView() {
         mIvBack = findViewById(R.id.iv_back);
         mTabQuPu = findViewById(R.id.tab_qupu);

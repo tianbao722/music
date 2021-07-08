@@ -68,4 +68,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.2.4'
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+
+// if u use AndroidX, use the following
+    implementation 'com.blankj:utilcodex:1.30.6'
 }

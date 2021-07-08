@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.example.music.R;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
@@ -30,7 +31,9 @@ import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TuPianYuePuFragment extends Fragment implements View.OnClickListener {
     private Context mContext;
@@ -45,15 +48,17 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                              @Nullable Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.tu_pian_yue_pu_fragment, container, false);
         initView(inflate);
+        initFile();
         return inflate;
     }
+
 
     private void initView(View inflate) {
         mContext = getActivity();
         mRecTuPianYuePu = inflate.findViewById(R.id.rec_tupianyuepy);
         mTvXinZheng = inflate.findViewById(R.id.tv_xinzeng);
         mTvXinZheng.setOnClickListener(this);
-        ArrayList<BenDiYuePuBean> spList = SPBeanUtile.getSPList();
+        ArrayList<BenDiYuePuBean> spList = SPBeanUtile.getTuPianQuPuFileList();
         if (spList != null) {
             strings = spList;
         } else {
@@ -76,6 +81,10 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 tuPianYuePuAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void initFile() {
+
     }
 
     @Override
@@ -109,29 +118,40 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                     }
                                 }
                                 if (classify) {
-                                    for (int i = 0; i < strings.size(); i++) {
-                                        BenDiYuePuBean benDiYuePuBean = strings.get(i);
-                                        benDiYuePuBean.setSelected(false);
-                                        strings.set(i, benDiYuePuBean);
+                                    boolean tuPiQuPuFile = SPBeanUtile.createTuPiQuPuFile(text);
+                                    if (tuPiQuPuFile) {
+                                        for (int i = 0; i < strings.size(); i++) {
+                                            BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                                            benDiYuePuBean.setSelected(false);
+                                            strings.set(i, benDiYuePuBean);
+                                        }
+                                        BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
+                                        strings.add(0, benDiYuePuBean);
+                                        tuPianYuePuAdapter.notifyDataSetChanged();
+                                        if (alertDialog != null) {
+                                            alertDialog.dismiss();
+                                        }
+                                        Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
                                     }
+                                } else {
+                                    Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } else {
+                                boolean tuPiQuPuFile = SPBeanUtile.createTuPiQuPuFile(text);
+                                if (tuPiQuPuFile) {
                                     BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                     strings.add(0, benDiYuePuBean);
                                     tuPianYuePuAdapter.notifyDataSetChanged();
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }
-                                    SPBeanUtile.setSPList(strings);
+                                    Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                                strings.add(0, benDiYuePuBean);
-                                tuPianYuePuAdapter.notifyDataSetChanged();
-                                if (alertDialog != null) {
-                                    alertDialog.dismiss();
-                                }
-                                SPBeanUtile.setSPList(strings);
                             }
                         } else {
                             Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
