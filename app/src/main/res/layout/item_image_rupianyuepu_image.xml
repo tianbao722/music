@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/dp_50"
+    android:layout_marginRight="@dimen/dp_20"
     android:background="@drawable/shape_image_tupianyuepu_image"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/dp_50">
 
     <TextView
         android:id="@+id/tv_image_name"

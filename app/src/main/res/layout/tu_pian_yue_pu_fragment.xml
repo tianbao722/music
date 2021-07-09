@@ -62,7 +62,6 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rec_image_yuepu"
             android:layout_width="0dp"
-            android:layout_marginRight="@dimen/dp_20"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_20"
             android:layout_weight="7"
