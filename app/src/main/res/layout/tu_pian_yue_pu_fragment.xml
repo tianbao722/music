@@ -11,11 +11,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:background="#DBDBDB"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="#ffffff"
             android:layout_weight="3"
             android:orientation="vertical">
 
@@ -27,10 +29,11 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rec_tupianyuepy"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/dp_50"
                     android:layout_alignBottom="@+id/tv_xinzeng"
+                    android:layout_marginBottom="@dimen/dp_50"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,11 +44,11 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:background="@drawable/shape_xinzeng"
                     android:gravity="center"
                     android:text="新增"
                     android:textColor="#65FFE9"
-                    android:layout_marginBottom="@dimen/dp_10"
                     android:textSize="@dimen/sp_15"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -57,8 +60,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rec_image_yuepu"
             android:layout_width="0dp"
+            android:layout_marginRight="@dimen/dp_20"
             android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp_20"
             android:layout_weight="7"
             android:background="#DBDBDB" />
 

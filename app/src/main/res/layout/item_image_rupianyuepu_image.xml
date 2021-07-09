@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/dp_50"
+    android:background="@drawable/shape_image_tupianyuepu_image"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_image_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:text="名字"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_15"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_yeshu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:text="页数"
+        android:textColor="#838383"
+        android:textSize="@dimen/sp_15" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_15"
+        android:background="#4A4A4A" />
+
+</LinearLayout>

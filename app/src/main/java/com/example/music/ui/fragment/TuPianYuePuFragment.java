@@ -3,11 +3,13 @@ package com.example.music.ui.fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,9 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.ImageYuePuImageBean;
 import com.example.music.bean.SPListBean;
 import com.example.music.ui.activity.BenDiQuPuActivity;
 import com.example.music.utils.PreferenceUtil;
@@ -39,16 +44,17 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     private Context mContext;
     private ArrayList<BenDiYuePuBean> strings;
     private RecyclerView mRecTuPianYuePu;
+    private RecyclerView mRecImageYuePu;
     private TextView mTvXinZheng;
     private boolean classify = false;
     private TuPianYuePuAdapter tuPianYuePuAdapter;
+    private int mPosition;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.tu_pian_yue_pu_fragment, container, false);
         initView(inflate);
-        initFile();
         return inflate;
     }
 
@@ -56,8 +62,57 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     private void initView(View inflate) {
         mContext = getActivity();
         mRecTuPianYuePu = inflate.findViewById(R.id.rec_tupianyuepy);
+        mRecImageYuePu = inflate.findViewById(R.id.rec_image_yuepu);
         mTvXinZheng = inflate.findViewById(R.id.tv_xinzeng);
         mTvXinZheng.setOnClickListener(this);
+        //初始化图片乐谱左边title
+        initRecTuPianYuePu();
+        //初始化图片乐谱右边图片
+        initRecImageYuePu();
+    }
+
+    private void initRecImageYuePu() {
+        mRecImageYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
+        ArrayList<ImageYuePuImageBean> imageFileList = getImageFileList();
+        RecImageYuePuAdapter recImageYuePuAdapter = new RecImageYuePuAdapter(imageFileList, mContext);
+        mRecImageYuePu.setAdapter(recImageYuePuAdapter);
+        //条目点击事件
+        recImageYuePuAdapter.setOnItemClickListener(new RecImageYuePuAdapter.onItemClickListener() {
+            @Override
+            public void onItmeClick(int position) {
+                ArrayList<String> image = new ArrayList<>();
+                ImageYuePuImageBean imageYuePuImageBean = imageFileList.get(position);
+                List<File> list = imageYuePuImageBean.getList();
+                for (int i = 0; i < list.size(); i++) {
+                    String path = list.get(i).getPath();
+                    image.add(path);
+                }
+                Intent intent = new Intent();
+                intent.setAction("bigimage");
+                intent.putExtra("position", 1);
+                intent.putStringArrayListExtra("list", image);
+                startActivityForResult(intent, 100);
+            }
+        });
+    }
+
+    private ArrayList<ImageYuePuImageBean> getImageFileList() {
+        ArrayList<ImageYuePuImageBean> imageYuePuImageBeans = new ArrayList<>();
+        String path = MyApplication.getTuPianYuePuFile().getPath();
+        String currentPath = path + "/" + strings.get(mPosition).getTitle();
+        List<File> files = FileUtils.listFilesInDir(currentPath);
+        if (files != null && files.size() > 0) {
+            for (int i = 0; i < files.size(); i++) {
+                String name = files.get(i).getName();
+                List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
+                ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
+                imageYuePuImageBeans.add(imageYuePuImageBean);
+            }
+        }
+        return imageYuePuImageBeans;
+    }
+
+    private void initRecTuPianYuePu() {
         ArrayList<BenDiYuePuBean> spList = SPBeanUtile.getTuPianQuPuFileList();
         if (spList != null) {
             strings = spList;
@@ -70,6 +125,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         tuPianYuePuAdapter.setOnItemClickListener(new TuPianYuePuAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                mPosition = position;
                 for (int i = 0; i < strings.size(); i++) {
                     BenDiYuePuBean benDiYuePuBean = strings.get(i);
                     benDiYuePuBean.setSelected(false);
@@ -81,10 +137,6 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 tuPianYuePuAdapter.notifyDataSetChanged();
             }
         });
-    }
-
-    private void initFile() {
-
     }
 
     @Override

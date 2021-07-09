@@ -71,4 +71,6 @@ dependencies {
 
 // if u use AndroidX, use the following
     implementation 'com.blankj:utilcodex:1.30.6'
+
+    implementation 'com.github.tianbao722:imageYiLai:1.2'
 }
