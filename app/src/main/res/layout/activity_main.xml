@@ -27,7 +27,7 @@
                 android:layout_width="@dimen/dp_90"
                 android:layout_height="@dimen/dp_120"
                 android:scaleType="fitXY"
-                android:src="@mipmap/img_gongnegn" />
+                android:src="@mipmap/bendi" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                 android:layout_width="@dimen/dp_90"
                 android:layout_height="@dimen/dp_120"
                 android:scaleType="fitXY"
-                android:src="@mipmap/img_gongnegn" />
+                android:src="@mipmap/bendi" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                 android:layout_width="@dimen/dp_90"
                 android:layout_height="@dimen/dp_120"
                 android:scaleType="fitXY"
-                android:src="@mipmap/img_gongnegn" />
+                android:src="@mipmap/bendi" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -109,7 +109,7 @@
                 android:layout_width="@dimen/dp_90"
                 android:layout_height="@dimen/dp_120"
                 android:scaleType="fitXY"
-                android:src="@mipmap/img_gongnegn" />
+                android:src="@mipmap/bendi" />
 
             <TextView
                 android:layout_width="match_parent"
