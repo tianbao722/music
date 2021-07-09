@@ -39,7 +39,7 @@ public class MyApplication extends Application {
         return myApplication.getApplicationContext();
     }
 
-    //获取图片曲谱根路径
+    //获取图片曲谱文件
     public static File getTuPianYuePuFile() {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.TuPianYuePu);
         return tupianyuepu;

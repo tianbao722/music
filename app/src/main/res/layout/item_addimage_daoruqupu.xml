@@ -6,7 +6,7 @@
     <ImageView
         android:id="@+id/iv_jia"
         android:src="@mipmap/jiahao"
-        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_15"
         android:background="@drawable/shape_tianjia"
         android:padding="@dimen/dp_20"
         android:layout_width="wrap_content"

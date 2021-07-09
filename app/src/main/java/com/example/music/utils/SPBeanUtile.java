@@ -15,15 +15,14 @@ import com.example.music.Constants;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.bean.BenDiYuePuBean;
-import com.example.music.bean.SPListBean;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SPBeanUtile {
-    //创建图片乐谱文件夹
+
+    //创建文件夹
     public static boolean createTuPiQuPuFile(String string) {
         File tuPianYuePuFile = MyApplication.getTuPianYuePuFile();
         File file = new File(tuPianYuePuFile, string);

@@ -11,8 +11,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -25,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.music.Constants;
+import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.DaoRuQuPuAdaper;
 import com.example.music.adapter.FlowLayoutManager;
@@ -32,8 +36,15 @@ import com.example.music.adapter.ImageDaoRuQuPuAdapter;
 import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
+import com.example.music.utils.DownLoadUtile;
 import com.example.music.utils.SPBeanUtile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -50,6 +61,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<ImageDaoRuQuPuBean> imagelist;
     private ImageDaoRuQuPuAdapter imageDaoRuQuPuAdapter;
     private AlertDialog alertDialog;
+    private int position;//当前选中的文件夹的下标
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +73,19 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initView() {
+        imagelist = new ArrayList<>();
+        Intent intent = getIntent();
+        String imgUrl = intent.getStringExtra(Constants.webImage);
+        if (!TextUtils.isEmpty(imgUrl)) {
+            imagelist.add(new ImageDaoRuQuPuBean(imgUrl, null, null));
+        }
         mRecDaoRuQuPu = findViewById(R.id.rec_daoruqupu);
         mEdDaoruqupu = findViewById(R.id.ed_daoruqupu);
         mivBack = findViewById(R.id.iv_back);
         mRecDaoRuQuPuImg = findViewById(R.id.rec_daoruqupu_img);
         mTvEnterDaoRuQuPu = findViewById(R.id.tv_enter_daoruyuepu);
         mivBack.setOnClickListener(this);
+        mTvEnterDaoRuQuPu.setOnClickListener(this);
         list = SPBeanUtile.getTuPianQuPuFileList();
         if (list == null) {
             list = new ArrayList<BenDiYuePuBean>();
@@ -77,7 +96,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPu.setLayoutManager(flowLayoutManager);
         mRecDaoRuQuPu.setAdapter(daoRuQuPuAdaper);
 
-        imagelist = new ArrayList<>();
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
         mRecDaoRuQuPuImg.addItemDecoration(new SpaceItemDecoration(dp2px(0)));
         mRecDaoRuQuPuImg.setLayoutManager(new GridLayoutManager(mContext, 4));
@@ -91,6 +109,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         daoRuQuPuAdaper.setOnItemClickListener(new DaoRuQuPuAdaper.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                DaoRuQuPuActivity.this.position = position;
                 for (int i = 0; i < list.size(); i++) {
                     BenDiYuePuBean benDiYuePuBean = list.get(i);
                     benDiYuePuBean.setSelected(false);
@@ -237,6 +256,19 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
             case R.id.iv_back:
                 DaoRuQuPuActivity.this.finish();
                 break;
+            case R.id.tv_enter_daoruyuepu:
+                String text = mEdDaoruqupu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    boolean b = addFile(text);
+                    if (b) {
+                        Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入乐谱名字", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
@@ -254,7 +286,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                             alertDialog.dismiss();
                         }
                     }
-//                mIvImage.setImageBitmap(photo);
                 }
                 break;
             case 2:
@@ -267,7 +298,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                             alertDialog.dismiss();
                         }
                     }
-//                mIvImage.setImageURI(uri);
                 }
                 break;
         }
@@ -361,5 +391,26 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-
+    public boolean addFile(String text) {
+        boolean b = false;
+        for (int i = 0; i < imagelist.size(); i++) {
+            ImageDaoRuQuPuBean imageDaoRuQuPuBean = imagelist.get(i);
+            String url = imageDaoRuQuPuBean.getUrl();
+            Uri uri = imageDaoRuQuPuBean.getUri();
+            Bitmap bitmap = imageDaoRuQuPuBean.getBitmap();
+            if (TextUtils.isEmpty(url) && uri == null && bitmap != null) {//保存bitmap
+                b = DownLoadUtile.SavaImage(bitmap, MyApplication.getTuPianYuePuFile().getPath() + "/" + list.get(position).getTitle() + "/" + text, i);
+            } else if (TextUtils.isEmpty(url) && bitmap == null && uri != null) {//保存uri
+                try {
+                    Bitmap bitmap1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                    b = DownLoadUtile.SavaImage(bitmap1, MyApplication.getTuPianYuePuFile().getPath() + "/" + list.get(position).getTitle() + "/" + text, i);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else if (bitmap == null && uri == null && !TextUtils.isEmpty(url)) {//保存url
+                b = DownLoadUtile.newThread(url, MyApplication.getTuPianYuePuFile().getPath() + "/" + list.get(position).getTitle() + "/" + text, i);
+            }
+        }
+        return b;
+    }
 }

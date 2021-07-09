@@ -69,7 +69,10 @@
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginRight="@dimen/dp_20"
         android:background="@drawable/shape_edit_daoruqupu"
+        android:hint="请输入乐谱名字"
+        android:maxLength="10"
         android:padding="@dimen/dp_10"
+        android:singleLine="true"
         app:layout_constraintTop_toBottomOf="@+id/rec_daoruqupu" />
 
     <androidx.recyclerview.widget.RecyclerView
