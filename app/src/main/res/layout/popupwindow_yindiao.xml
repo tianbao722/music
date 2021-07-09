@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:paddingBottom="@dimen/dp_20"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/dp_20">
 
     <TextView
         android:id="@+id/tv_yuandiao"
@@ -11,43 +12,62 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
-        android:text="原调"
+        android:text="音调"
         android:textColor="#000000"
         android:textSize="@dimen/sp_20"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rec_yuandiao"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_30"
-        android:layout_marginTop="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_30"
-        app:layout_constraintTop_toBottomOf="@+id/tv_yuandiao" />
+        android:layout_height="@dimen/dp_50"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/tv_xindiao"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_20"
-        android:layout_marginTop="@dimen/dp_20"
-        android:text="新调"
-        android:textColor="#000000"
-        android:textSize="@dimen/sp_20"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rec_yuandiao" />
+        <TextView
+            android:id="@+id/tv_jianyindiao"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_50"
+            android:gravity="center"
+            android:paddingLeft="@dimen/dp_40"
+            android:paddingRight="@dimen/dp_40"
+            android:text="－"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rec_xindiao"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_30"
-        android:layout_marginTop="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_30"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_xindiao" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:layout_width="@dimen/dp_1"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <TextView
+            android:id="@+id/tv_yindiaozhi"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_50"
+            android:gravity="center"
+            android:paddingLeft="@dimen/dp_40"
+            android:paddingRight="@dimen/dp_40"
+            android:text="0"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="@dimen/dp_1"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <TextView
+            android:id="@+id/tv_jiayindiao"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_50"
+            android:gravity="center"
+            android:paddingLeft="@dimen/dp_40"
+            android:paddingRight="@dimen/dp_40"
+            android:text="＋"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

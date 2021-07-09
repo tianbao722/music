@@ -33,6 +33,7 @@ import com.example.music.R;
 import com.example.music.adapter.DaoRuQuPuAdaper;
 import com.example.music.adapter.FlowLayoutManager;
 import com.example.music.adapter.ImageDaoRuQuPuAdapter;
+import com.example.music.adapter.RecyclerViewSpacesItemDecoration;
 import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
@@ -47,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView mRecDaoRuQuPu;
@@ -97,7 +99,10 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPu.setAdapter(daoRuQuPuAdaper);
 
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
-        mRecDaoRuQuPuImg.addItemDecoration(new SpaceItemDecoration(dp2px(0)));
+
+        HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
+        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION,50);//右间距
+        mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
         mRecDaoRuQuPuImg.setLayoutManager(new GridLayoutManager(mContext, 4));
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());

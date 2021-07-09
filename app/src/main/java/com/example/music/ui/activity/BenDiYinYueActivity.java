@@ -3,7 +3,6 @@ package com.example.music.ui.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,26 +15,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.music.R;
 import com.example.music.adapter.MusicListAdapter;
-import com.example.music.adapter.XinDiaoAdapter;
-import com.example.music.adapter.YuanDiaoAdapter;
 import com.example.music.bean.Song;
-import com.example.music.bean.YinDiaoBean;
 import com.example.music.utils.Constant;
 import com.example.music.utils.MusicUtils;
 import com.example.music.utils.ObjectUtils;
@@ -124,8 +115,7 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
             return true;
         }
     });
-    private ArrayList<YinDiaoBean> yuanDiaoList;
-    private ArrayList<YinDiaoBean> xinDiaoList;
+    private int yindiao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,8 +127,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         timeSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
         musicData = SPUtils.getString(Constant.MUSIC_DATA_FIRST, "yes", this);
         setSearchView();//设置搜索本地音乐的监听
-        yuanDiaoList = getYuanDiaoList();
-        xinDiaoList = getXinDiaoList();
         if (musicData.equals("no")) {//说明是第一次打开APP，未进行扫描
             scanLay.setVisibility(View.GONE);
             initMusic();
@@ -316,82 +304,94 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         alertDialog.setContentView(inflate);
         alertDialog.setCanceledOnTouchOutside(true);//点击弹窗外可关闭弹窗
         //找控件ID
-        RecyclerView mRecYuanDiao = inflate.findViewById(R.id.rec_yuandiao);
-        RecyclerView mRecXinDiao = inflate.findViewById(R.id.rec_xindiao);
-        mRecYuanDiao.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecXinDiao.setLayoutManager(new GridLayoutManager(this, 4));
-        YuanDiaoAdapter yuanDiaoAdapter = new YuanDiaoAdapter(yuanDiaoList, this);
-        mRecYuanDiao.setAdapter(yuanDiaoAdapter);
-        XinDiaoAdapter xinDiaoAdapter = new XinDiaoAdapter(xinDiaoList, this);
-        mRecXinDiao.setAdapter(xinDiaoAdapter);
-        yuanDiaoAdapter.setOnItemClickListener(new YuanDiaoAdapter.onItemClickListener() {
+        TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyindiao);
+        TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yindiaozhi);
+        TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayindiao);
+        //减音调
+        mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(int position) {
-                YinDiaoBean yinDiaoBean = yuanDiaoList.get(position);
-                for (int i = 0; i < yuanDiaoList.size(); i++) {
-                    yuanDiaoList.get(i).setSelecte(false);
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao <= -6) {
+                    return;
+                } else {
+                    yindiao -= 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.00f);
+                                break;
+                            case -1:
+                                setYinDaio(params, 1.25f);
+                                break;
+                            case -2:
+                                setYinDaio(params, 1.50f);
+                                break;
+                            case -3:
+                                setYinDaio(params, 1.75f);
+                                break;
+                            case -4:
+                                setYinDaio(params, 2.00f);
+                                break;
+                            case -5:
+                                setYinDaio(params, 2.25f);
+                                break;
+                            case -6:
+                                setYinDaio(params, 2.50f);
+                                break;
+                        }
+                    }
                 }
-                yinDiaoBean.setSelecte(true);
-                yuanDiaoList.set(position, yinDiaoBean);
-                if (mediaPlayer != null) {
-                    PlaybackParams params = mediaPlayer.getPlaybackParams();
-                    params.setPitch(yinDiaoBean.getYindiaozhi());//音调
-                    mediaPlayer.setPlaybackParams(params);
-                }
-                yuanDiaoAdapter.notifyDataSetChanged();
             }
         });
-        xinDiaoAdapter.setOnItemClickListener(new XinDiaoAdapter.onItemClickListener() {
+        //加音调
+        mTvJiaYinDiao.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(int position) {
-                YinDiaoBean yinDiaoBean = xinDiaoList.get(position);
-                for (int i = 0; i < xinDiaoList.size(); i++) {
-                    xinDiaoList.get(i).setSelecte(false);
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao < 6) {
+                    yindiao += 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.0f);
+                                break;
+                            case 1:
+                                setYinDaio(params, 0.884f);
+                                break;
+                            case 2:
+                                setYinDaio(params, 0.768f);
+                                break;
+                            case 3:
+                                setYinDaio(params, 0.652f);
+                                break;
+                            case 4:
+                                setYinDaio(params, 0.536f);
+                                break;
+                            case 5:
+                                setYinDaio(params, 0.420f);
+                                break;
+                            case 6:
+                                setYinDaio(params, 0.304f);
+                                break;
+                        }
+                    }
+                } else if (yindiao >= 6) {
+                    return;
                 }
-                yinDiaoBean.setSelecte(true);
-                xinDiaoList.set(position, yinDiaoBean);
-                if (mediaPlayer != null) {
-                    PlaybackParams params = mediaPlayer.getPlaybackParams();
-                    params.setPitch(yinDiaoBean.getYindiaozhi());//音调
-                    mediaPlayer.setPlaybackParams(params);
-                }
-                xinDiaoAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    private ArrayList<YinDiaoBean> getYuanDiaoList() {
-        ArrayList<YinDiaoBean> yinDiaoBeans = new ArrayList<>();
-        yinDiaoBeans.add(new YinDiaoBean("C调", 1.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降D", 1.5f, false));
-        yinDiaoBeans.add(new YinDiaoBean("D调", 2.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降E", 2.5f, false));
-        yinDiaoBeans.add(new YinDiaoBean("E调", 3.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("F调", 4.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降g", 4.5f, false));
-        yinDiaoBeans.add(new YinDiaoBean("g调", 5.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降A", 5.5f, false));
-        yinDiaoBeans.add(new YinDiaoBean("A调", 6.0f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降B", 6.5f, false));
-        yinDiaoBeans.add(new YinDiaoBean("B调", 7.0f, false));
-        return yinDiaoBeans;
-    }
-
-    private ArrayList<YinDiaoBean> getXinDiaoList() {
-        ArrayList<YinDiaoBean> yinDiaoBeans = new ArrayList<>();
-        yinDiaoBeans.add(new YinDiaoBean("C调", 0.20f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降D", 0.35f, false));
-        yinDiaoBeans.add(new YinDiaoBean("D调", 0.50f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降E", 0.65f, false));
-        yinDiaoBeans.add(new YinDiaoBean("E调", 0.80f, false));
-        yinDiaoBeans.add(new YinDiaoBean("F调", 0.95f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降g", 1.10f, false));
-        yinDiaoBeans.add(new YinDiaoBean("g调", 1.25f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降A", 1.50f, false));
-        yinDiaoBeans.add(new YinDiaoBean("A调", 1.65f, false));
-        yinDiaoBeans.add(new YinDiaoBean("降B", 1.80f, false));
-        yinDiaoBeans.add(new YinDiaoBean("B调", 2.00f, false));
-        return yinDiaoBeans;
+    private void setYinDaio(PlaybackParams params, float v2) {
+        params.setPitch(v2);//音调
+        mediaPlayer.setPlaybackParams(params);
     }
 
     //切歌

@@ -6,9 +6,9 @@
 
     <ImageView
         android:id="@+id/tv_tianjia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
         android:background="@drawable/shape_tianjia"
-        android:padding="@dimen/dp_3"
+        android:padding="@dimen/dp_10"
         android:src="@mipmap/jiahao" />
 </LinearLayout>
