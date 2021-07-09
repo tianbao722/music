@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView mIvBack;
+    private ImageView mIvShear;
     private TabLayout mTabQuPu;
     private ViewPager mVp;
     private TuPianYuePuFragment tuPianYuePuFragment;
@@ -40,9 +42,11 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
 
     private void initView() {
         mIvBack = findViewById(R.id.iv_back);
+        mIvShear = findViewById(R.id.iv_shear);
         mTabQuPu = findViewById(R.id.tab_qupu);
         mVp = findViewById(R.id.vp);
         mIvBack.setOnClickListener(this);
+        mIvShear.setOnClickListener(this);
         tuPianYuePuFragment = new TuPianYuePuFragment();
         dpfYuePuFragment = new DPFYuePuFragment();
         titles = new ArrayList<>();
@@ -96,6 +100,10 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.iv_back:
                 BenDiQuPuActivity.this.finish();
+                break;
+            case R.id.iv_shear:
+                Intent intent = new Intent(BenDiQuPuActivity.this, SearchYuePuActivity.class);
+                startActivity(intent);
                 break;
         }
     }
