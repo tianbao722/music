@@ -101,7 +101,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
 
         HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
-        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION,50);//右间距
+        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 50);//右间距
         mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
         mRecDaoRuQuPuImg.setLayoutManager(new GridLayoutManager(mContext, 4));
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
@@ -261,12 +261,14 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
             case R.id.iv_back:
                 DaoRuQuPuActivity.this.finish();
                 break;
-            case R.id.tv_enter_daoruyuepu:
+            case R.id.tv_enter_daoruyuepu://确定
                 String text = mEdDaoruqupu.getText().toString();
                 if (!TextUtils.isEmpty(text)) {
                     boolean b = addFile(text);
                     if (b) {
                         Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mContext, BenDiQuPuActivity.class);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
                     }

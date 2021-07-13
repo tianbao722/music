@@ -4,23 +4,75 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E4E4E4"
     android:orientation="vertical"
     tools:context=".ui.activity.SearchYuePuActivity">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/yuepu_search_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dp_5"
+        android:paddingTop="@dimen/dp_5"
+        android:background="#ffffff">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/fanhui"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/yuepu_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_30"
+            android:focusedByDefault="false"
+            app:iconifiedByDefault="false"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:queryHint="@string/search_tips1"
+            tools:targetApi="o" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:focusedByDefault="false"
-        app:iconifiedByDefault="false"
-        app:queryHint="@string/search_tips1"
-        tools:targetApi="o" />
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_search_tupianyuepu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp_20"
+            android:background="@null"
+            android:padding="@dimen/dp_10"
+            android:text="图片乐谱"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_15" />
+
+        <TextView
+            android:id="@+id/tv_search_defyuepu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:padding="@dimen/dp_10"
+            android:text="DEF乐谱"
+            android:textColor="#8A8A8A"
+            android:textSize="@dimen/sp_15" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_search_yuepu"
         android:layout_width="match_parent"
-        android:layout_marginLeft="@dimen/dp_20"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20" />
 </LinearLayout>

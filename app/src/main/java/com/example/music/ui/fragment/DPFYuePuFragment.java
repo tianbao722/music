@@ -1,7 +1,5 @@
 package com.example.music.ui.fragment;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +46,6 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
     private TuPianYuePuAdapter tuPianYuePuAdapter;
     private boolean classify = false;
 
-
     public static DPFYuePuFragment newInstance() {
         return new DPFYuePuFragment();
     }
@@ -67,9 +64,9 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
         mDefTvXinJian = inflate.findViewById(R.id.edf_tv_xinzeng);
         mDefRecDefYuePuImage = inflate.findViewById(R.id.edg_rec_image_yuepu);
         mDefTvXinJian.setOnClickListener(this);
-        //初始化图片乐谱左边title
+        //初始化Def乐谱左边title
         initRecTuPianYuePu();
-        //初始化图片乐谱右边图片
+        //初始化Def乐谱右边图片
         initRecImageYuePu();
     }
 

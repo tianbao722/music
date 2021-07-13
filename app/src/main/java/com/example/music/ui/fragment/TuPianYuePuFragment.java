@@ -75,11 +75,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
 
     private void initRecImageYuePu() {
         mRecImageYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
-        if (imageFileList == null || imageFileList.size() == 0) {
-            imageFileList = new ArrayList<>();
-        } else {
-            imageFileList = getImageFileList();
-        }
+        imageFileList = getImageFileList();
         recImageYuePuAdapter = new RecImageYuePuAdapter(imageFileList, mContext);
         mRecImageYuePu.setAdapter(recImageYuePuAdapter);
         //条目点击事件
@@ -145,11 +141,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 strings.set(position, benDiYuePuBean);
                 tuPianYuePuAdapter.notifyDataSetChanged();
                 imageFileList.clear();
-                if (imageFileList == null || imageFileList.size() == 0) {
-                    imageFileList = new ArrayList<>();
-                } else {
-                    imageFileList = getImageFileList();
-                }
+                imageFileList = getImageFileList();
                 recImageYuePuAdapter.notifyDataSetChanged();
             }
         });
