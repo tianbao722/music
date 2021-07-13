@@ -22,7 +22,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClickListener {
-
     private ImageView mIvBack;
     private ImageView mIvShear;
     private TabLayout mTabQuPu;

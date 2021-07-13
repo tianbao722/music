@@ -75,7 +75,11 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
 
     private void initRecImageYuePu() {
         mRecImageYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
-        imageFileList = getImageFileList();
+        if (imageFileList == null || imageFileList.size() == 0) {
+            imageFileList = new ArrayList<>();
+        } else {
+            imageFileList = getImageFileList();
+        }
         recImageYuePuAdapter = new RecImageYuePuAdapter(imageFileList, mContext);
         mRecImageYuePu.setAdapter(recImageYuePuAdapter);
         //条目点击事件
@@ -101,6 +105,9 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     private ArrayList<ImageYuePuImageBean> getImageFileList() {
         ArrayList<ImageYuePuImageBean> imageYuePuImageBeans = new ArrayList<>();
         String path = MyApplication.getTuPianYuePuFile().getPath();
+        if (strings == null || strings.size() == 0) {
+            return null;
+        }
         String currentPath = path + "/" + strings.get(mPosition).getTitle();
         List<File> files = FileUtils.listFilesInDir(currentPath);
         if (files != null && files.size() > 0) {
@@ -137,9 +144,12 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 benDiYuePuBean.setSelected(true);
                 strings.set(position, benDiYuePuBean);
                 tuPianYuePuAdapter.notifyDataSetChanged();
-
                 imageFileList.clear();
-                imageFileList = getImageFileList();
+                if (imageFileList == null || imageFileList.size() == 0) {
+                    imageFileList = new ArrayList<>();
+                } else {
+                    imageFileList = getImageFileList();
+                }
                 recImageYuePuAdapter.notifyDataSetChanged();
             }
         });

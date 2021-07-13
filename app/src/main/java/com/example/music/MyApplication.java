@@ -44,4 +44,10 @@ public class MyApplication extends Application {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.TuPianYuePu);
         return tupianyuepu;
     }
+
+    //获取Def曲谱文件
+    public static File getDefYuePuFile() {
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.Def);
+        return tupianyuepu;
+    }
 }

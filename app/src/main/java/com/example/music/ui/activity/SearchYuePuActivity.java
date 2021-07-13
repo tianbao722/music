@@ -10,7 +10,6 @@ import android.view.View;
 import com.example.music.R;
 
 public class SearchYuePuActivity extends AppCompatActivity {
-
     private SearchView mYuePuSearchView;
     private RecyclerView mREcSearchYuePu;
 

@@ -22,9 +22,21 @@ import java.util.List;
 
 public class SPBeanUtile {
 
-    //创建文件夹
+    //在图片曲谱文件夹下创建文件夹
     public static boolean createTuPiQuPuFile(String string) {
         File tuPianYuePuFile = MyApplication.getTuPianYuePuFile();
+        File file = new File(tuPianYuePuFile, string);
+        boolean orExistsDir = FileUtils.createOrExistsDir(file);
+        if (orExistsDir) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //在Def曲谱文件夹下创建文件夹
+    public static boolean createDefQuPuFile(String string) {
+        File tuPianYuePuFile = MyApplication.getDefYuePuFile();
         File file = new File(tuPianYuePuFile, string);
         boolean orExistsDir = FileUtils.createOrExistsDir(file);
         if (orExistsDir) {
@@ -38,6 +50,29 @@ public class SPBeanUtile {
     public static ArrayList<BenDiYuePuBean> getTuPianQuPuFileList() {
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
         File tuPianYuePuFile = MyApplication.getTuPianYuePuFile();
+        boolean orExistsDir = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir) {//判断目录是否存在,不存在判断是否创建成功
+            List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
+            if (files != null && files.size() > 0) {
+                for (int i = 0; i < files.size(); i++) {
+                    if (i == 0) {
+                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
+                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, true));
+                    } else {
+                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
+                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, false));
+                    }
+                }
+                return benDiYuePuBeans;
+            }
+        }
+        return null;
+    }
+
+    //获取Def乐谱文件夹名字集合
+    public static ArrayList<BenDiYuePuBean> getDefQuPuFileList() {
+        ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
+        File tuPianYuePuFile = MyApplication.getDefYuePuFile();
         boolean orExistsDir = FileUtils.createOrExistsDir(tuPianYuePuFile);
         if (orExistsDir) {//判断目录是否存在,不存在判断是否创建成功
             List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
