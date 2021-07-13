@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.music.R;
+import com.example.music.utils.StatusBarUtil;
 
 public class LianXiGuJiActivity extends AppCompatActivity {
 
@@ -12,5 +13,7 @@ public class LianXiGuJiActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lian_xi_gu_ji);
+        StatusBarUtil.transparencyBar(this);
+
     }
 }

@@ -39,6 +39,7 @@ import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
 import com.example.music.utils.DownLoadUtile;
 import com.example.music.utils.SPBeanUtile;
+import com.example.music.utils.StatusBarUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,6 +70,8 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dao_ru_qu_pu);
+        StatusBarUtil.transparencyBar(this);
+
         this.mContext = this;
         initView();
         initListener();

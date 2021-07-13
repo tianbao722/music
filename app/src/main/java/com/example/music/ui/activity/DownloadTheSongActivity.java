@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.music.R;
+import com.example.music.utils.StatusBarUtil;
 
 public class DownloadTheSongActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +23,8 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_the_song);
+        StatusBarUtil.transparencyBar(this);
+
         initView();
     }
 

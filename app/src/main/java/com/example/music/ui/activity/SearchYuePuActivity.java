@@ -19,6 +19,7 @@ import com.example.music.adapter.SearchYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
 import com.example.music.utils.SPBeanUtile;
+import com.example.music.utils.StatusBarUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_yue_pu);
+        StatusBarUtil.transparencyBar(this);
+
         mContext = this;
         initView();
     }

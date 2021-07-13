@@ -16,6 +16,7 @@ import com.example.music.R;
 import com.example.music.adapter.BenDiYuePuPagerAdapter;
 import com.example.music.ui.fragment.DPFYuePuFragment;
 import com.example.music.ui.fragment.TuPianYuePuFragment;
+import com.example.music.utils.StatusBarUtil;
 import com.google.android.material.tabs.TabLayout;
 
 import java.lang.reflect.Type;
@@ -35,6 +36,7 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ben_di_qu_pu);
+        StatusBarUtil.transparencyBar(this);
         initView();
         initListener();
     }

@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.music.R;
+import com.example.music.utils.StatusBarUtil;
 
 public class SouPuWangActivity extends AppCompatActivity {
 
@@ -19,6 +20,8 @@ public class SouPuWangActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sou_pu_wang);
+        StatusBarUtil.transparencyBar(this);
+
         initView();
     }
 

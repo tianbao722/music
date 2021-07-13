@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.music.Constants;
 import com.example.music.R;
 import com.example.music.inter.JsCallJavaObj;
+import com.example.music.utils.StatusBarUtil;
 
 public class I7JiTaWangActivity extends AppCompatActivity {
 
@@ -24,6 +25,8 @@ public class I7JiTaWangActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_i7_ji_ta_wang);
+        StatusBarUtil.transparencyBar(this);
+
         this.mContext = this;
         initView();
     }

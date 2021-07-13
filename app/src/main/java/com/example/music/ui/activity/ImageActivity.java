@@ -8,31 +8,36 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.music.R;
 import com.example.music.adapter.ImageMagnifyAdapter;
+import com.example.music.utils.StatusBarUtil;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
 public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
-    ViewPager vpPop;
-    TextView tvPop;
-    TextView mTvDi;
-    TextView mTvBanZou;
-    ImageView mIvBack;
-    ConstraintLayout mConTop;
-    ConstraintLayout mConLayout;
-    ConstraintLayout mConBottom;
+    private ViewPager vpPop;
+    private TextView tvPop;
+    private TextView mTvDi;
+    private TextView mTvBanZou;
+    private ImageView mIvBack;
+    private ConstraintLayout mConTop;
+    private ConstraintLayout mConLayout;
+    private ConstraintLayout mConBottom;
+    private ArrayList<String> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
         ButterKnife.bind(this);
+        StatusBarUtil.transparencyBar(this);
+
         initView();
     }
 
@@ -51,7 +56,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConLayout.setOnClickListener(this);
         Intent intent = getIntent();
         int postion1 = intent.getIntExtra("position", 0);
-        final ArrayList<String> list = intent.getStringArrayListExtra("list");
+        list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
         vpPop.setAdapter(imgVpAda);
         tvPop.setText(postion1 + 1 + "/" + list.size());
@@ -97,7 +102,16 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
                 break;
             case R.id.tv_di:
-
+                int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
+                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+                    //夜间 切换 日间
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    recreate();
+                } else {
+                    //日间 切换 夜间
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    recreate();
+                }
                 break;
             case R.id.con_layout:
 
