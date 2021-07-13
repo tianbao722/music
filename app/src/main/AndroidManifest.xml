@@ -18,7 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Music">
         <activity android:name=".ui.activity.SearchYuePuActivity"></activity>
-        <activity android:name=".ui.activity.QuPuImageActivity" />
         <activity android:name=".ui.activity.XiTongSheZhiActivity" />
         <activity android:name=".ui.activity.LianXiGuJiActivity" />
         <activity android:name=".ui.activity.JiePaiQiActivity" />
@@ -28,6 +27,7 @@
         <activity android:name=".ui.activity.BenDiQuPuActivity" />
         <activity android:name=".ui.activity.ZhongGuoYuPuWangActivity" />
         <activity android:name=".ui.activity.I7JiTaWangActivity" />
+        <activity android:name=".ui.activity.ImageActivity" />
         <activity android:name=".ui.activity.CiQuWangActivity" />
         <activity android:name=".ui.activity.SouPuWangActivity" />
         <activity android:name=".ui.activity.NiuRenYuePuWangActivity" />

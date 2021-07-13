@@ -32,6 +32,7 @@ import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
 import com.example.music.bean.SPListBean;
 import com.example.music.ui.activity.BenDiQuPuActivity;
+import com.example.music.ui.activity.ImageActivity;
 import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
 import com.google.gson.Gson;
@@ -89,11 +90,9 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                     String path = list.get(i).getPath();
                     image.add(path);
                 }
-                Intent intent = new Intent();
-                intent.setAction("bigimage");
-                intent.putExtra("position", 1);
+                Intent intent = new Intent(mContext, ImageActivity.class);
                 intent.putStringArrayListExtra("list", image);
-                startActivityForResult(intent, 100);
+                startActivity(intent);
             }
         });
     }

@@ -72,5 +72,6 @@ dependencies {
 // if u use AndroidX, use the following
     implementation 'com.blankj:utilcodex:1.30.6'
 
-    implementation 'com.github.tianbao722:imageYiLai:1.2'
+    implementation 'com.github.chrisbanes:PhotoView:1.2.6'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
 }
