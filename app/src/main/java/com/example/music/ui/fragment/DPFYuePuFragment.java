@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
-
-
     private RecyclerView mDefRecDefYuePuTitle;
     private RecyclerView mDefRecDefYuePuImage;
     private TextView mDefTvXinJian;
