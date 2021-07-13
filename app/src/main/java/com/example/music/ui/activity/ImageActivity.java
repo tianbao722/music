@@ -14,6 +14,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.music.R;
 import com.example.music.adapter.ImageMagnifyAdapter;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_image);
         ButterKnife.bind(this);
         StatusBarUtil.transparencyBar(this);
-
         initView();
     }
 
@@ -48,13 +48,19 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConBottom = findViewById(R.id.con_bottom);
         mConLayout = findViewById(R.id.con_layout);
         mTvDi = findViewById(R.id.tv_di);
-        mIvBack = findViewById(R.id.iv_back);
+        mIvBack = findViewById(R.id.iv_back1);
         mTvBanZou = findViewById(R.id.tv_banzou);
         mIvBack.setOnClickListener(this);
         mTvDi.setOnClickListener(this);
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
         Intent intent = getIntent();
+        String heibai = PreferenceUtil.getInstance().getString("heibai", "1");
+        if (heibai.equals("1")){
+            mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
+        }else {
+            mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
+        }
         int postion1 = intent.getIntExtra("position", 0);
         list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
@@ -95,7 +101,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_back:
+            case R.id.iv_back1:
                 ImageActivity.this.finish();
                 break;
             case R.id.tv_banzou:
@@ -103,14 +109,14 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.tv_di:
                 int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
-                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
-                    //夜间 切换 日间
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    recreate();
-                } else {
+                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
                     //日间 切换 夜间
+                    PreferenceUtil.getInstance().saveString("heibai", "1");
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    recreate();
+                } else {
+                    //夜间 切换 日间
+                    PreferenceUtil.getInstance().saveString("heibai", "2");
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }
                 break;
             case R.id.con_layout:

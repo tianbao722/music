@@ -20,9 +20,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_10"
+            android:background="@mipmap/fanhui"
             android:layout_marginTop="@dimen/dp_10"
             android:padding="@dimen/dp_10"
-            android:src="@mipmap/fanhui"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
