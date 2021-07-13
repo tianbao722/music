@@ -56,9 +56,9 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConLayout.setOnClickListener(this);
         Intent intent = getIntent();
         String heibai = PreferenceUtil.getInstance().getString("heibai", "1");
-        if (heibai.equals("1")){
+        if (heibai.equals("1")) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
-        }else {
+        } else {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
         }
         int postion1 = intent.getIntExtra("position", 0);
@@ -103,6 +103,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.iv_back1:
                 ImageActivity.this.finish();
+                //夜间 切换 日间
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             case R.id.tv_banzou:
 
@@ -123,5 +125,12 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //夜间 切换 日间
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 }
