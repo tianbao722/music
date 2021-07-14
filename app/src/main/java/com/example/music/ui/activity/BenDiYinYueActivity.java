@@ -599,10 +599,11 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
             String path1 = files2.get(i).getPath();
             mmr.setDataSource(path1);
             String fileName = FileUtils.getFileName(files2.get(i));
+            String name = fileName.substring(0, fileName.length() - 4);
             String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             String size = FileUtils.getSize(files2.get(i));
             long time1 = Long.parseLong(time);
-            MusicBean musicBean = new MusicBean(fileName, time1, size, path1);
+            MusicBean musicBean = new MusicBean(name, time1, size, path1);
             musicBeans.add(musicBean);
         }
         return musicBeans;

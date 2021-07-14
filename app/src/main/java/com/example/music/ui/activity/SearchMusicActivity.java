@@ -67,10 +67,11 @@ public class SearchMusicActivity extends AppCompatActivity {
                 String path1 = files.get(j).getPath();
                 mmr.setDataSource(path1);
                 String fileName = FileUtils.getFileName(files.get(j));
+                String name = fileName.substring(0, fileName.length() - 4);
                 String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 String size = FileUtils.getSize(files.get(j));
                 long time1 = Long.parseLong(time);
-                MusicBean musicBean = new MusicBean(fileName, time1, size, path1);
+                MusicBean musicBean = new MusicBean(name, time1, size, path1);
                 musicBeans.add(musicBean);
             }
         }

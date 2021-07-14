@@ -3,6 +3,7 @@ package com.example.music.ui.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +15,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.music.R;
 import com.example.music.adapter.ImageMagnifyAdapter;
-import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
 
 import java.util.ArrayList;
@@ -22,15 +22,16 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 
 public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
-    private ViewPager vpPop;
-    private TextView tvPop;
-    private TextView mTvDi;
-    private TextView mTvBanZou;
-    private ImageView mIvBack;
-    private ConstraintLayout mConTop;
-    private ConstraintLayout mConLayout;
-    private ConstraintLayout mConBottom;
+    ViewPager vpPop;
+    TextView tvPop;
+    TextView mTvDi;
+    TextView mTvBanZou;
+    ImageView mIvBack;
+    ConstraintLayout mConTop;
+    ConstraintLayout mConLayout;
+    ConstraintLayout mConBottom;
     private ArrayList<String> list;
+    private int defaultNightMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_image);
         ButterKnife.bind(this);
         StatusBarUtil.transparencyBar(this);
+
         initView();
     }
 
@@ -54,13 +56,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mTvDi.setOnClickListener(this);
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
-        Intent intent = getIntent();
-        String heibai = PreferenceUtil.getInstance().getString("heibai", "1");
-        if (heibai.equals("1")) {
+        defaultNightMode = AppCompatDelegate.getDefaultNightMode();
+        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
         } else {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
         }
+        Intent intent = getIntent();
         int postion1 = intent.getIntExtra("position", 0);
         list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
@@ -102,23 +104,25 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back1:
+                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+                    //夜间 切换 日间
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
+                    recreate();
+                }
                 ImageActivity.this.finish();
-                //夜间 切换 日间
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             case R.id.tv_banzou:
 
                 break;
             case R.id.tv_di:
-                int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
-                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
                     //日间 切换 夜间
-                    PreferenceUtil.getInstance().saveString("heibai", "1");
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);//夜间
+                    recreate();
                 } else {
                     //夜间 切换 日间
-                    PreferenceUtil.getInstance().saveString("heibai", "2");
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
+                    recreate();
                 }
                 break;
             case R.id.con_layout:
@@ -128,9 +132,12 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //夜间 切换 日间
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            //夜间 切换 日间
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
+            recreate();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
