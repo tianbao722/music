@@ -3,39 +3,55 @@ package com.example.music.ui.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
+import com.example.music.MyApplication;
 import com.example.music.R;
-import com.example.music.adapter.MusicListAdapter;
+import com.example.music.adapter.MusicAdapter;
+import com.example.music.adapter.TuPianYuePuAdapter;
+import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.MusicBean;
 import com.example.music.bean.Song;
 import com.example.music.utils.Constant;
 import com.example.music.utils.MusicUtils;
 import com.example.music.utils.ObjectUtils;
+import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SPUtils;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;
 import com.example.music.utils.ToastUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +63,6 @@ import butterknife.OnClick;
 import static com.example.music.utils.DateUtil.parseTime;
 
 public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener {
-    @BindView(R.id.rv_music)
-    RecyclerView rvMusic;
-    @BindView(R.id.btn_scan)
-    Button btnScan;
-    @BindView(R.id.scan_lay)
-    LinearLayout scanLay;
     @BindView(R.id.tv_clear_list)
     TextView tvClearList;
     @BindView(R.id.tv_title)
@@ -85,16 +95,28 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     TextView tv_yindiao;
     @BindView(R.id.tv_bofangmoshi)
     TextView mTvBoFangMoShi;
-    private MusicListAdapter mAdapter;//歌曲适配器
-    private List<Song> mList;//歌曲列表
+    @BindView(R.id.yinyue_rec_tupianyuepy)
+    RecyclerView mYinYueRecTitle;
+    @BindView(R.id.yinyue_tv_xinzeng)
+    TextView mYinYueTVXinZeng;
+    @BindView(R.id.yinyue_rec_image_yuepu)
+    RecyclerView mYinYue_Rec_image;
+    @BindView(R.id.tv_search_wodeyinyue)
+    ImageView mTvSearchWoDeYinYue;
+    private ArrayList<MusicBean> mList;//歌曲列表
     private RxPermissions rxPermissions;//权限请求
     private MediaPlayer mediaPlayer;//音频播放器
-    private String musicData = null;
     // 记录当前播放歌曲的位置
     public int mCurrentPosition;
     //记录播放模式
     private int mPattern = 0;//0：列表循环 1：单曲循环 2：单曲播放
     private static final int INTERNAL_TIME = 1000;// 音乐进度间隔时间
+    private ArrayList<BenDiYuePuBean> strings;
+    private Context mContext;
+    private TuPianYuePuAdapter tuPianYuePuAdapter;
+    private int mPosition;
+    private boolean classify = false;
+    private MusicAdapter musicAdapter;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -121,70 +143,18 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ben_di_yin_yue);
+        mContext = this;
         StatusBarUtil.transparencyBar(this);
         ButterKnife.bind(this);
         StatusBarUtil.StatusBarLightMode(this);
         rxPermissions = new RxPermissions(this);//使用前先实例化
         timeSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
-        musicData = SPUtils.getString(Constant.MUSIC_DATA_FIRST, "yes", this);
         setSearchView();//设置搜索本地音乐的监听
-        if (musicData.equals("no")) {//说明是第一次打开APP，未进行扫描
-            scanLay.setVisibility(View.GONE);
-            initMusic();
-        } else {
-            scanLay.setVisibility(View.VISIBLE);
-        }
+        //初始化音乐左边title
+        initRecTuPianYuePu();
+        //初始化音乐右边歌曲
+        initRecImageYuePu();
     }
-
-    @SuppressLint("CheckResult")
-    private void permissionRequest() {//使用这个框架需要制定JDK版本，建议用1.8
-        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(granted -> {
-                    if (granted) {//请求成功之后开始扫描
-                        initMusic();
-                    } else {//失败时给一个提示
-                        ToastUtils.showShortToast(BenDiYinYueActivity.this, "未授权");
-                    }
-                });
-    }
-
-    //获取音乐列表
-    private void initMusic() {
-        mList = new ArrayList<>();//实例化
-
-        //数据赋值
-        mList = MusicUtils.getMusicData(this);//将扫描到的音乐赋值给音乐列表
-        if (!ObjectUtils.isEmpty(mList) && mList != null) {
-            scanLay.setVisibility(View.GONE);
-            SPUtils.putString(Constant.MUSIC_DATA_FIRST, "no", this);
-        }
-        mAdapter = new MusicListAdapter(mList);//指定适配器的布局和数据源
-        //线性布局管理器，可以设置横向还是纵向，RecyclerView默认是纵向的，所以不用处理,如果不需要设置方向，代码还可以更加的精简如下
-        rvMusic.setLayoutManager(new LinearLayoutManager(this));
-        //如果需要设置方向显示，则将下面代码注释去掉即可
-//        LinearLayoutManager manager = new LinearLayoutManager(this);
-//        manager.setOrientation(RecyclerView.HORIZONTAL);
-//        rvMusic.setLayoutManager(manager);
-
-        //设置适配器
-        rvMusic.setAdapter(mAdapter);
-
-        //item的点击事件
-        mAdapter.setOnItemClickListener(new MusicListAdapter.onItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-//                if (view.getId() == R.id.item_music) {
-                mCurrentPosition = position;
-                changeMusic(mCurrentPosition);
-//                    mAdapter.notifyItemRangeChanged(0, mList.size());
-//                }
-            }
-        });
-
-        //设置背景样式
-        initStyle();
-    }
-
 
     private void initStyle() {
         //toolbar背景变透明
@@ -195,14 +165,13 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         StatusBarUtil.transparencyBar(this);
     }
 
-    @OnClick({R.id.tv_clear_list, R.id.btn_scan, R.id.btn_previous, R.id.btn_play_or_pause, R.id.btn_next, R.id.tv_beisu, R.id.tv_yindiao, R.id.tv_bofangmoshi})
+    @OnClick({R.id.tv_clear_list, R.id.btn_previous, R.id.btn_play_or_pause, R.id.btn_next, R.id.tv_beisu, R.id.tv_yindiao, R.id.tv_bofangmoshi, R.id.tv_search_wodeyinyue, R.id.yinyue_tv_xinzeng, R.id.iv_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_clear_list://清空数据
                 mList.clear();
-                mAdapter.notifyDataSetChanged();
+                musicAdapter.notifyDataSetChanged();
                 SPUtils.putString(Constant.MUSIC_DATA_FIRST, "yes", this);
-                scanLay.setVisibility(View.VISIBLE);
                 toolbar.setBackgroundColor(getResources().getColor(R.color.white));
                 StatusBarUtil.StatusBarLightMode(this);
                 tvTitle.setTextColor(getResources().getColor(R.color.black));
@@ -216,9 +185,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                     mediaPlayer.reset();
                 }
                 break;
-            case R.id.btn_scan://扫描本地歌曲
-                permissionRequest();
-                break;
             case R.id.btn_previous://上一曲
                 changeMusic(--mCurrentPosition);//当前歌曲位置减1
                 break;
@@ -231,10 +197,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                         mediaPlayer.pause();
                         btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
                         playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
-                        //如果你是用TextView的leftDrawable设置的图片，在代码里面就可以通过下面代码来动态更换
-//                        Drawable leftImg = getResources().getDrawable(R.mipmap.list_play_state);
-//                        leftImg.setBounds(0, 0, leftImg.getMinimumWidth(), leftImg.getMinimumHeight());
-//                        tvPlaySongInfo.setCompoundDrawables(leftImg, null, null, null);
                     } else {
                         mediaPlayer.start();
                         btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
@@ -253,6 +215,91 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                 break;
             case R.id.tv_bofangmoshi://播放模式
                 showBoFangMoShi();
+                break;
+            case R.id.tv_search_wodeyinyue://搜索
+                Intent intent = new Intent(mContext, SearchMusicActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.yinyue_tv_xinzeng://新增
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+                alertDialog.setContentView(inflate);
+                alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                alertDialog.setCanceledOnTouchOutside(false);
+                TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+                TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+                EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+                //确定
+                mTvEnter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String text = mEdBenDiQuPu.getText().toString();
+                        if (!TextUtils.isEmpty(text)) {
+                            if (strings.size() != 0) {
+                                for (int i = 0; i < strings.size(); i++) {
+                                    String title = strings.get(i).getTitle();
+                                    if (title.equals(text)) {
+                                        classify = false;
+                                        break;
+                                    } else {
+                                        classify = true;
+                                    }
+                                }
+                                if (classify) {
+                                    boolean tuPiQuPuFile = SPBeanUtile.createWoDeYinYueFile(text);
+                                    if (tuPiQuPuFile) {
+                                        for (int i = 0; i < strings.size(); i++) {
+                                            BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                                            benDiYuePuBean.setSelected(false);
+                                            strings.set(i, benDiYuePuBean);
+                                        }
+                                        BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
+                                        strings.add(0, benDiYuePuBean);
+                                        tuPianYuePuAdapter.notifyDataSetChanged();
+                                        if (alertDialog != null) {
+                                            alertDialog.dismiss();
+                                        }
+                                        Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } else {
+                                boolean tuPiQuPuFile = SPBeanUtile.createWoDeYinYueFile(text);
+                                if (tuPiQuPuFile) {
+                                    BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
+                                    strings.add(0, benDiYuePuBean);
+                                    tuPianYuePuAdapter.notifyDataSetChanged();
+                                    if (alertDialog != null) {
+                                        alertDialog.dismiss();
+                                    }
+                                    Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                //取消
+                mTvCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (alertDialog != null) {
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+                break;
+            case R.id.iv_back://返回
+                BenDiYinYueActivity.this.finish();
                 break;
         }
     }
@@ -414,10 +461,9 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
             // 切歌之前先重置，释放掉之前的资源
             mediaPlayer.reset();
             // 设置播放源
-            Log.d("Music", mList.get(position).path);
-            mediaPlayer.setDataSource(mList.get(position).path);
-            tvPlaySongInfo.setText("歌名： " + mList.get(position).song +
-                    "  歌手： " + mList.get(position).singer);
+            Log.d("Music", mList.get(position).getPath());
+            mediaPlayer.setDataSource(mList.get(position).getPath());
+            tvPlaySongInfo.setText("歌名： " + mList.get(position).getName());
 //            Glide.with(this).load(mList.get(position).album_art).into(songImage);
             tvPlaySongInfo.setSelected(true);//跑马灯效果
             playStateLay.setVisibility(View.VISIBLE);
@@ -543,13 +589,81 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
             // 当搜索内容改变时触发该方法
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
-//                if (!TextUtils.isEmpty(newText)) {
-//                    mListView.setFilterText(newText);
-//                } else {
-//                    mListView.clearTextFilter();
-//                }
+//                mAdapter.getFilter().filter(newText);
                 return false;
+            }
+        });
+    }
+
+
+    private void initRecImageYuePu() {
+        mYinYue_Rec_image.setLayoutManager(new GridLayoutManager(mContext, 2));
+        mList = getImageFileList();
+        musicAdapter = new MusicAdapter(mList, mContext);
+        mYinYue_Rec_image.setAdapter(musicAdapter);
+        //条目点击事件
+        musicAdapter.setOnItemClickListener(new MusicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                mCurrentPosition = position;
+                changeMusic(mCurrentPosition);
+            }
+        });
+    }
+
+    private ArrayList<MusicBean> getImageFileList() {
+        ArrayList<MusicBean> musicBeans = new ArrayList<>();
+        String path = MyApplication.getWoDeYinYueFile().getPath();
+        if (strings == null || strings.size() == 0) {
+            return null;
+        }
+        String currentPath = path + "/" + strings.get(mPosition).getTitle();
+        List<File> files2 = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return (pathname.getPath().endsWith(".mp3"));
+            }
+        });
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        for (int i = 0; i < files2.size(); i++) {
+            String path1 = files2.get(i).getPath();
+            mmr.setDataSource(path1);
+            String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            String size = FileUtils.getSize(files2.get(i));
+            long time1 = Long.parseLong(time);
+            MusicBean musicBean = new MusicBean(name, time1, size,path1);
+            musicBeans.add(musicBean);
+        }
+        return musicBeans;
+    }
+
+    private void initRecTuPianYuePu() {
+        ArrayList<BenDiYuePuBean> spList = SPBeanUtile.getWoDeYinYueFileList();
+        if (spList != null) {
+            strings = spList;
+        } else {
+            strings = new ArrayList<>();
+        }
+        tuPianYuePuAdapter = new TuPianYuePuAdapter(mContext, strings);
+        mYinYueRecTitle.setLayoutManager(new LinearLayoutManager(mContext));
+        mYinYueRecTitle.setAdapter(tuPianYuePuAdapter);
+        tuPianYuePuAdapter.setOnItemClickListener(new TuPianYuePuAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                mPosition = position;
+                for (int i = 0; i < strings.size(); i++) {
+                    BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                    benDiYuePuBean.setSelected(false);
+                    strings.set(i, benDiYuePuBean);
+                }
+                BenDiYuePuBean benDiYuePuBean = strings.get(position);
+                benDiYuePuBean.setSelected(true);
+                strings.set(position, benDiYuePuBean);
+                tuPianYuePuAdapter.notifyDataSetChanged();
+                mList.clear();
+                mList = getImageFileList();
+                tuPianYuePuAdapter.notifyDataSetChanged();
             }
         });
     }

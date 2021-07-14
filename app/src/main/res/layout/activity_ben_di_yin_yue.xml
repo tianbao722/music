@@ -4,10 +4,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/appbg"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".ui.activity.BenDiYinYueActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/fanhui"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的音乐"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_15"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
+
+        <ImageView
+            android:id="@+id/tv_search_wodeyinyue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp_10"
+            android:src="@mipmap/share"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--Toolbar-->
     <androidx.appcompat.widget.Toolbar
@@ -40,31 +76,6 @@
             android:textColor="@color/common_black"
             android:visibility="gone" />
     </androidx.appcompat.widget.Toolbar>
-    <!--扫描歌曲的布局-->
-    <LinearLayout
-        android:id="@+id/scan_lay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/img_scan_logo" />
-
-        <Button
-            android:id="@+id/btn_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_20"
-            android:background="@drawable/selector_scan_btn"
-            android:text="开始扫描"
-            android:textColor="#FFF"
-            android:textSize="22sp" />
-    </LinearLayout>
     <!-- 搜索本地歌曲 -->
 
     <!--扫描之后，歌曲的展示和播放布局-->
@@ -112,12 +123,6 @@
             app:iconifiedByDefault="false"
             app:queryHint="@string/search_tips"
             tools:targetApi="o" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_music"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
         <!--底部歌曲播放控制布局-->
         <LinearLayout
             android:layout_width="match_parent"
@@ -242,6 +247,66 @@
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#DBDBDB">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="#ffffff"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/yinyue_rec_tupianyuepy"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignBottom="@+id/tv_xinzeng"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginBottom="@dimen/dp_50"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/yinyue_tv_xinzeng"
+                        android:layout_width="@dimen/dp_80"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:background="@drawable/shape_xinzeng"
+                        android:gravity="center"
+                        android:text="新增"
+                        android:textColor="#65FFE9"
+                        android:textSize="@dimen/sp_15"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent" />
+
+                </RelativeLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/yinyue_rec_image_yuepu"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_weight="7"
+                android:background="#DBDBDB" />
+
         </LinearLayout>
     </LinearLayout>
 

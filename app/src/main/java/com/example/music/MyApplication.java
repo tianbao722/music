@@ -45,6 +45,12 @@ public class MyApplication extends Application {
         return tupianyuepu;
     }
 
+    //获取我的音乐文件
+    public static File getWoDeYinYueFile() {
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.WoDeYinYue);
+        return tupianyuepu;
+    }
+
     //获取Def曲谱文件
     public static File getDefYuePuFile() {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.Def);
