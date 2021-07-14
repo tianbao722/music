@@ -89,8 +89,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     LinearLayout playStateLay;
     @BindView(R.id.tv_beisu)
     TextView tvbeisu;
-    @BindView(R.id.music_search_view)
-    SearchView mSearchView;
     @BindView(R.id.tv_yindiao)
     TextView tv_yindiao;
     @BindView(R.id.tv_bofangmoshi)
@@ -149,20 +147,10 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         StatusBarUtil.StatusBarLightMode(this);
         rxPermissions = new RxPermissions(this);//使用前先实例化
         timeSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
-        setSearchView();//设置搜索本地音乐的监听
         //初始化音乐左边title
         initRecTuPianYuePu();
         //初始化音乐右边歌曲
         initRecImageYuePu();
-    }
-
-    private void initStyle() {
-        //toolbar背景变透明
-        toolbar.setBackgroundColor(getResources().getColor(R.color.half_transparent));
-        //文字变白色
-        tvTitle.setTextColor(getResources().getColor(R.color.white));
-        tvClearList.setTextColor(getResources().getColor(R.color.white));
-        StatusBarUtil.transparencyBar(this);
     }
 
     @OnClick({R.id.tv_clear_list, R.id.btn_previous, R.id.btn_play_or_pause, R.id.btn_next, R.id.tv_beisu, R.id.tv_yindiao, R.id.tv_bofangmoshi, R.id.tv_search_wodeyinyue, R.id.yinyue_tv_xinzeng, R.id.iv_back})
@@ -577,24 +565,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         }
     }
 
-    public void setSearchView() {
-        // 设置搜索文本监听
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // 当点击搜索按钮时触发该方法
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            // 当搜索内容改变时触发该方法
-            @Override
-            public boolean onQueryTextChange(String newText) {
-//                mAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-    }
-
 
     private void initRecImageYuePu() {
         mYinYue_Rec_image.setLayoutManager(new GridLayoutManager(mContext, 2));
@@ -628,11 +598,11 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         for (int i = 0; i < files2.size(); i++) {
             String path1 = files2.get(i).getPath();
             mmr.setDataSource(path1);
-            String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String fileName = FileUtils.getFileName(files2.get(i));
             String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             String size = FileUtils.getSize(files2.get(i));
             long time1 = Long.parseLong(time);
-            MusicBean musicBean = new MusicBean(name, time1, size,path1);
+            MusicBean musicBean = new MusicBean(fileName, time1, size, path1);
             musicBeans.add(musicBean);
         }
         return musicBeans;

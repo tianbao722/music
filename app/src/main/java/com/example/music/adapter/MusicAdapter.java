@@ -1,9 +1,12 @@
 package com.example.music.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,14 +16,17 @@ import com.example.music.R;
 import com.example.music.bean.MusicBean;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private ArrayList<MusicBean> list;
+    private ArrayList<MusicBean> beans;
     private Context mContext;
 
     public MusicAdapter(ArrayList<MusicBean> list, Context mContext) {
         this.list = list;
         this.mContext = mContext;
+        this.beans = list;
     }
 
     @NonNull
@@ -47,6 +53,35 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                if (TextUtils.isEmpty(constraint)) {
+                    list = beans;
+                } else {
+                    list = new ArrayList<>();
+                    for (MusicBean bean : beans) {
+                        if (bean.getName().contains(constraint) || bean.getName().contains(constraint)) {
+                            list.add(bean);
+                        }
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = list;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                if (results.values instanceof List) {
+                    notifyDataSetChanged();
+                }
+            }
+        };
     }
 
     class ViewHolcer extends RecyclerView.ViewHolder {
