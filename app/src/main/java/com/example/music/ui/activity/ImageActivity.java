@@ -165,14 +165,14 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
         if (banZouListBean != null) {
             list1 = banZouListBean.getList();
+        } else {
+            list1 = new ArrayList<>();
         }
-//        if (list1 != null && list1.size() > 0) {
-//            mTvNull.setVisibility(View.GONE);
-//            mRecGuanLian.setVisibility(View.INVISIBLE);
-//        } else {
-//            mTvNull.setVisibility(View.INVISIBLE);
-//            mRecGuanLian.setVisibility(View.GONE);
-//        }
+        if (list1 != null && list1.size() > 0) {
+            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+        } else {
+            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.touming));
+        }
         mRecGuanLian.setLayoutManager(new LinearLayoutManager(mContext));
         banZouAdapter = new BanZouAdapter(mContext, list1);
         mRecGuanLian.setAdapter(banZouAdapter);
