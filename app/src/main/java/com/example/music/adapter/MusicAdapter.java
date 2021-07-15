@@ -45,7 +45,7 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         viewHolcer.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(position);
+                onItemClickListener.onItemClick(position, list.get(position));
             }
         });
     }
@@ -102,6 +102,14 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position, MusicBean musicBean);
+    }
+
+    public void setData(ArrayList<MusicBean> data) {
+        list.clear();
+        beans.clear();
+        list = data;
+        beans = data;
+        notifyDataSetChanged();
     }
 }

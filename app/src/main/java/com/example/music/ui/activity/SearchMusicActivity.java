@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.view.View;
@@ -43,13 +44,21 @@ public class SearchMusicActivity extends AppCompatActivity {
         mMusicRecSearch = findViewById(R.id.music_rec_search);
         setSearchView();
         allMusic = getAllMusic();
+        Intent intent = getIntent();
         mMusicRecSearch.setLayoutManager(new GridLayoutManager(mContext, 2));
         musicAdapter = new MusicAdapter(allMusic, mContext);
         mMusicRecSearch.setAdapter(musicAdapter);
         musicAdapter.setOnItemClickListener(new MusicAdapter.onItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-
+            public void onItemClick(int position, MusicBean musicBean) {
+                intent.putExtra("path", musicBean.getPath());
+                String path = MyApplication.getWoDeYinYueFile().getPath();
+                int length = path.length();
+                String title = musicBean.getPath().substring(length + 1, musicBean.getPath().length() - 4 - (musicBean.getName().length()) - 1);
+                intent.putExtra("name", musicBean.getName());
+                intent.putExtra("title", title);
+                setResult(2, intent);
+                SearchMusicActivity.this.finish();
             }
         });
     }

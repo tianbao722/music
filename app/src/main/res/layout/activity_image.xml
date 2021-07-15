@@ -37,12 +37,12 @@
             android:layout_marginLeft="@dimen/dp_5"
             android:padding="@dimen/dp_10"
             android:src="@mipmap/fanhui"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_title"
+            app:layout_constraintBottom_toBottomOf="@+id/music_tv_title"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title" />
+            app:layout_constraintTop_toTopOf="@+id/music_tv_title" />
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/music_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="我命由我不由天"
@@ -59,9 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_10"
             android:textColor="@color/heise"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_title"
+            app:layout_constraintBottom_toBottomOf="@+id/music_tv_title"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title" />
+            app:layout_constraintTop_toTopOf="@+id/music_tv_title" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

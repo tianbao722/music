@@ -8,6 +8,7 @@ public class ImageYuePuImageBean {
     private List<File> list;
     private int content;
 
+
     public ImageYuePuImageBean(String name, List<File> list, int content) {
         this.name = name;
         this.list = list;

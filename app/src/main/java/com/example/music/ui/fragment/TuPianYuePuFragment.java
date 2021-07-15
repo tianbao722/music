@@ -92,6 +92,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 }
                 Intent intent = new Intent(mContext, ImageActivity.class);
                 intent.putStringArrayListExtra("list", image);
+                intent.putExtra("title", imageYuePuImageBean.getName());
                 startActivity(intent);
             }
         });
@@ -141,7 +142,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 tuPianYuePuAdapter.notifyDataSetChanged();
                 imageFileList.clear();
                 imageFileList = getImageFileList();
-                recImageYuePuAdapter.notifyDataSetChanged();
+                recImageYuePuAdapter.setData(getImageFileList());
             }
         });
     }

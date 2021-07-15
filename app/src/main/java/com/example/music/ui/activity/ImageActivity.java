@@ -1,45 +1,58 @@
 package com.example.music.ui.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.music.R;
+import com.example.music.adapter.BanZouAdapter;
 import com.example.music.adapter.ImageMagnifyAdapter;
+import com.example.music.bean.BanZouBean;
+import com.example.music.bean.BanZouListBean;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 
 public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
-    ViewPager vpPop;
-    TextView tvPop;
-    TextView mTvDi;
-    TextView mTvBanZou;
-    ImageView mIvBack;
-    ConstraintLayout mConTop;
-    ConstraintLayout mConLayout;
-    ConstraintLayout mConBottom;
-    private ArrayList<String> list;
+    private ViewPager vpPop;
+    private TextView tvPop;
+    private TextView mTvDi;
+    private TextView mTvBanZou;
+    private ImageView mIvBack;
+    private ConstraintLayout mConTop;
+    private ConstraintLayout mConLayout;
+    private ConstraintLayout mConBottom;
+    private ArrayList<String> list;//图片
     private int defaultNightMode;
+    private Context mContext;
+    private ArrayList<BanZouBean> list1;//伴奏
+    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        ButterKnife.bind(this);
+        mContext = this;
         StatusBarUtil.transparencyBar(this);
-
         initView();
     }
 
@@ -57,12 +70,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
-        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
-            mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
-        } else {
+        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
+        } else {
+            mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
         }
         Intent intent = getIntent();
+        title = intent.getStringExtra("title");
         int postion1 = intent.getIntExtra("position", 0);
         list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
@@ -112,16 +126,16 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 ImageActivity.this.finish();
                 break;
             case R.id.tv_banzou:
-
+                setAlerD();
                 break;
             case R.id.tv_di:
-                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
-                    //日间 切换 夜间
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);//夜间
-                    recreate();
-                } else {
+                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
                     //夜间 切换 日间
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
+                    recreate();
+                } else {
+                    //日间 切换 夜间
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);//夜间
                     recreate();
                 }
                 break;
@@ -129,6 +143,57 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
                 break;
         }
+    }
+
+    private void setAlerD() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_banzou, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
+        TextView mTvNull = inflate.findViewById(R.id.tv_null);
+        RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
+        String json = PreferenceUtil.getInstance().getString(title, null);
+        BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
+        if (banZouListBean != null) {
+            list1 = banZouListBean.getList();
+        }
+        if (list1 != null && list1.size() > 0) {
+            mTvNull.setVisibility(View.GONE);
+            mRecGuanLian.setVisibility(View.INVISIBLE);
+        } else {
+            mTvNull.setVisibility(View.INVISIBLE);
+            mRecGuanLian.setVisibility(View.GONE);
+        }
+        mRecGuanLian.setLayoutManager(new LinearLayoutManager(mContext));
+        BanZouAdapter banZouAdapter = new BanZouAdapter(mContext, list1);
+        mRecGuanLian.setAdapter(banZouAdapter);
+        //点击播放，单曲循环
+        banZouAdapter.setOnItemClickListener(new BanZouAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+            }
+        });
+        //点击删除
+        banZouAdapter.setOnItemDeleteClickListener(new BanZouAdapter.onItemDeleteClickListener() {
+            @Override
+            public void onItemDelete(int position) {
+
+            }
+        });
+        //关联伴奏
+        mTvGuanLian.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, BanZouActivity.class);
+                intent.putExtra("title", title);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

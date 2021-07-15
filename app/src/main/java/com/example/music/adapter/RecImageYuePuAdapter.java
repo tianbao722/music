@@ -60,6 +60,12 @@ public class RecImageYuePuAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
+    public void setData(ArrayList<ImageYuePuImageBean> data) {
+        list.clear();
+        list = data;
+        notifyDataSetChanged();
+    }
+
     private onItemClickListener onItemClickListener;
 
     public void setOnItemClickListener(RecImageYuePuAdapter.onItemClickListener onItemClickListener) {
