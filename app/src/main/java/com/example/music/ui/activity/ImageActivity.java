@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -37,6 +38,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private TextView tvPop;
     private TextView mTvDi;
     private TextView mTvBanZou;
+    private TextView mMusicTvTitle;
     private ImageView mIvBack;
     private ConstraintLayout mConTop;
     private ConstraintLayout mConLayout;
@@ -46,6 +48,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private Context mContext;
     private ArrayList<BanZouBean> list1;//伴奏
     private String title;
+    private BanZouAdapter banZouAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConLayout = findViewById(R.id.con_layout);
         mTvDi = findViewById(R.id.tv_di);
         mIvBack = findViewById(R.id.iv_back1);
+        mMusicTvTitle = findViewById(R.id.music_tv_title);
         mTvBanZou = findViewById(R.id.tv_banzou);
         mIvBack.setOnClickListener(this);
         mTvDi.setOnClickListener(this);
@@ -77,6 +81,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         }
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
+        mMusicTvTitle.setText(title);
         int postion1 = intent.getIntExtra("position", 0);
         list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
@@ -161,16 +166,17 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         if (banZouListBean != null) {
             list1 = banZouListBean.getList();
         }
-        if (list1 != null && list1.size() > 0) {
-            mTvNull.setVisibility(View.GONE);
-            mRecGuanLian.setVisibility(View.INVISIBLE);
-        } else {
-            mTvNull.setVisibility(View.INVISIBLE);
-            mRecGuanLian.setVisibility(View.GONE);
-        }
+//        if (list1 != null && list1.size() > 0) {
+//            mTvNull.setVisibility(View.GONE);
+//            mRecGuanLian.setVisibility(View.INVISIBLE);
+//        } else {
+//            mTvNull.setVisibility(View.INVISIBLE);
+//            mRecGuanLian.setVisibility(View.GONE);
+//        }
         mRecGuanLian.setLayoutManager(new LinearLayoutManager(mContext));
-        BanZouAdapter banZouAdapter = new BanZouAdapter(mContext, list1);
+        banZouAdapter = new BanZouAdapter(mContext, list1);
         mRecGuanLian.setAdapter(banZouAdapter);
+        banZouAdapter.notifyDataSetChanged();
         //点击播放，单曲循环
         banZouAdapter.setOnItemClickListener(new BanZouAdapter.onItemClickListener() {
             @Override
@@ -182,7 +188,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         banZouAdapter.setOnItemDeleteClickListener(new BanZouAdapter.onItemDeleteClickListener() {
             @Override
             public void onItemDelete(int position) {
-
+                list1.remove(position);
+                BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                String json1 = new Gson().toJson(banZouListBean1);
+                PreferenceUtil.getInstance().saveString(title, json1);
+                banZouAdapter.notifyDataSetChanged();
             }
         });
         //关联伴奏
@@ -191,7 +201,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, BanZouActivity.class);
                 intent.putExtra("title", title);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -204,5 +214,19 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             recreate();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            if (banZouAdapter != null) {
+                list1.clear();
+                String json = PreferenceUtil.getInstance().getString(title, null);
+                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
+                list1 = banZouListBean.getList();
+                banZouAdapter.setData(list1);
+            }
+        }
     }
 }

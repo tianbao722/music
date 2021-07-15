@@ -24,6 +24,12 @@ public class BanZouAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.list = list;
     }
 
+    public void setData(ArrayList<BanZouBean> data) {
+        list.clear();
+        list = data;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -65,8 +71,8 @@ public class BanZouAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mYinFu = itemView.findViewById(R.id.banzou_music_item_yinfu);
-            mYinFu = itemView.findViewById(R.id.banzou_music_item_name);
-            mYinFu = itemView.findViewById(R.id.banzou_music_item_tv_delete);
+            mName = itemView.findViewById(R.id.banzou_music_item_name);
+            mDelete = itemView.findViewById(R.id.banzou_music_item_tv_delete);
         }
     }
 
