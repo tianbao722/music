@@ -137,6 +137,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
                     recreate();
                 }
+                if (xToast != null && xToast.isShow()) {
+                    xToast.cancel();
+                    xToast = null;
+                }
                 ImageActivity.this.finish();
                 break;
             case R.id.tv_banzou:
