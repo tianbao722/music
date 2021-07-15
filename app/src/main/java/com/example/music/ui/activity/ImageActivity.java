@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,16 @@ import com.example.music.adapter.ImageMagnifyAdapter;
 import com.example.music.bean.BanZouBean;
 import com.example.music.bean.BanZouListBean;
 import com.example.music.utils.PreferenceUtil;
+import com.example.music.utils.SpringDraggable;
 import com.example.music.utils.StatusBarUtil;
+import com.example.music.utils.XToast;
 import com.google.gson.Gson;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
@@ -49,6 +56,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private ArrayList<BanZouBean> list1;//伴奏
     private String title;
     private BanZouAdapter banZouAdapter;
+    private XXPermissions with;
+    private XToast xToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +168,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         alertDialog.setCanceledOnTouchOutside(true);
         TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
-        TextView mTvNull = inflate.findViewById(R.id.tv_null);
         RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
         String json = PreferenceUtil.getInstance().getString(title, null);
         BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
@@ -181,7 +189,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         banZouAdapter.setOnItemClickListener(new BanZouAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
-
+                show7();
             }
         });
         //点击删除
@@ -213,6 +221,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
             recreate();
         }
+        if (xToast != null && xToast.isShow()) {
+            xToast.cancel();
+            xToast = null;
+        }
         return super.onKeyDown(keyCode, event);
     }
 
@@ -228,5 +240,39 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 banZouAdapter.setData(list1);
             }
         }
+    }
+
+    public void show7() {
+        with = XXPermissions.with(this);
+        with.permission(Permission.SYSTEM_ALERT_WINDOW);
+        with.request(new OnPermissionCallback() {
+            @Override
+            public void onGranted(List<String> granted, boolean all) {
+                // 传入 Application 表示这个是一个全局的 Toast
+                xToast = new XToast(getApplication())
+                        .setView(R.layout.toast_phone)
+                        .setGravity(Gravity.END | Gravity.BOTTOM)
+                        .setYOffset(200)
+                        // 设置指定的拖拽规则
+                        .setDraggable(new SpringDraggable())
+                        .setOnClickListener(android.R.id.icon, new XToast.OnClickListener<ImageView>() {
+                            @Override
+                            public void onClick(XToast<?> toast, ImageView view) {
+
+                            }
+                        });
+                xToast.show();
+            }
+
+            @Override
+            public void onDenied(List<String> denied, boolean never) {
+                new XToast<>(ImageActivity.this)
+                        .setDuration(1000)
+                        .setView(R.layout.toast_hint)
+                        .setImageDrawable(android.R.id.icon, R.mipmap.ic_dialog_tip_error)
+                        .setText(android.R.id.message, "请先授予悬浮窗权限")
+                        .show();
+            }
+        });
     }
 }
