@@ -70,7 +70,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private XXPermissions with;
     private XToast xToast;
     private MediaPlayer mediaPlayer;//音频播放器
-    private static final int INTERNAL_TIME = 1000;// 音乐进度间隔时间
+    private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
     // 记录当前播放歌曲的位置
     public int mCurrentPosition;
     private int yindiao;
