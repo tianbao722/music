@@ -60,7 +60,7 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     public int mCurrentPosition;
     //记录播放模式
     private int mPattern = 0;//0：列表循环 1：单曲循环 2：单曲播放
-    private static final int INTERNAL_TIME = 1000;// 音乐进度间隔时间
+    private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
     private ArrayList<BenDiYuePuBean> strings;
     private Context mContext;
     private TuPianYuePuAdapter tuPianYuePuAdapter;

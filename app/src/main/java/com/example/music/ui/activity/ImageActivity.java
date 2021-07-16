@@ -4,14 +4,21 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.PlaybackParams;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,6 +35,7 @@ import com.example.music.adapter.ImageMagnifyAdapter;
 import com.example.music.bean.BanZouBean;
 import com.example.music.bean.BanZouListBean;
 import com.example.music.utils.PreferenceUtil;
+import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.SpringDraggable;
 import com.example.music.utils.StatusBarUtil;
 import com.example.music.utils.XToast;
@@ -36,11 +44,14 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.music.utils.DateUtil.parseTime;
 
-public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class ImageActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
     private ViewPager vpPop;
     private TextView tvPop;
     private TextView mTvDi;
@@ -58,6 +69,36 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private BanZouAdapter banZouAdapter;
     private XXPermissions with;
     private XToast xToast;
+    private MediaPlayer mediaPlayer;//音频播放器
+    private static final int INTERNAL_TIME = 1000;// 音乐进度间隔时间
+    // 记录当前播放歌曲的位置
+    public int mCurrentPosition;
+    private int yindiao;
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message message) {
+            // 展示给进度条和当前时间
+            if (mediaPlayer != null) {
+//                PlaybackParams params = mediaPlayer.getPlaybackParams();
+//                float pitch = params.getPitch();//音调
+//                float speed = params.getSpeed();//音速
+//                Log.i("音调", "音调: -----"+pitch);
+//                Log.i("音速", "音速: -----"+speed);
+                int progress = mediaPlayer.getCurrentPosition();
+                mTvSeekBar.setProgress(progress);
+                mTvPlayTime.setText(parseTime(progress));
+                // 继续定时发送数据
+                updateProgress();
+            }
+            return true;
+        }
+    });
+    private SeekBar mTvSeekBar;
+    private ImageView mIvPlayOrPause;
+    private TextView mTvTitle;
+    private TextView mTvTotalTime;
+    private TextView mTvPlayTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,15 +173,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back1:
-                if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-                    //夜间 切换 日间
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
-                    recreate();
-                }
-                if (xToast != null && xToast.isShow()) {
-                    xToast.cancel();
-                    xToast = null;
-                }
+                setFanhui();
                 ImageActivity.this.finish();
                 break;
             case R.id.tv_banzou:
@@ -157,12 +190,31 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     recreate();
                 }
                 break;
-            case R.id.con_layout:
-
-                break;
         }
     }
+    //滑动条监听
+    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        // 当手停止拖拽进度条时执行该方法
+        // 获取拖拽进度
+        // 将进度对应设置给MediaPlayer
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            int progress = seekBar.getProgress();
+            if (mediaPlayer != null) {
+                mediaPlayer.seekTo(progress);
+            }
+        }
+    };
     private void setAlerD() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         AlertDialog alertDialog = builder.create();
@@ -193,7 +245,15 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         banZouAdapter.setOnItemClickListener(new BanZouAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                mCurrentPosition = position;
+                if (xToast != null && xToast.isShow()) {
+                    xToast.cancel();
+                    xToast = null;
+                }
                 show7();
+                showAler();
+                changeMusic(position);
+                alertDialog.dismiss();
             }
         });
         //点击删除
@@ -220,6 +280,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        setFanhui();
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void setFanhui() {
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             //夜间 切换 日间
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
@@ -229,7 +294,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             xToast.cancel();
             xToast = null;
         }
-        return super.onKeyDown(keyCode, event);
+        if (mediaPlayer != null || mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer = null;
+        }
     }
 
     @Override
@@ -262,7 +331,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                         .setOnClickListener(android.R.id.icon, new XToast.OnClickListener<ImageView>() {
                             @Override
                             public void onClick(XToast<?> toast, ImageView view) {
-
+                                showAler();
+                                mTvTitle.setText(list1.get(mCurrentPosition).getName());
+                                mTvSeekBar.setMax(mediaPlayer.getDuration());
+                                mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
                             }
                         });
                 xToast.show();
@@ -278,5 +350,253 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                         .show();
             }
         });
+    }
+
+    private void showAler() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_banzou_music, null);
+        alertDialog.show();
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        mTvTitle = inflate.findViewById(R.id.alertdialog_tv_banzou_music_name);
+        TextView mTvBeiSu = inflate.findViewById(R.id.banzou_tv_beisu);
+        ImageView mIvPreVious = inflate.findViewById(R.id.banzou_btn_previous);
+        mIvPlayOrPause = inflate.findViewById(R.id.banzou_btn_play_or_pause);
+        ImageView mIvNext = inflate.findViewById(R.id.banzou_btn_next);
+        TextView mTvYinDiao = inflate.findViewById(R.id.banzou_tv_yindiao);
+        mTvPlayTime = inflate.findViewById(R.id.banzou_tv_play_time);
+        mTvTotalTime = inflate.findViewById(R.id.banzou_tv_total_time);
+        mTvSeekBar = inflate.findViewById(R.id.banzou_time_seekBar);
+        mTvSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
+        //倍速
+        mTvBeiSu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSpeedPop();
+            }
+        });
+        //上一曲
+        mIvPreVious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeMusic(--mCurrentPosition);//当前歌曲位置减1
+            }
+        });
+        //下一曲
+        mIvNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeMusic(++mCurrentPosition);//当前歌曲位置加1
+            }
+        });
+        //播放和暂停
+        mIvPlayOrPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+// 首次点击播放按钮，默认播放第0首，下标从0开始
+                if (mediaPlayer == null) {
+                    changeMusic(0);
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                    } else {
+                        mediaPlayer.start();
+                        mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                    }
+                }
+            }
+        });
+        //音调
+        mTvYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showYinDiao();
+            }
+        });
+        //
+    }
+
+    /**
+     * 显示速度弹窗
+     */
+    private SpeedDialog speedDialog;
+
+    private void showSpeedPop() {
+        if (speedDialog == null) {
+            speedDialog = new SpeedDialog(this, R.style.my_dialog);
+            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
+                @Override
+                public void OnChange(float speed) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        try {
+                            PlaybackParams params = mediaPlayer.getPlaybackParams();
+                            params.setSpeed(speed);//音速
+                            mediaPlayer.setPlaybackParams(params);
+                        } catch (Exception e) {
+                            Log.e("Exception", "setPlaySpeed: ", e);
+                        }
+                    }
+                }
+            });
+        }
+        speedDialog.show();
+    }
+
+    //切歌
+    private void changeMusic(int position) {
+        Log.e("BenDiYinYueActivity", "position:" + position);
+        if (position < 0) {
+            mCurrentPosition = position = list1.size() - 1;
+            Log.e("BenDiYinYueActivity", "mList.size:" + list1.size());
+        } else if (position > list1.size() - 1) {//如果当前播放的是最后一首歌，则把下标改成0
+            mCurrentPosition = position = 0;
+        }
+        Log.e("BenDiYinYueActivity", "position:" + position);
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnCompletionListener(this);//监听音乐播放完毕事件，自动下一曲
+        }
+
+        try {
+            // 切歌之前先重置，释放掉之前的资源
+            mediaPlayer.reset();
+            // 设置播放源
+            Log.d("Music", list1.get(position).getPath());
+            mediaPlayer.setDataSource(list1.get(position).getPath());
+            mTvTitle.setText(list1.get(position).getName());
+//            Glide.with(this).load(mList.get(position).album_art).into(songImage);
+            // 开始播放前的准备工作，加载多媒体资源，获取相关信息
+            mediaPlayer.prepare();
+            // 开始播放
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 切歌时重置进度条并展示歌曲时长
+        mTvSeekBar.setProgress(0);
+        mTvSeekBar.setMax(mediaPlayer.getDuration());
+        mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
+        updateProgress();
+        if (mediaPlayer.isPlaying()) {
+            mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+        } else {
+            mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+        }
+    }
+
+    private void updateProgress() {
+        // 使用Handler每间隔1s发送一次空消息，通知进度条更新
+        Message msg = Message.obtain();// 获取一个现成的消息
+        // 使用MediaPlayer获取当前播放时间除以总时间的进度
+        int progress = mediaPlayer.getCurrentPosition();
+        msg.arg1 = progress;
+        mHandler.sendMessageDelayed(msg, INTERNAL_TIME);
+    }
+
+    private void showYinDiao() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_yindiao, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.setCanceledOnTouchOutside(true);//点击弹窗外可关闭弹窗
+        //找控件ID
+        TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyindiao);
+        TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yindiaozhi);
+        TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayindiao);
+        //减音调
+        mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao <= -6) {
+                    return;
+                } else {
+                    yindiao -= 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.00f);
+                                break;
+                            case -1:
+                                setYinDaio(params, 1.25f);
+                                break;
+                            case -2:
+                                setYinDaio(params, 1.50f);
+                                break;
+                            case -3:
+                                setYinDaio(params, 1.75f);
+                                break;
+                            case -4:
+                                setYinDaio(params, 2.00f);
+                                break;
+                            case -5:
+                                setYinDaio(params, 2.25f);
+                                break;
+                            case -6:
+                                setYinDaio(params, 2.50f);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+        //加音调
+        mTvJiaYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao < 6) {
+                    yindiao += 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.0f);
+                                break;
+                            case 1:
+                                setYinDaio(params, 0.884f);
+                                break;
+                            case 2:
+                                setYinDaio(params, 0.768f);
+                                break;
+                            case 3:
+                                setYinDaio(params, 0.652f);
+                                break;
+                            case 4:
+                                setYinDaio(params, 0.536f);
+                                break;
+                            case 5:
+                                setYinDaio(params, 0.420f);
+                                break;
+                            case 6:
+                                setYinDaio(params, 0.304f);
+                                break;
+                        }
+                    }
+                } else if (yindiao >= 6) {
+                    return;
+                }
+            }
+        });
+    }
+
+    private void setYinDaio(PlaybackParams params, float v2) {
+        params.setPitch(v2);//音调
+        mediaPlayer.setPlaybackParams(params);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        changeMusic(mCurrentPosition);
     }
 }
