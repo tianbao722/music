@@ -77,10 +77,17 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         title = intent.getStringExtra("title");
         ArrayList<MusicBean> allMusic = getAllMusic();
         list = new ArrayList<>();
-        for (MusicBean bean : allMusic) {
-            if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                list.add(bean);
+        if (allMusic != null && allMusic.size() > 0) {
+            for (MusicBean bean : allMusic) {
+                if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                    list.add(bean);
+                }
             }
+        }
+        if (list != null && list.size() > 0) {
+            mRecBanZouMusicRecSearch.setBackgroundColor(getResources().getColor(R.color.white));
+        } else {
+            mRecBanZouMusicRecSearch.setBackgroundColor(getResources().getColor(R.color.touming));
         }
         musicAdapter = new MusicAdapter(list, mContext);
         mRecBanZouMusicRecSearch.setLayoutManager(new GridLayoutManager(mContext, 2));
@@ -130,25 +137,30 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList<MusicBean> getAllMusic() {
         ArrayList<MusicBean> musicBeans = new ArrayList<>();
         ArrayList<BenDiYuePuBean> mList = SPBeanUtile.getWoDeYinYueFileList();
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        for (int i = 0; i < mList.size(); i++) {
-            String title = mList.get(i).getTitle();
-            String path = MyApplication.getWoDeYinYueFile().getPath();
-            String currentPath = path + "/" + title;
-            List<File> files = FileUtils.listFilesInDir(currentPath);
-            for (int j = 0; j < files.size(); j++) {
-                String path1 = files.get(j).getPath();
-                mmr.setDataSource(path1);
-                String fileName = FileUtils.getFileName(files.get(j));
-                String name = fileName.substring(0, fileName.length() - 4);
-                String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                String size = FileUtils.getSize(files.get(j));
-                long time1 = Long.parseLong(time);
-                MusicBean musicBean = new MusicBean(name, time1, size, path1);
-                musicBeans.add(musicBean);
+        if (mList != null && mList.size() > 0) {
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            for (int i = 0; i < mList.size(); i++) {
+                String title = mList.get(i).getTitle();
+                String path = MyApplication.getWoDeYinYueFile().getPath();
+                String currentPath = path + "/" + title;
+                List<File> files = FileUtils.listFilesInDir(currentPath);
+                for (int j = 0; j < files.size(); j++) {
+                    String path1 = files.get(j).getPath();
+                    mmr.setDataSource(path1);
+                    String fileName = FileUtils.getFileName(files.get(j));
+                    String name = fileName.substring(0, fileName.length() - 4);
+                    String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                    String size = FileUtils.getSize(files.get(j));
+                    long time1 = Long.parseLong(time);
+                    MusicBean musicBean = new MusicBean(name, time1, size, path1);
+                    musicBeans.add(musicBean);
+                }
             }
+            return musicBeans;
+        } else {
+            return null;
         }
-        return musicBeans;
+
     }
 
     @Override

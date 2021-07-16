@@ -192,6 +192,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
     }
+
     //滑动条监听
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
@@ -215,6 +216,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
+
     private void setAlerD() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         AlertDialog alertDialog = builder.create();
@@ -294,7 +296,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             xToast.cancel();
             xToast = null;
         }
-        if (mediaPlayer != null || mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
             mediaPlayer = null;
