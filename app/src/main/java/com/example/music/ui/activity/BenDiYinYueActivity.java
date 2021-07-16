@@ -156,35 +156,60 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_previous://上一曲
-                changeMusic(--mCurrentPosition);//当前歌曲位置减1
+                if (mList != null) {
+                    changeMusic(--mCurrentPosition);//当前歌曲位置减1
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.btn_play_or_pause://播放或者暂停
                 // 首次点击播放按钮，默认播放第0首，下标从0开始
-                if (mediaPlayer == null) {
-                    changeMusic(0);
-                } else {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-                        playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
+                if (mList != null) {
+
+                    if (mediaPlayer == null) {
+                        changeMusic(0);
                     } else {
-                        mediaPlayer.start();
-                        btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
-                        playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_pause_state));
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
+                        } else {
+                            mediaPlayer.start();
+                            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_pause_state));
+                        }
                     }
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_next://下一曲
-                changeMusic(++mCurrentPosition);//当前歌曲位置加1
+                if (mList != null) {
+                    changeMusic(++mCurrentPosition);//当前歌曲位置加1
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_beisu://播放倍速
-                showSpeedPop();
+                if (mList != null && mediaPlayer != null) {
+                    showSpeedPop();
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_yindiao://音调
-                showYinDiao();
+                if (mList != null && mediaPlayer != null) {
+                    showYinDiao();
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_bofangmoshi://播放模式
-                showBoFangMoShi();
+                if (mList != null) {
+                    showBoFangMoShi();
+                } else {
+                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_search_wodeyinyue://搜索
                 Intent intent = new Intent(mContext, SearchMusicActivity.class);

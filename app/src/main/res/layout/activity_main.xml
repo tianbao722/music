@@ -12,25 +12,22 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_80">
+        android:layout_marginTop="@dimen/dp_50">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/dp_35"
-            android:text="戴谱乐"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/dp_45"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+        <ImageView
+            android:layout_width="@dimen/dp_200"
+            android:layout_marginRight="@dimen/dp_40"
+            android:layout_height="@dimen/dp_100"
+            android:src="@mipmap/dpl"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_20"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -38,24 +35,19 @@
             android:id="@+id/ll_bendiqupu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wdyp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="我的乐谱"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/twdyt" />
 
         </LinearLayout>
 
@@ -63,49 +55,39 @@
             android:id="@+id/ll_bendiyinyue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_15"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wdyy" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="我的音乐"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/twdyy" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_daoruyuepu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_15"
+            android:layout_marginLeft="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/dryp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="导入乐谱"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/tdryp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -117,78 +99,64 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ll_xiazaiqupu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/dp_15"
-            android:orientation="vertical">
-
-
-            <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
-                android:scaleType="fitXY"
-                android:src="@mipmap/xzyp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="下载曲谱"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/ll_xiazaiyinyue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_15"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xzyy" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="下载音乐"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/txzyy" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_xiazaiqupu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
+                android:scaleType="fitXY"
+                android:src="@mipmap/xzyp" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/txzyp" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/ll_jiepaiqi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_15"
+            android:layout_marginLeft="@dimen/dp_17"
             android:orientation="vertical">
 
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/dtyp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="动态乐谱"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/tdtyp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -204,76 +172,61 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/jzxl" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="节奏训练"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/tjzxl" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/tv_systemsetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xtsz" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="系统设置"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/txtsz" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_wenjianguanli"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
 
             <ImageView
-                android:layout_width="@dimen/dp_65"
-                android:layout_height="@dimen/dp_65"
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_55"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wjgl" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
-                android:gravity="center"
-                android:text="文件管理"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_40"
+                android:src="@mipmap/twjgl" />
         </LinearLayout>
 
 
