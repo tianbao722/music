@@ -46,7 +46,11 @@ public class RecImageYuePuAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if (list != null && list.size() > 0) {
+            return list.size();
+        } else {
+            return 0;
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

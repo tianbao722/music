@@ -126,4 +126,27 @@ public class SPBeanUtile {
         }
         return null;
     }
+
+    //获取节奏训练文件夹名字集合
+    public static ArrayList<BenDiYuePuBean> getJieZouXunLianFileList() {
+        ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
+        File tuPianYuePuFile = MyApplication.getJieZouXunLianFile();
+        boolean orExistsDir = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir) {//判断目录是否存在,不存在判断是否创建成功
+            List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
+            if (files != null && files.size() > 0) {
+                for (int i = 0; i < files.size(); i++) {
+                    if (i == 0) {
+                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
+                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, true));
+                    } else {
+                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
+                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, false));
+                    }
+                }
+                return benDiYuePuBeans;
+            }
+        }
+        return null;
+    }
 }

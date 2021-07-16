@@ -227,7 +227,7 @@
                         android:id="@+id/yinyue_rec_tupianyuepy"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_alignBottom="@+id/tv_xinzeng"
+                        android:layout_alignBottom="@+id/yinyue_tv_xinzeng"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_marginBottom="@dimen/dp_50"
                         app:layout_constraintLeft_toLeftOf="parent"

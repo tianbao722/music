@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLWenJianGuanLi;
     private LinearLayout mLLJiePaiQi;
     private LinearLayout mLLLianXiGuJi;
-    private TextView mTvSystemSetting;
+    private LinearLayout mTvSystemSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

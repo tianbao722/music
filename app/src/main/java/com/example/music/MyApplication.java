@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
@@ -39,6 +40,17 @@ public class MyApplication extends Application {
         return myApplication.getApplicationContext();
     }
 
+    public boolean getGenMuLu() {
+        //首先判断外部存储是否可用
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File sd = new File(Environment.getExternalStorageDirectory().getPath());
+            Log.e("qq", "sd = " + sd);//sd = /storage/emulated/0
+            return sd.canWrite();
+        } else {
+            return false;
+        }
+    }
+
     //获取图片曲谱文件
     public static File getTuPianYuePuFile() {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.TuPianYuePu);
@@ -56,4 +68,12 @@ public class MyApplication extends Application {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.Def);
         return tupianyuepu;
     }
+
+    //获取节奏训练歌曲文件
+    public static File getJieZouXunLianFile() {
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.JieZouXunLian);
+        return tupianyuepu;
+    }
+
+
 }
