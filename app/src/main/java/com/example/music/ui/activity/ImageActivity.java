@@ -34,7 +34,9 @@ import com.example.music.adapter.BanZouAdapter;
 import com.example.music.adapter.ImageMagnifyAdapter;
 import com.example.music.bean.BanZouBean;
 import com.example.music.bean.BanZouListBean;
+import com.example.music.bean.MusicBean;
 import com.example.music.utils.PreferenceUtil;
+import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.SpringDraggable;
 import com.example.music.utils.StatusBarUtil;
@@ -124,20 +126,55 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mTvDi.setOnClickListener(this);
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
+        Intent intent = getIntent();
+        title = intent.getStringExtra("title");
+        ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
+        list1 = new ArrayList<>();
+        if (allMusic != null && allMusic.size() > 0) {
+            for (MusicBean bean : allMusic) {
+                if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                    list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                }
+            }
+        }
+        String json = PreferenceUtil.getInstance().getString(title, null);
+        if (!TextUtils.isEmpty(json)) {
+            BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
+            if (banZouListBean != null) {
+                ArrayList<BanZouBean> list = banZouListBean.getList();
+                if (list != null && list.size() > 0) {
+                    setAlerD();
+                } else {
+                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                    String json1 = new Gson().toJson(banZouListBean1);
+                    PreferenceUtil.getInstance().saveString(title, json1);
+                    setAlerD();
+                }
+            } else {
+                BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                String json1 = new Gson().toJson(banZouListBean1);
+                PreferenceUtil.getInstance().saveString(title, json1);
+                setAlerD();
+            }
+        } else {
+            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+            String json1 = new Gson().toJson(banZouListBean1);
+            PreferenceUtil.getInstance().saveString(title, json1);
+            setAlerD();
+        }
+
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
         } else {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
         }
-        Intent intent = getIntent();
-        title = intent.getStringExtra("title");
         mMusicTvTitle.setText(title);
         int postion1 = intent.getIntExtra("position", 0);
-        list = intent.getStringArrayListExtra("list");
-        ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, list);
+        this.list = intent.getStringArrayListExtra("list");
+        ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, this.list);
         vpPop.setAdapter(imgVpAda);
-        tvPop.setText(postion1 + 1 + "/" + list.size());
+        tvPop.setText(postion1 + 1 + "/" + this.list.size());
         vpPop.setCurrentItem(postion1);
         imgVpAda.setCallBack(new ImageMagnifyAdapter.onCallBack() {
             @Override
@@ -155,7 +192,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             @SuppressLint("SetTextI18n")
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tvPop.setText(position + 1 + "/" + list.size());
+                tvPop.setText(position + 1 + "/" + ImageActivity.this.list.size());
             }
 
             @Override

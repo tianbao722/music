@@ -75,7 +75,7 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         mIVBack.setOnClickListener(this);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
-        ArrayList<MusicBean> allMusic = getAllMusic();
+        ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
         list = new ArrayList<>();
         if (allMusic != null && allMusic.size() > 0) {
             for (MusicBean bean : allMusic) {
@@ -132,35 +132,6 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
                 setResult(2, intent);
             }
         });
-    }
-
-    private ArrayList<MusicBean> getAllMusic() {
-        ArrayList<MusicBean> musicBeans = new ArrayList<>();
-        ArrayList<BenDiYuePuBean> mList = SPBeanUtile.getWoDeYinYueFileList();
-        if (mList != null && mList.size() > 0) {
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            for (int i = 0; i < mList.size(); i++) {
-                String title = mList.get(i).getTitle();
-                String path = MyApplication.getWoDeYinYueFile().getPath();
-                String currentPath = path + "/" + title;
-                List<File> files = FileUtils.listFilesInDir(currentPath);
-                for (int j = 0; j < files.size(); j++) {
-                    String path1 = files.get(j).getPath();
-                    mmr.setDataSource(path1);
-                    String fileName = FileUtils.getFileName(files.get(j));
-                    String name = fileName.substring(0, fileName.length() - 4);
-                    String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    String size = FileUtils.getSize(files.get(j));
-                    long time1 = Long.parseLong(time);
-                    MusicBean musicBean = new MusicBean(name, time1, size, path1);
-                    musicBeans.add(musicBean);
-                }
-            }
-            return musicBeans;
-        } else {
-            return null;
-        }
-
     }
 
     @Override
