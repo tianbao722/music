@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.Constants;
 import com.example.music.MyApplication;
@@ -40,9 +42,13 @@ import com.example.music.adapter.RecyclerViewSpacesItemDecoration;
 import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
+import com.example.music.bean.ImageYuePuImageBean;
+import com.example.music.bean.UrlImageListBean;
 import com.example.music.utils.DownLoadUtile;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,6 +59,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView mRecDaoRuQuPu;
@@ -70,6 +77,10 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private ImageView mIvLoading;
     private int position;//当前选中的文件夹的下标
     private boolean isDown = true;
+    private ArrayList<ImageYuePuImageBean> Titlelist;
+    private boolean isNameEqual = false;
+    private int time = 3000;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +94,26 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
 
     private void initView() {
         imagelist = new ArrayList<>();
-        Intent intent = getIntent();
-        String imgUrl = intent.getStringExtra(Constants.webImage);
-        if (!TextUtils.isEmpty(imgUrl)) {
-            imagelist.add(new ImageDaoRuQuPuBean(imgUrl, null, null));
+        Titlelist = new ArrayList<>();
+        intent = getIntent();
+        String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
+        if (!TextUtils.isEmpty(json)) {
+            UrlImageListBean urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
+            ArrayList<String> list = urlImageListBean.getList();
+            if (list != null && list.size() > 0) {
+                for (String imageUrl : list) {
+                    imagelist.add(new ImageDaoRuQuPuBean(imageUrl, null, null));
+                }
+            }
+        }
+        if (imagelist.size() <= 2) {
+            time = 3000;
+        } else if (imagelist.size() > 2 && imagelist.size() <= 5) {
+            time = 5000;
+        } else if (imagelist.size() >= 6) {
+            time = 8000;
+        } else {
+            time = 2000;
         }
         mRecDaoRuQuPu = findViewById(R.id.rec_daoruqupu);
         mEdDaoruqupu = findViewById(R.id.ed_daoruqupu);
@@ -107,9 +134,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPu.addItemDecoration(new SpaceItemDecoration(dp2px(5)));
         mRecDaoRuQuPu.setLayoutManager(flowLayoutManager);
         mRecDaoRuQuPu.setAdapter(daoRuQuPuAdaper);
-
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
-
         HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
         stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 50);//右间距
         mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
@@ -117,6 +142,25 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());
         mItemTouchHelper.attachToRecyclerView(mRecDaoRuQuPuImg);
+    }
+
+    private void getImageFileList() {
+        ArrayList<BenDiYuePuBean> benDiYuePuBeans = SPBeanUtile.getTuPianQuPuFileList();
+        Titlelist.clear();
+        String path;
+        path = MyApplication.getTuPianYuePuFile().getPath();
+        for (int i = 0; i < benDiYuePuBeans.size(); i++) {
+            String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
+            List<File> files = FileUtils.listFilesInDir(currentPath);
+            if (files != null && files.size() > 0) {
+                for (int j = 0; j < files.size(); j++) {
+                    String name = files.get(j).getName();
+                    List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
+                    ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
+                    Titlelist.add(imageYuePuImageBean);
+                }
+            }
+        }
     }
 
     private void initListener() {
@@ -164,6 +208,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 alertDialog.setCanceledOnTouchOutside(true);
                 TextView mTvXiangJi = inflate.findViewById(R.id.tv_xiangji);
                 TextView mTvXiangCe = inflate.findViewById(R.id.tv_xiangce);
+                TextView mTvUrlImage = inflate.findViewById(R.id.tv_urlimage);
                 //相机的点击监听
                 mTvXiangJi.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -181,6 +226,14 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                         Intent intent_album = new Intent(Intent.ACTION_PICK);
                         intent_album.setType("image/*");
                         startActivityForResult(intent_album, 2);
+                    }
+                });
+                //继续选择曲谱点击监听
+                mTvUrlImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setResult(2, intent);
+                        DaoRuQuPuActivity.this.finish();
                     }
                 });
             }
@@ -269,29 +322,47 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
+                PreferenceUtil.getInstance().remove(Constants.webImage);
+                setResult(3, intent);
                 DaoRuQuPuActivity.this.finish();
                 break;
             case R.id.tv_enter_daoruyuepu://确定
+                getImageFileList();
                 String text = mEdDaoruqupu.getText().toString();
                 if (!TextUtils.isEmpty(text)) {
-                    boolean b = addFile(text);
-                    mIvLoading.setVisibility(View.VISIBLE);
-                    isDown = false;
-                    mTvEnterDaoRuQuPu.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            boolean b = addFile(text);
-                            if (b) {
-                                Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(mContext, BenDiQuPuActivity.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
-                            }
-                            mIvLoading.setVisibility(View.GONE);
-                            isDown = true;
+                    for (int i = 0; i < Titlelist.size(); i++) {
+                        String name = Titlelist.get(i).getName();
+                        if (name.equals(text)) {
+                            isNameEqual = true;
+                            break;
+                        } else {
+                            isNameEqual = false;
                         }
-                    }, 3000);
+                    }
+                    if (!isNameEqual) {
+                        boolean b = addFile(text);
+                        mIvLoading.setVisibility(View.VISIBLE);
+                        isDown = false;
+                        mTvEnterDaoRuQuPu.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                boolean b = addFile(text);
+                                if (b) {
+                                    PreferenceUtil.getInstance().remove(Constants.webImage);
+                                    Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(mContext, BenDiQuPuActivity.class);
+                                    startActivity(intent);
+                                    setResult(3, intent);
+                                } else {
+                                    Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
+                                }
+                                mIvLoading.setVisibility(View.GONE);
+                                isDown = true;
+                            }
+                        }, time);
+                    } else {
+                        Toast.makeText(mContext, "该乐谱名称已存在，请更换乐谱名称", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(mContext, "请输入乐谱名字", Toast.LENGTH_SHORT).show();
                 }
@@ -306,6 +377,13 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        PreferenceUtil.getInstance().remove(Constants.webImage);
+        setResult(3, intent);
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

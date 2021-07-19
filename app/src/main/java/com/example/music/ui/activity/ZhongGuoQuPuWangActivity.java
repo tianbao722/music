@@ -1,6 +1,7 @@
 package com.example.music.ui.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -15,6 +16,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,18 +29,23 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.ImageUtils;
 import com.example.music.Constants;
 import com.example.music.R;
+import com.example.music.bean.UrlImageListBean;
 import com.example.music.inter.JsCallJavaObj;
 import com.example.music.utils.DownLoadUtile;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 
-public class ZhongGuoQuPuWangActivity extends AppCompatActivity {
+public class ZhongGuoQuPuWangActivity extends AppCompatActivity implements View.OnClickListener {
 
     private WebView mWeb_zhongGuoQuPu;
     private Context mContext;
     private Bitmap bitmap;
+    private TextView mTvCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +75,11 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity {
 
     private void initView() {
         mWeb_zhongGuoQuPu = findViewById(R.id.web_zhognguoqupuwang);
+        mTvCancel = findViewById(R.id.tv_cancel1);
+        mTvCancel.setVisibility(View.GONE);
         mWeb_zhongGuoQuPu.loadUrl("https://www.qupu123.com/Mobile");
         mWeb_zhongGuoQuPu.setWebViewClient(new WebViewClient());
+        mTvCancel.setOnClickListener(this);
         this.mContext = this;
         // 这行代码一定加上否则效果不会出现
         mWeb_zhongGuoQuPu.getSettings().setJavaScriptEnabled(true);
@@ -121,14 +131,52 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity {
             }
         });
         mTvDaoRuQuPu.setOnClickListener(new View.OnClickListener() {
+
+            private ArrayList<String> list;
+            private UrlImageListBean urlImageListBean;
+
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "图片路径" + url, Toast.LENGTH_SHORT).show();
+                String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
+                if (!TextUtils.isEmpty(json)) {
+                    urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
+                    list = urlImageListBean.getList();
+                    if (list != null && list.size() > 0) {
+                        list.add(url);
+                    } else {
+                        list = new ArrayList<>();
+                        list.add(url);
+                    }
+                    urlImageListBean.setList(list);
+                } else {
+                    list = new ArrayList<>();
+                    list.add(url);
+                    urlImageListBean = new UrlImageListBean(list);
+                }
+                String json1 = new Gson().toJson(urlImageListBean);
+                PreferenceUtil.getInstance().saveString(Constants.webImage, json1);
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
-                intent.putExtra(Constants.webImage, url);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 alertDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            mTvCancel.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_cancel1:
+                Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                startActivityForResult(intent, 1);
+                break;
+        }
     }
 }

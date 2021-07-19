@@ -14,7 +14,7 @@
         android:padding="@dimen/dp_10"
         android:text="相机"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_15"
         android:textStyle="bold" />
 
     <TextView
@@ -25,6 +25,19 @@
         android:padding="@dimen/dp_10"
         android:text="相册"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_15"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_urlimage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        android:text="继续选择曲谱"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_15"
+        android:textStyle="bold" />
+
+
 </LinearLayout>
