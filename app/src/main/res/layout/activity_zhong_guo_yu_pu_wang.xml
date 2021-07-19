@@ -10,5 +10,21 @@
         android:id="@+id/web_zhongguoyuepuwang"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+    <TextView
+        android:id="@+id/yuepu_tv_cancel1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_30"
+        android:background="@drawable/shape_cancel"
+        android:gravity="center"
+        android:paddingTop="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_10"
+        android:text="不再选择"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

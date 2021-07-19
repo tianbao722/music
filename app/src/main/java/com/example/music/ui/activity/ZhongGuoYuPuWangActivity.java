@@ -1,6 +1,7 @@
 package com.example.music.ui.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -11,6 +12,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,16 +24,21 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.ImageUtils;
 import com.example.music.Constants;
 import com.example.music.R;
+import com.example.music.bean.UrlImageListBean;
 import com.example.music.utils.DownLoadUtile;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
+import com.google.gson.Gson;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class ZhongGuoYuPuWangActivity extends AppCompatActivity {
 
     private WebView mWebZhongGuoYuePu;
     private Context mContext;
     private Bitmap bitmap;
+    private TextView mTvCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,15 @@ public class ZhongGuoYuPuWangActivity extends AppCompatActivity {
 
     private void initView() {
         mWebZhongGuoYuePu = findViewById(R.id.web_zhongguoyuepuwang);
+        mTvCancel = findViewById(R.id.yuepu_tv_cancel1);
+        mTvCancel.setVisibility(View.GONE);
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
         mWebZhongGuoYuePu.loadUrl("https://www.cnscore.com/jianpu/");
         mWebZhongGuoYuePu.setWebViewClient(new WebViewClient());
         this.mContext = this;
@@ -79,6 +95,16 @@ public class ZhongGuoYuPuWangActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            mTvCancel.setVisibility(View.VISIBLE);
+        } else {
+            mTvCancel.setVisibility(View.GONE);
+        }
     }
 
     private void showAlerDialog(String url) {
@@ -112,12 +138,31 @@ public class ZhongGuoYuPuWangActivity extends AppCompatActivity {
             }
         });
         mTvDaoRuQuPu.setOnClickListener(new View.OnClickListener() {
+            private ArrayList<String> list;
+            private UrlImageListBean urlImageListBean;
+
             @Override
             public void onClick(View v) {
-//                Toast.makeText(mContext, "图片路径" + url, Toast.LENGTH_SHORT).show();
+                String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
+                if (!TextUtils.isEmpty(json)) {
+                    urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
+                    list = urlImageListBean.getList();
+                    if (list != null && list.size() > 0) {
+                        list.add(url);
+                    } else {
+                        list = new ArrayList<>();
+                        list.add(url);
+                    }
+                    urlImageListBean.setList(list);
+                } else {
+                    list = new ArrayList<>();
+                    list.add(url);
+                    urlImageListBean = new UrlImageListBean(list);
+                }
+                String json1 = new Gson().toJson(urlImageListBean);
+                PreferenceUtil.getInstance().saveString(Constants.webImage, json1);
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
-                intent.putExtra(Constants.webImage, url);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 alertDialog.dismiss();
             }
         });

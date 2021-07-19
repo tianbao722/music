@@ -88,7 +88,7 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity implements View.
             public boolean onLongClick(View v) {
                 WebView.HitTestResult result = mWeb_zhongGuoQuPu.getHitTestResult();
                 int type = result.getType();
-                if (type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {//判断长按的地方是否是链接形式的图片
+                if (type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || type == WebView.HitTestResult.IMAGE_TYPE) {//判断长按的地方是否是链接形式的图片
                     String extra = result.getExtra();
                     showAlerDialog(extra);
                     return true;
@@ -167,6 +167,8 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity implements View.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == 2) {
             mTvCancel.setVisibility(View.VISIBLE);
+        } else {
+            mTvCancel.setVisibility(View.GONE);
         }
     }
 
