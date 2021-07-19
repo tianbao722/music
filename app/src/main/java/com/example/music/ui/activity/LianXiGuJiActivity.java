@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.view.View;
@@ -61,7 +62,8 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
             public void onItemClick(int position) {
                 if (position == mList.size()) {
                     //跳转到下载鼓机
-
+                    Intent intent = new Intent(mContext, DownLoadGuJiActivity.class);
+                    startActivityForResult(intent, 1);
                 } else {
                     //播放音乐
                 }

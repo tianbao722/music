@@ -99,6 +99,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTvTitle;
     private TextView mTvTotalTime;
     private TextView mTvPlayTime;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,6 +254,9 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     xToast = null;
                 }
                 show7();
+                if (alertDialog != null && alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 showAler();
                 changeMusic(position);
                 alertDialog.dismiss();
@@ -333,10 +337,14 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                         .setOnClickListener(android.R.id.icon, new XToast.OnClickListener<ImageView>() {
                             @Override
                             public void onClick(XToast<?> toast, ImageView view) {
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.dismiss();
+                                }
                                 showAler();
                                 mTvTitle.setText(list1.get(mCurrentPosition).getName());
                                 mTvSeekBar.setMax(mediaPlayer.getDuration());
                                 mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
+                                mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
                             }
                         });
                 xToast.show();
@@ -356,7 +364,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
     private void showAler() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_banzou_music, null);
         alertDialog.show();
         alertDialog.setContentView(inflate);

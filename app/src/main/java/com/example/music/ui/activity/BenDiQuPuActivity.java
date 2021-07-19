@@ -92,10 +92,6 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
         mTabQuPu.getTabAt(0).select();
     }
 
-    private void setTabTV() {
-
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

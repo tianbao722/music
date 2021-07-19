@@ -16,10 +16,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.music.Constants;
 import com.example.music.MyApplication;
 import com.example.music.R;
@@ -64,14 +67,15 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<ImageDaoRuQuPuBean> imagelist;
     private ImageDaoRuQuPuAdapter imageDaoRuQuPuAdapter;
     private AlertDialog alertDialog;
+    private ImageView mIvLoading;
     private int position;//当前选中的文件夹的下标
+    private boolean isDown = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dao_ru_qu_pu);
         StatusBarUtil.transparencyBar(this);
-
         this.mContext = this;
         initView();
         initListener();
@@ -86,6 +90,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         }
         mRecDaoRuQuPu = findViewById(R.id.rec_daoruqupu);
         mEdDaoruqupu = findViewById(R.id.ed_daoruqupu);
+        mIvLoading = findViewById(R.id.iv_loading);
         mivBack = findViewById(R.id.iv_back);
         mRecDaoRuQuPuImg = findViewById(R.id.rec_daoruqupu_img);
         mTvEnterDaoRuQuPu = findViewById(R.id.tv_enter_daoruyuepu);
@@ -95,6 +100,8 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         if (list == null) {
             list = new ArrayList<BenDiYuePuBean>();
         }
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+        mIvLoading.setVisibility(View.GONE);
         daoRuQuPuAdaper = new DaoRuQuPuAdaper(mContext, list);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         mRecDaoRuQuPu.addItemDecoration(new SpaceItemDecoration(dp2px(5)));
@@ -268,17 +275,36 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 String text = mEdDaoruqupu.getText().toString();
                 if (!TextUtils.isEmpty(text)) {
                     boolean b = addFile(text);
-                    if (b) {
-                        Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(mContext, BenDiQuPuActivity.class);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
-                    }
+                    mIvLoading.setVisibility(View.VISIBLE);
+                    isDown = false;
+                    mTvEnterDaoRuQuPu.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean b = addFile(text);
+                            if (b) {
+                                Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(mContext, BenDiQuPuActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
+                            }
+                            mIvLoading.setVisibility(View.GONE);
+                            isDown = true;
+                        }
+                    }, 3000);
                 } else {
                     Toast.makeText(mContext, "请输入乐谱名字", Toast.LENGTH_SHORT).show();
                 }
                 break;
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (isDown) {
+            return super.dispatchTouchEvent(ev);
+        } else {
+            return false;
         }
     }
 
@@ -417,7 +443,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            } else if (bitmap == null && uri == null && !TextUtils.isEmpty(url)) {//保存url
+            } else if (uri == null && bitmap == null && !TextUtils.isEmpty(url)) {
                 b = DownLoadUtile.newThread(url, MyApplication.getTuPianYuePuFile().getPath() + "/" + list.get(position).getTitle() + "/" + text, i);
             }
         }

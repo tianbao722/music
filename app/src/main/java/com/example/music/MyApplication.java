@@ -57,6 +57,12 @@ public class MyApplication extends Application {
         return tupianyuepu;
     }
 
+    //获取临时文件
+    public static File getLinShiPuFile() {
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.LinShi);
+        return tupianyuepu;
+    }
+
     //获取我的音乐文件
     public static File getWoDeYinYueFile() {
         File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.WoDeYinYue);

@@ -6,7 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DownLoadUtile {
-    private static boolean b;
+    private static boolean imagePath;
 
     /**
      * 保存位图到本地
@@ -49,11 +53,13 @@ public class DownLoadUtile {
             @Override
             public void run() {
                 Bitmap bitmap = GetImageInputStream(url);
-                b = SavaImage(bitmap, path, position);
+                imagePath = SavaImage(bitmap, path, position);
             }
         }).start();
-        return b;
+        return imagePath;
     }
+
+    //薛凯琪
 
     /**
      * 获取网络图片
@@ -104,7 +110,7 @@ public class DownLoadUtile {
             Uri uri = Uri.fromFile(file);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
 //            if (isSuccess) {
-                return true;
+            return true;
 //            } else {
 //                return false;
 //            }
