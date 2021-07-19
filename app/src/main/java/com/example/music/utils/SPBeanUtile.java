@@ -27,10 +27,15 @@ public class SPBeanUtile {
     //在图片曲谱文件夹下创建文件夹
     public static boolean createTuPiQuPuFile(String string) {
         File tuPianYuePuFile = MyApplication.getTuPianYuePuFile();
-        File file = new File(tuPianYuePuFile, string);
-        boolean orExistsDir = FileUtils.createOrExistsDir(file);
-        if (orExistsDir) {
-            return true;
+        boolean orExistsDir1 = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir1) {
+            File file = new File(tuPianYuePuFile, string);
+            boolean orExistsDir = FileUtils.createOrExistsDir(file);
+            if (orExistsDir) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -39,10 +44,15 @@ public class SPBeanUtile {
     //在Def曲谱文件夹下创建文件夹
     public static boolean createDefQuPuFile(String string) {
         File tuPianYuePuFile = MyApplication.getDefYuePuFile();
-        File file = new File(tuPianYuePuFile, string);
-        boolean orExistsDir = FileUtils.createOrExistsDir(file);
-        if (orExistsDir) {
-            return true;
+        boolean orExistsDir1 = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir1) {
+            File file = new File(tuPianYuePuFile, string);
+            boolean orExistsDir = FileUtils.createOrExistsDir(file);
+            if (orExistsDir) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -51,10 +61,15 @@ public class SPBeanUtile {
     //在我的音乐文件夹下创建文件夹
     public static boolean createWoDeYinYueFile(String string) {
         File tuPianYuePuFile = MyApplication.getWoDeYinYueFile();
-        File file = new File(tuPianYuePuFile, string);
-        boolean orExistsDir = FileUtils.createOrExistsDir(file);
-        if (orExistsDir) {
-            return true;
+        boolean orExistsDir1 = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir1) {
+            File file = new File(tuPianYuePuFile, string);
+            boolean orExistsDir = FileUtils.createOrExistsDir(file);
+            if (orExistsDir) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

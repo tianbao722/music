@@ -40,12 +40,13 @@ public class MyApplication extends Application {
         return myApplication.getApplicationContext();
     }
 
-    public boolean getGenMuLu() {
-        //首先判断外部存储是否可用
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+    public static boolean getGenMuLu() {
+        //首先判断外部存储是否可用Environment.getExternalStorageDirectory().getPath()
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
             File sd = new File(Environment.getExternalStorageDirectory().getPath());
             Log.e("qq", "sd = " + sd);//sd = /storage/emulated/0
-            return sd.canWrite();
+            boolean b = sd.canWrite();
+            return b;
         } else {
             return false;
         }
@@ -53,31 +54,29 @@ public class MyApplication extends Application {
 
     //获取图片曲谱文件
     public static File getTuPianYuePuFile() {
-        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.TuPianYuePu);
-        return tupianyuepu;
-    }
-
-    //获取临时文件
-    public static File getLinShiPuFile() {
-        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.LinShi);
+//        myApplication.getExternalFilesDir(null)
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.TuPianYuePu);
+        if (!tupianyuepu.exists()) {
+            tupianyuepu.mkdirs();
+        }
         return tupianyuepu;
     }
 
     //获取我的音乐文件
     public static File getWoDeYinYueFile() {
-        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.WoDeYinYue);
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.WoDeYinYue);
         return tupianyuepu;
     }
 
     //获取Def曲谱文件
     public static File getDefYuePuFile() {
-        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.Def);
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.Def);
         return tupianyuepu;
     }
 
     //获取节奏训练歌曲文件
     public static File getJieZouXunLianFile() {
-        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.JieZouXunLian);
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.JieZouXunLian);
         return tupianyuepu;
     }
 

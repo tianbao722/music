@@ -62,9 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLJiePaiQi.setOnClickListener(this);
         mLLLianXiGuJi.setOnClickListener(this);
         mTvSystemSetting.setOnClickListener(this);
-        String[] strings = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        String[] strings = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,};
+                Manifest.permission.CAMERA,
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE};
         PermissionsUtil.requestPermission(this, new PermissionListener() {
             @Override
             public void permissionGranted(@NonNull String[] permission) {
