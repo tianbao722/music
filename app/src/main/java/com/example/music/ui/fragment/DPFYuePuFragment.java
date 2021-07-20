@@ -24,10 +24,13 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.FileUtils;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.PDFImageAdapter;
 import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
+import com.example.music.bean.PDFImageBean;
+import com.example.music.ui.activity.PDFImageActivity;
 import com.example.music.utils.SPBeanUtile;
 
 import java.io.File;
@@ -40,8 +43,8 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
     private TextView mDefTvXinJian;
     private Context mContext;
     private ArrayList<BenDiYuePuBean> strings;
-    private ArrayList<ImageYuePuImageBean> imageFileList;
-    private RecImageYuePuAdapter recImageYuePuAdapter;
+    private ArrayList<PDFImageBean> imageFileList;
+    private PDFImageAdapter recImageYuePuAdapter;
     private int mPosition;
     private TuPianYuePuAdapter tuPianYuePuAdapter;
     private boolean classify = false;
@@ -72,35 +75,24 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
 
     private void initRecImageYuePu() {
         mDefRecDefYuePuImage.setLayoutManager(new GridLayoutManager(mContext, 2));
-        if (imageFileList == null || imageFileList.size() == 0) {
-            imageFileList = new ArrayList<>();
-        } else {
-            imageFileList = getImageFileList();
-        }
-        recImageYuePuAdapter = new RecImageYuePuAdapter(imageFileList, mContext);
+        imageFileList = getImageFileList();
+        recImageYuePuAdapter = new PDFImageAdapter(imageFileList, mContext);
         mDefRecDefYuePuImage.setAdapter(recImageYuePuAdapter);
         //条目点击事件
-        recImageYuePuAdapter.setOnItemClickListener(new RecImageYuePuAdapter.onItemClickListener() {
+        recImageYuePuAdapter.setOnItemClickListener(new PDFImageAdapter.onItemClickListener() {
             @Override
             public void onItmeClick(int position) {
-                ArrayList<String> image = new ArrayList<>();
-                ImageYuePuImageBean imageYuePuImageBean = imageFileList.get(position);
-                List<File> list = imageYuePuImageBean.getList();
-                for (int i = 0; i < list.size(); i++) {
-                    String path = list.get(i).getPath();
-                    image.add(path);
-                }
-                Intent intent = new Intent();
-                intent.setAction("bigimage");
-                intent.putExtra("position", 1);
-                intent.putStringArrayListExtra("list", image);
-                startActivityForResult(intent, 100);
+                PDFImageBean imageYuePuImageBean = imageFileList.get(position);
+                Intent intent = new Intent(mContext, PDFImageActivity.class);
+                intent.putExtra("name", imageYuePuImageBean.getName());
+                intent.putExtra("file", imageYuePuImageBean.getFile().getPath());
+                startActivity(intent);
             }
         });
     }
 
-    private ArrayList<ImageYuePuImageBean> getImageFileList() {
-        ArrayList<ImageYuePuImageBean> imageYuePuImageBeans = new ArrayList<>();
+    private ArrayList<PDFImageBean> getImageFileList() {
+        ArrayList<PDFImageBean> imageYuePuImageBeans = new ArrayList<>();
         String path = MyApplication.getDefYuePuFile().getPath();
         if (strings == null || strings.size() <= 0) {
             return null;
@@ -110,8 +102,8 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
         if (files != null && files.size() > 0) {
             for (int i = 0; i < files.size(); i++) {
                 String name = files.get(i).getName();
-                List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
-                ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
+                String size = FileUtils.getSize(files.get(i));
+                PDFImageBean imageYuePuImageBean = new PDFImageBean(name, files.get(i), size);
                 imageYuePuImageBeans.add(imageYuePuImageBean);
             }
         }
@@ -142,11 +134,7 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 strings.set(position, benDiYuePuBean);
                 tuPianYuePuAdapter.notifyDataSetChanged();
                 imageFileList.clear();
-                if (imageFileList == null || imageFileList.size() == 0) {
-                    imageFileList = new ArrayList<>();
-                } else {
-                    imageFileList = getImageFileList();
-                }
+                imageFileList = getImageFileList();
                 recImageYuePuAdapter.notifyDataSetChanged();
             }
         });

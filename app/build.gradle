@@ -79,4 +79,6 @@ dependencies {
 
     // 权限请求框架：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:11.6'
+    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'//PDF
+
 }

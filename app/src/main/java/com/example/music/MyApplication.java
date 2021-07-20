@@ -68,9 +68,9 @@ public class MyApplication extends Application {
         return tupianyuepu;
     }
 
-    //获取Def曲谱文件
+    //获取PDF曲谱文件
     public static File getDefYuePuFile() {
-        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.Def);
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.PDF);
         return tupianyuepu;
     }
 

@@ -4,13 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.blankj.utilcode.util.IntentUtils;
 import com.example.music.ui.activity.BenDiQuPuActivity;
 import com.example.music.ui.activity.BenDiYinYueActivity;
 import com.example.music.ui.activity.DaoRuQuPuActivity;
@@ -23,6 +29,8 @@ import com.example.music.ui.activity.XiaZaiYinYueActivity;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout mTvXiaZai;
@@ -65,8 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String[] strings = {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,
-                Manifest.permission.MANAGE_EXTERNAL_STORAGE};
+                Manifest.permission.CAMERA,};
         PermissionsUtil.requestPermission(this, new PermissionListener() {
             @Override
             public void permissionGranted(@NonNull String[] permission) {
@@ -84,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_xiazaiqupu://下载曲谱
-                Intent intent = new Intent(MainActivity.this, DownloadTheSongActivity.class);
-                startActivity(intent);
+                Intent intent5 = new Intent(MainActivity.this, DownloadTheSongActivity.class);
+                startActivity(intent5);
                 break;
             case R.id.ll_bendiyinyue://本地音乐
                 Intent intent1 = new Intent(MainActivity.this, BenDiYinYueActivity.class);
@@ -104,8 +111,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent4);
                 break;
             case R.id.ll_wenjianguanli://文件管理
-                Intent intent5 = new Intent(MainActivity.this, WenJianGuanLiActivity.class);
-                startActivity(intent5);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                //系统调用Action属性
+                intent.setType("*/*");
+                //设置文件类型
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                // 添加Category属性
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "没有正确打开文件管理器", Toast.LENGTH_SHORT).show();
+                }
+//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                intent.addCategory(Intent.CATEGORY_DEFAULT);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.setType("application/pdf");
+//                startActivityForResult(intent, 1);
                 break;
             case R.id.ll_jiepaiqi://节拍器
                 Intent intent6 = new Intent(MainActivity.this, JiePaiQiActivity.class);
