@@ -120,7 +120,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ll_jiepaiqi"
+            android:id="@+id/ll_xiazaiyinyue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_17"
@@ -181,7 +181,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_xiazaiyinyue"
+            android:id="@+id/ll_dongtaipu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"

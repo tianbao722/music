@@ -1,6 +1,7 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.downloadqupu;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -8,15 +9,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -25,23 +24,29 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.ImageUtils;
 import com.example.music.Constants;
 import com.example.music.R;
-import com.example.music.inter.JsCallJavaObj;
+import com.example.music.bean.UrlImageListBean;
+import com.example.music.ui.activity.zhujiemian.DaoRuQuPuActivity;
 import com.example.music.utils.DownLoadUtile;
+import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
+import com.google.gson.Gson;
 
 import java.io.File;
+import java.util.ArrayList;
 
-public class CiQuWangActivity extends AppCompatActivity {
+public class ZhongGuoYuPuWangActivity extends AppCompatActivity {
 
-    private WebView mWebCiQuWang;
+    private WebView mWebZhongGuoYuePu;
     private Context mContext;
     private Bitmap bitmap;
+    private TextView mTvCancel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ci_qu_wang);
+        setContentView(R.layout.activity_zhong_guo_yu_pu_wang);
         StatusBarUtil.transparencyBar(this);
-        this.mContext = this;
+
         initView();
     }
 
@@ -60,24 +65,27 @@ public class CiQuWangActivity extends AppCompatActivity {
             }
         }
     };
-    @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
-    private void initView() {
-        mWebCiQuWang = findViewById(R.id.web_ciquwang);
-        mWebCiQuWang.loadUrl("http://www.ktvc8.com/");
-        mWebCiQuWang.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                super.onReceivedSslError(view, handler, error);
-                handler.proceed();//接收证书
 
+    private void initView() {
+        mWebZhongGuoYuePu = findViewById(R.id.web_zhongguoyuepuwang);
+        mTvCancel = findViewById(R.id.yuepu_tv_cancel1);
+        mTvCancel.setVisibility(View.GONE);
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
+        mWebZhongGuoYuePu.loadUrl("https://www.cnscore.com/jianpu/");
+        mWebZhongGuoYuePu.setWebViewClient(new WebViewClient());
+        this.mContext = this;
         // 这行代码一定加上否则效果不会出现
-        mWebCiQuWang.getSettings().setJavaScriptEnabled(true);
-        mWebCiQuWang.setOnLongClickListener(new View.OnLongClickListener() {
+        mWebZhongGuoYuePu.getSettings().setJavaScriptEnabled(true);
+        mWebZhongGuoYuePu.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                WebView.HitTestResult result = mWebCiQuWang.getHitTestResult();
+                WebView.HitTestResult result = mWebZhongGuoYuePu.getHitTestResult();
                 int type = result.getType();
                 if (type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || type == WebView.HitTestResult.IMAGE_TYPE) {//判断长按的地方是否是链接形式的图片
                     String extra = result.getExtra();
@@ -88,6 +96,16 @@ public class CiQuWangActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            mTvCancel.setVisibility(View.VISIBLE);
+        } else {
+            mTvCancel.setVisibility(View.GONE);
+        }
     }
 
     private void showAlerDialog(String url) {
@@ -106,7 +124,6 @@ public class CiQuWangActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         bitmap = DownLoadUtile.GetImageInputStream(url);
-//                        b = DownLoadUtile.saveImageToGallery(mContext, bitmap);
                         File file = ImageUtils.save2Album(bitmap, Bitmap.CompressFormat.JPEG);
                         Message message = new Message();
                         if (file != null) {
@@ -122,12 +139,31 @@ public class CiQuWangActivity extends AppCompatActivity {
             }
         });
         mTvDaoRuQuPu.setOnClickListener(new View.OnClickListener() {
+            private ArrayList<String> list;
+            private UrlImageListBean urlImageListBean;
+
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "图片路径" + url, Toast.LENGTH_SHORT).show();
+                String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
+                if (!TextUtils.isEmpty(json)) {
+                    urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
+                    list = urlImageListBean.getList();
+                    if (list != null && list.size() > 0) {
+                        list.add(url);
+                    } else {
+                        list = new ArrayList<>();
+                        list.add(url);
+                    }
+                    urlImageListBean.setList(list);
+                } else {
+                    list = new ArrayList<>();
+                    list.add(url);
+                    urlImageListBean = new UrlImageListBean(list);
+                }
+                String json1 = new Gson().toJson(urlImageListBean);
+                PreferenceUtil.getInstance().saveString(Constants.webImage, json1);
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
-                intent.putExtra(Constants.webImage, url);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 alertDialog.dismiss();
             }
         });

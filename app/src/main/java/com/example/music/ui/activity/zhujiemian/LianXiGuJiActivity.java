@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.zhujiemian;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -17,7 +17,7 @@ import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.LianXiGuJiAdapter;
 import com.example.music.bean.LianXiGuJiBean;
-import com.example.music.bean.MusicBean;
+import com.example.music.ui.activity.DownLoadGuJiActivity;
 import com.example.music.utils.StatusBarUtil;
 
 import java.io.File;

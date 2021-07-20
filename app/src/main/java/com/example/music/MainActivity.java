@@ -4,42 +4,37 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.IntentUtils;
-import com.example.music.ui.activity.BenDiQuPuActivity;
-import com.example.music.ui.activity.BenDiYinYueActivity;
-import com.example.music.ui.activity.DaoRuQuPuActivity;
-import com.example.music.ui.activity.DownloadTheSongActivity;
-import com.example.music.ui.activity.JiePaiQiActivity;
-import com.example.music.ui.activity.LianXiGuJiActivity;
-import com.example.music.ui.activity.WenJianGuanLiActivity;
-import com.example.music.ui.activity.XiTongSheZhiActivity;
-import com.example.music.ui.activity.XiaZaiYinYueActivity;
+import com.example.music.ui.activity.zhujiemian.BenDiQuPuActivity;
+import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
+import com.example.music.ui.activity.zhujiemian.DaoRuQuPuActivity;
+import com.example.music.ui.activity.zhujiemian.DownloadTheSongActivity;
+import com.example.music.ui.activity.zhujiemian.DongTaiPuActivity;
+import com.example.music.ui.activity.zhujiemian.LianXiGuJiActivity;
+import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
+import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
+import com.example.music.ui.activity.zhujiemian.XiTongSheZhiActivity;
+import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout mTvXiaZai;
     private LinearLayout mTvBenDiYinYue;
     private LinearLayout mLLBenDiQuPu;
     private LinearLayout mLLXiaZaiQuPu;
+    private LinearLayout mTvShiYongShuoMing;
     private LinearLayout mLLDaoRuYuePu;
     private LinearLayout mLLWenJianGuanLi;
     private LinearLayout mLLJiePaiQi;
+    private LinearLayout mLLMianFeiJiaoXue;
     private LinearLayout mLLLianXiGuJi;
     private LinearLayout mTvSystemSetting;
 
@@ -58,7 +53,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLXiaZaiQuPu = findViewById(R.id.ll_xiazaiqupu);
         mLLDaoRuYuePu = findViewById(R.id.ll_daoruyuepu);
         mLLWenJianGuanLi = findViewById(R.id.ll_wenjianguanli);
-        mLLJiePaiQi = findViewById(R.id.ll_jiepaiqi);
+        mTvShiYongShuoMing = findViewById(R.id.tv_caozuoshuoming);
+        mLLJiePaiQi = findViewById(R.id.ll_dongtaipu);
+        mLLMianFeiJiaoXue = findViewById(R.id.ll_mianfeijiaoxue);
         mLLLianXiGuJi = findViewById(R.id.ll_lianxiguji);
         mTvSystemSetting = findViewById(R.id.tv_systemsetting);
         mTvXiaZai.setOnClickListener(this);
@@ -66,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLBenDiQuPu.setOnClickListener(this);
         mLLXiaZaiQuPu.setOnClickListener(this);
         mLLDaoRuYuePu.setOnClickListener(this);
+        mLLMianFeiJiaoXue.setOnClickListener(this);
         mLLWenJianGuanLi.setOnClickListener(this);
         mLLJiePaiQi.setOnClickListener(this);
         mLLLianXiGuJi.setOnClickListener(this);
@@ -110,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent4 = new Intent(MainActivity.this, DaoRuQuPuActivity.class);
                 startActivity(intent4);
                 break;
+            case R.id.ll_mianfeijiaoxue://免费教学
+                Intent intent9 = new Intent(MainActivity.this, MianFeiJiaoXueActivity.class);
+                startActivity(intent9);
+                break;
             case R.id.ll_wenjianguanli://文件管理
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 //系统调用Action属性
@@ -128,8 +130,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                intent.setType("application/pdf");
 //                startActivityForResult(intent, 1);
                 break;
-            case R.id.ll_jiepaiqi://节拍器
-                Intent intent6 = new Intent(MainActivity.this, JiePaiQiActivity.class);
+            case R.id.ll_dongtaipu://节拍器
+                Intent intent6 = new Intent(MainActivity.this, DongTaiPuActivity.class);
                 startActivity(intent6);
                 break;
             case R.id.ll_lianxiguji://练习鼓机
@@ -139,6 +141,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_systemsetting://系统设置
                 Intent intent8 = new Intent(MainActivity.this, XiTongSheZhiActivity.class);
                 startActivity(intent8);
+                break;
+            case R.id.tv_caozuoshuoming://系统设置
+                Intent intent10 = new Intent(MainActivity.this, ShiYongShuoMingActivity.class);
+                startActivity(intent10);
                 break;
         }
     }

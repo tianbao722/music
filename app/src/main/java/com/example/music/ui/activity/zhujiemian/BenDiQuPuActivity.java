@@ -1,11 +1,10 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.zhujiemian;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +13,12 @@ import android.widget.TextView;
 
 import com.example.music.R;
 import com.example.music.adapter.BenDiYuePuPagerAdapter;
+import com.example.music.ui.activity.SearchYuePuActivity;
 import com.example.music.ui.fragment.DPFYuePuFragment;
 import com.example.music.ui.fragment.TuPianYuePuFragment;
 import com.example.music.utils.StatusBarUtil;
 import com.google.android.material.tabs.TabLayout;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClickListener {

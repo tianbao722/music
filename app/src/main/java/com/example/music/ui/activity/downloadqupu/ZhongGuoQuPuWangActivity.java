@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.downloadqupu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,17 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -30,13 +26,12 @@ import com.blankj.utilcode.util.ImageUtils;
 import com.example.music.Constants;
 import com.example.music.R;
 import com.example.music.bean.UrlImageListBean;
-import com.example.music.inter.JsCallJavaObj;
+import com.example.music.ui.activity.zhujiemian.DaoRuQuPuActivity;
 import com.example.music.utils.DownLoadUtile;
 import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.StatusBarUtil;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 

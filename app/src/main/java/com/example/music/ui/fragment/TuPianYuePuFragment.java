@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,12 +29,8 @@ import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
-import com.example.music.bean.SPListBean;
-import com.example.music.ui.activity.BenDiQuPuActivity;
 import com.example.music.ui.activity.ImageActivity;
-import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;

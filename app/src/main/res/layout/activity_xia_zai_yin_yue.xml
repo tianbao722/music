@@ -1,9 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.XiaZaiYinYueActivity">
+    android:paddingTop="@dimen/dp_30"
+    android:orientation="vertical"
+    tools:context=".ui.activity.zhujiemian.XiaZaiYinYueActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/tv_download_music1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:padding="@dimen/dp_10"
+        android:text="Vfine音乐"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_15" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="#B1B1B1" />
+
+    <TextView
+        android:id="@+id/tv_download_music2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:padding="@dimen/dp_10"
+        android:text="5Sing原创音乐"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_15" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="#B1B1B1" />
+</LinearLayout>

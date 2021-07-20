@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.zhujiemian;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +35,7 @@ import com.example.music.adapter.MusicAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
+import com.example.music.ui.activity.SearchMusicActivity;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;
@@ -46,8 +47,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.example.music.utils.DateUtil.parseTime;

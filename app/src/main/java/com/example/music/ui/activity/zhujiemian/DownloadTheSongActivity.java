@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.zhujiemian;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.music.R;
+import com.example.music.ui.activity.downloadqupu.NiuRenYuePuWangActivity;
+import com.example.music.ui.activity.downloadqupu.ZhongGuoQuPuWangActivity;
+import com.example.music.ui.activity.downloadqupu.ZhongGuoYuPuWangActivity;
 import com.example.music.utils.StatusBarUtil;
 
 public class DownloadTheSongActivity extends AppCompatActivity implements View.OnClickListener {
@@ -61,16 +64,16 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
                 startActivity(intent1);
                 break;
             case R.id.tv_soupuwang:
-                Intent intent2 = new Intent(DownloadTheSongActivity.this, SouPuWangActivity.class);
-                startActivity(intent2);
+//                Intent intent2 = new Intent(DownloadTheSongActivity.this, SouPuWangActivity.class);
+//                startActivity(intent2);
                 break;
             case R.id.tv_souquwang:
-                Intent intent3 = new Intent(DownloadTheSongActivity.this, CiQuWangActivity.class);
-                startActivity(intent3);
+//                Intent intent3 = new Intent(DownloadTheSongActivity.this, CiQuWangActivity.class);
+//                startActivity(intent3);
                 break;
             case R.id.tv_17jitawang:
-                Intent intent4 = new Intent(DownloadTheSongActivity.this, I7JiTaWangActivity.class);
-                startActivity(intent4);
+//                Intent intent4 = new Intent(DownloadTheSongActivity.this, I7JiTaWangActivity.class);
+//                startActivity(intent4);
                 break;
             case R.id.tv_zhongguoyuepuwang:
                 Intent intent5 = new Intent(DownloadTheSongActivity.this, ZhongGuoYuPuWangActivity.class);
