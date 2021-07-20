@@ -107,7 +107,8 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
         });
         if (files != null && files.size() > 0) {
             for (int i = 0; i < files.size(); i++) {
-                String name = files.get(i).getName();
+                String fileName = files.get(i).getName();
+                String name = fileName.substring(0, fileName.length() - 4);
                 String size = FileUtils.getSize(files.get(i));
                 PDFImageBean imageYuePuImageBean = new PDFImageBean(name, files.get(i), size);
                 imageYuePuImageBeans.add(imageYuePuImageBean);
