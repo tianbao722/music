@@ -12,12 +12,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_30">
+        android:layout_marginTop="@dimen/dp_50">
 
         <ImageView
-            android:layout_width="@dimen/dp_200"
-            android:layout_marginRight="@dimen/dp_40"
-            android:layout_height="@dimen/dp_100"
+            android:layout_width="@dimen/dp_150"
+            android:layout_height="@dimen/dp_80"
+            android:layout_marginRight="@dimen/dp_50"
             android:src="@mipmap/dpl"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,27 +32,26 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ll_bendiqupu"
+            android:id="@+id/ll_bendiyinyue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/wdyp" />
+                android:src="@mipmap/wdyy" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
-                android:src="@mipmap/twdyt" />
-
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/twdyy" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_bendiyinyue"
+            android:id="@+id/ll_bendiqupu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"
@@ -60,34 +59,56 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/wdyy" />
+                android:src="@mipmap/wdyp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
-                android:src="@mipmap/twdyy" />
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/twdyt" />
+
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/ll_daoruyuepu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
                 android:src="@mipmap/dryp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tdryp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_lianxiguji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:scaleType="fitXY"
+                android:src="@mipmap/jzxl" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/tjzxl" />
         </LinearLayout>
     </LinearLayout>
 
@@ -99,21 +120,22 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ll_xiazaiyinyue"
+            android:id="@+id/ll_jiepaiqi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
-                android:scaleType="fitXY"
-                android:src="@mipmap/xzyy" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:scaleType="fitXY"
+                android:src="@mipmap/dtyp" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/txzyy" />
         </LinearLayout>
 
@@ -127,66 +149,86 @@
 
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xzyp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/txzyp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_mianfeijiaoxue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:scaleType="fitXY"
+                android:src="@mipmap/mfjx" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/tmfjx" />
+        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_jiepaiqi"
+            android:id="@+id/ll_xiazaiyinyue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"
             android:orientation="vertical">
 
-
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/dtyp" />
+                android:src="@mipmap/xzyy" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tdtyp" />
         </LinearLayout>
+
+
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_100"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
-
         <LinearLayout
-            android:id="@+id/ll_lianxiguji"
+            android:id="@+id/tv_caozuoshuoming"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_17"
             android:layout_marginRight="@dimen/dp_17"
             android:orientation="vertical">
 
+
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/jzxl" />
+                android:src="@mipmap/wjgl" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
-                android:src="@mipmap/tjzxl" />
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/tsysm" />
         </LinearLayout>
-
         <LinearLayout
             android:id="@+id/tv_systemsetting"
             android:layout_width="wrap_content"
@@ -197,14 +239,14 @@
 
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xtsz" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/txtsz" />
         </LinearLayout>
 
@@ -218,14 +260,14 @@
 
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wjgl" />
 
             <ImageView
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/twjgl" />
         </LinearLayout>
 

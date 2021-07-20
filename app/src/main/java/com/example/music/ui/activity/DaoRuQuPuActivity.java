@@ -149,15 +149,17 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         Titlelist.clear();
         String path;
         path = MyApplication.getTuPianYuePuFile().getPath();
-        for (int i = 0; i < benDiYuePuBeans.size(); i++) {
-            String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
-            List<File> files = FileUtils.listFilesInDir(currentPath);
-            if (files != null && files.size() > 0) {
-                for (int j = 0; j < files.size(); j++) {
-                    String name = files.get(j).getName();
-                    List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
-                    ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
-                    Titlelist.add(imageYuePuImageBean);
+        if (benDiYuePuBeans != null) {
+            for (int i = 0; i < benDiYuePuBeans.size(); i++) {
+                String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
+                List<File> files = FileUtils.listFilesInDir(currentPath);
+                if (files != null && files.size() > 0) {
+                    for (int j = 0; j < files.size(); j++) {
+                        String name = files.get(j).getName();
+                        List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
+                        ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
+                        Titlelist.add(imageYuePuImageBean);
+                    }
                 }
             }
         }

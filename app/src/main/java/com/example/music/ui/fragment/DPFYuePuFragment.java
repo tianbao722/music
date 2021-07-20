@@ -34,6 +34,7 @@ import com.example.music.ui.activity.PDFImageActivity;
 import com.example.music.utils.SPBeanUtile;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,12 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
             return null;
         }
         String currentPath = path + "/" + strings.get(mPosition).getTitle();
-        List<File> files = FileUtils.listFilesInDir(currentPath);
+        List<File> files = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return (pathname.getPath().endsWith(".pdf"));
+            }
+        });
         if (files != null && files.size() > 0) {
             for (int i = 0; i < files.size(); i++) {
                 String name = files.get(i).getName();
