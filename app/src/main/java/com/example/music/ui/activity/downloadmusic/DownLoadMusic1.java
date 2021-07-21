@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -37,6 +38,7 @@ import com.example.music.bean.MusicBean;
 import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
 import com.example.music.utils.HomeProgressDialog;
 import com.example.music.utils.SPBeanUtile;
+import com.example.music.utils.StatusBarUtil;
 import com.lzy.okhttputils.OkHttpUtils;
 import com.lzy.okhttputils.callback.FileCallback;
 import com.lzy.okhttputils.request.BaseRequest;
@@ -62,6 +64,7 @@ public class DownLoadMusic1 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_down_load_music1);
+        StatusBarUtil.transparencyBar(this);
         mContext = this;
         initView();
     }
@@ -85,14 +88,22 @@ public class DownLoadMusic1 extends AppCompatActivity {
         webSettings.setLoadWithOverviewMode(true);
         //将网页加载到当前应用界面中，不再跳转到浏览器
         mWebMusic1.setWebChromeClient(new WebChromeClient());
+        //解决加载网页空白问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
         mWebMusic1.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 super.onReceivedSslError(view, handler, error);
-                handler.proceed();//接收证书
+                if (error.getPrimaryError() == SslError.SSL_INVALID) {
+                    handler.proceed();
+                } else {
+                    handler.cancel();
+                }
             }
         });
-        String url = "https://www.vfinemusic.com/music-library?utm_source=360&utm_medium=search&utm_campaign=PC-%E7%BD%91%E7%AB%99&utm_content=%E7%BD%91%E7%AB%99A&utm_term=%E4%B8%8B%E8%BD%BD%E9%9F%B3%E4%B9%90%E5%BA%93";
+        String url = "https://www.vfinemusic.com/html";
         mWebMusic1.loadUrl(url);
         //设置下载监听，每当有下载的时候就会进行拦截
         mWebMusic1.setDownloadListener(new DownloadListener() {

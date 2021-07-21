@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Music">
-        <activity android:name=".ui.activity.zhujiemian.ShiYongShuoMingActivity"></activity>
+        <activity android:name=".ui.activity.zhujiemian.ZengZhiFuWuActivity"></activity>
+        <activity android:name=".ui.activity.zhujiemian.ShiYongShuoMingActivity" />
         <activity android:name=".ui.activity.zhujiemian.MianFeiJiaoXueActivity" />
         <activity android:name=".ui.activity.downloadmusic.DownLoadMusic1" />
         <activity android:name=".ui.activity.PDFImageActivity" />

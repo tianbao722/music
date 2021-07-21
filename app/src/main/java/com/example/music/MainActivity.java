@@ -21,6 +21,7 @@ import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
 import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
 import com.example.music.ui.activity.zhujiemian.XiTongSheZhiActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
+import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLDaoRuYuePu;
     private LinearLayout mLLWenJianGuanLi;
     private LinearLayout mLLJiePaiQi;
+    private LinearLayout mLLZengZhiFuWu;
     private LinearLayout mLLMianFeiJiaoXue;
     private LinearLayout mLLLianXiGuJi;
     private LinearLayout mTvSystemSetting;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLMianFeiJiaoXue = findViewById(R.id.ll_mianfeijiaoxue);
         mLLLianXiGuJi = findViewById(R.id.ll_lianxiguji);
         mTvSystemSetting = findViewById(R.id.tv_systemsetting);
+        mLLZengZhiFuWu = findViewById(R.id.ll_zengzhifuwu);
         mTvXiaZai.setOnClickListener(this);
         mTvBenDiYinYue.setOnClickListener(this);
         mLLBenDiQuPu.setOnClickListener(this);
@@ -145,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_caozuoshuoming://系统设置
                 Intent intent10 = new Intent(MainActivity.this, ShiYongShuoMingActivity.class);
                 startActivity(intent10);
+                break;
+            case R.id.ll_zengzhifuwu://增值服务
+                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
+                startActivity(intent11);
                 break;
         }
     }

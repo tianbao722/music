@@ -39,13 +39,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wdyy" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/twdyy" />
         </LinearLayout>
@@ -59,13 +59,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/wdyp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/twdyt" />
 
@@ -81,13 +81,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/dryp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tdryp" />
         </LinearLayout>
@@ -100,13 +100,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/jzxl" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tjzxl" />
         </LinearLayout>
@@ -128,13 +128,13 @@
 
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/dtyp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/txzyy" />
         </LinearLayout>
@@ -149,13 +149,13 @@
 
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xzyp" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/txzyp" />
         </LinearLayout>
@@ -169,13 +169,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/mfjx" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tmfjx" />
         </LinearLayout>
@@ -188,17 +188,16 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
-                android:layout_height="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:scaleType="fitXY"
                 android:src="@mipmap/xzyy" />
 
             <ImageView
-                android:layout_width="@dimen/dp_45"
+                android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_25"
                 android:src="@mipmap/tdtyp" />
         </LinearLayout>
-
 
 
     </LinearLayout>
@@ -209,8 +208,9 @@
         android:layout_marginTop="@dimen/dp_100"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
+
         <LinearLayout
-            android:id="@+id/tv_caozuoshuoming"
+            android:id="@+id/ll_wenjianguanli"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"
@@ -222,13 +222,15 @@
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/sysm" />
+                android:src="@mipmap/wjgl" />
 
             <ImageView
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_25"
-                android:src="@mipmap/tsysm" />
+                android:src="@mipmap/twjgl" />
         </LinearLayout>
+
+
         <LinearLayout
             android:id="@+id/tv_systemsetting"
             android:layout_width="wrap_content"
@@ -251,7 +253,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_wenjianguanli"
+            android:id="@+id/tv_caozuoshuoming"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_17"
@@ -263,12 +265,33 @@
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/wjgl" />
+                android:src="@mipmap/sysm" />
 
             <ImageView
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_25"
-                android:src="@mipmap/twjgl" />
+                android:src="@mipmap/tsysm" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_zengzhifuwu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_17"
+            android:layout_marginRight="@dimen/dp_17"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:scaleType="fitXY"
+                android:src="@mipmap/zzfw" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_25"
+                android:src="@mipmap/tzzfw" />
         </LinearLayout>
 
 
