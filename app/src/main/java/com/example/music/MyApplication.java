@@ -17,6 +17,8 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.Fragment;
 
+import com.lzy.okhttputils.OkHttpUtils;
+
 import java.io.File;
 
 
@@ -30,6 +32,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         myApplication = this;
+        OkHttpUtils.init(this);
     }
 
     public static MyApplication getInstance() {
@@ -54,7 +57,6 @@ public class MyApplication extends Application {
 
     //获取图片曲谱文件
     public static File getTuPianYuePuFile() {
-//        myApplication.getExternalFilesDir(null)
         File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.TuPianYuePu);
         if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();

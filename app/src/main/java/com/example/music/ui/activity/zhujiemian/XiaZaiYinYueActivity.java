@@ -29,7 +29,6 @@ public class XiaZaiYinYueActivity extends AppCompatActivity implements View.OnCl
         mTvMusic1 = findViewById(R.id.tv_download_music1);
         mTvMusic2 = findViewById(R.id.tv_download_music2);
 
-
         mTvMusic1.setOnClickListener(this);
         mTvMusic2.setOnClickListener(this);
     }

@@ -80,5 +80,9 @@ dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:11.6'
     compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'//PDF
+    //下载框架
+//    implementation 'com.liulishuo.filedownloader:library:1.7.4'
+
+    compile 'com.lzy.net:okhttputils:1.6.5'  //可以单独使用，不需要依赖下方的扩展包
 
 }

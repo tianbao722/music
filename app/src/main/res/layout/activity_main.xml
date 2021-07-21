@@ -222,7 +222,7 @@
                 android:layout_width="@dimen/dp_45"
                 android:layout_height="@dimen/dp_45"
                 android:scaleType="fitXY"
-                android:src="@mipmap/wjgl" />
+                android:src="@mipmap/sysm" />
 
             <ImageView
                 android:layout_width="@dimen/dp_45"
