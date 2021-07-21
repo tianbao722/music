@@ -99,11 +99,63 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
                 LianXiGuJiActivity.this.finish();
                 break;
             case R.id.tv_guji_yinsu_jian://减音速
-
+                setJianYinSu();
                 break;
             case R.id.tv_guji_yinsu_jia://加音速
-
+                setJiaYinSu();
                 break;
+        }
+    }
+
+    private void setJianYinSu() {
+        String s = mTvYinSuZhi.getText().toString();
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 1.5f) {
+            mTvYinSuZhi.setText("1.4");
+        } else if (YinSu == 1.4f) {
+            mTvYinSuZhi.setText("1.3");
+        } else if (YinSu == 1.3f) {
+            mTvYinSuZhi.setText("1.2");
+        } else if (YinSu == 1.2f) {
+            mTvYinSuZhi.setText("1.1");
+        } else if (YinSu == 1.1f) {
+            mTvYinSuZhi.setText("1.0");
+        } else if (YinSu == 1.0f) {
+            mTvYinSuZhi.setText("0.9");
+        } else if (YinSu == 0.9f) {
+            mTvYinSuZhi.setText("0.8");
+        } else if (YinSu == 0.8f) {
+            mTvYinSuZhi.setText("0.7");
+        } else if (YinSu == 0.7f) {
+            mTvYinSuZhi.setText("0.6");
+        } else if (YinSu == 0.6f) {
+            mTvYinSuZhi.setText("0.5");
+        }
+    }
+
+    private void setJiaYinSu() {
+        String s = mTvYinSuZhi.getText().toString();
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 0.5f) {
+            mTvYinSuZhi.setText("0.6");
+        } else if (YinSu == 0.6f) {
+            mTvYinSuZhi.setText("0.7");
+        } else if (YinSu == 0.7f) {
+            mTvYinSuZhi.setText("0.8");
+        } else if (YinSu == 0.8f) {
+            mTvYinSuZhi.setText("0.9");
+        } else if (YinSu == 0.9f) {
+            mTvYinSuZhi.setText("1.0");
+        } else if (YinSu == 1.0f) {
+            mTvYinSuZhi.setText("1.1");
+        } else if (YinSu == 1.1f) {
+            mTvYinSuZhi.setText("1.2");
+        } else if (YinSu == 1.2f) {
+            mTvYinSuZhi.setText("1.3");
+        } else if (YinSu == 1.3f) {
+            mTvYinSuZhi.setText("1.4");
+        } else if (YinSu == 1.4f) {
+            mTvYinSuZhi.setText("1.5");
         }
     }
 }

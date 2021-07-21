@@ -30,7 +30,6 @@
         <activity android:name=".ui.activity.SearchYuePuActivity" />
         <activity android:name=".ui.activity.zhujiemian.LianXiGuJiActivity" />
         <activity android:name=".ui.activity.zhujiemian.DongTaiPuActivity" />
-        <activity android:name=".ui.activity.WenJianGuanLiActivity" />
         <activity android:name=".ui.activity.zhujiemian.DaoRuQuPuActivity" />
         <activity android:name=".ui.activity.zhujiemian.XiaZaiYinYueActivity" />
         <activity android:name=".ui.activity.zhujiemian.BenDiQuPuActivity" />

@@ -27,6 +27,7 @@ import com.example.music.ui.activity.zhujiemian.LianXiGuJiActivity;
 import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
 import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
+import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTvXiaZai.setOnClickListener(this);
         mTvBenDiYinYue.setOnClickListener(this);
         mLLBenDiQuPu.setOnClickListener(this);
+        mTvShiYongShuoMing.setOnClickListener(this);
         mLLZengZhiFuWu.setOnClickListener(this);
         mLLXiaZaiQuPu.setOnClickListener(this);
         mLLDaoRuYuePu.setOnClickListener(this);
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String aPackage = getPackage();
                 openAppWithPackageName(aPackage);
                 break;
-            case R.id.ll_dongtaipu://节拍器
+            case R.id.ll_dongtaipu://动态乐谱
                 Intent intent6 = new Intent(MainActivity.this, DongTaiPuActivity.class);
                 startActivity(intent6);
                 break;
@@ -139,22 +141,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_systemsetting://系统设置
                 Intent intent8 = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent8);
-//                Intent intent8 = new Intent(MainActivity.this, XiTongSheZhiActivity.class);
-//                startActivity(intent8);
                 break;
-            case R.id.tv_caozuoshuoming://系统设置
+            case R.id.tv_caozuoshuoming://操作说明
                 Intent intent10 = new Intent(MainActivity.this, ShiYongShuoMingActivity.class);
                 startActivity(intent10);
                 break;
             case R.id.ll_zengzhifuwu://增值服务
-                Intent intent11 = new Intent(Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS);
+                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
                 startActivity(intent11);
-//                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
-//                startActivity(intent11);
                 break;
         }
     }
 
+    //获取文件管理或资源管理的包名
     public String getPackage() {
         String BaoMing = null;
         final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -175,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return BaoMing;
     }
 
+    //通过包名跳转到指定的应用
     private void openAppWithPackageName(String packagename) {
         // 通过包名获取此APP详细信息，包括Activities、services、versioncode、name等等
         PackageInfo packageinfo = null;
