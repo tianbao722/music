@@ -7,4 +7,6 @@ public class Constants {
     public static String WoDeYinYue = "我的音乐";
     public static String JieZouXunLian = "节奏训练";
     public static String LinShi = "临时文件";
+    public static String BaoMing = "文件管理";
+    public static String BaoMing1 = "资源管理";
 }

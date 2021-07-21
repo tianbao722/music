@@ -104,13 +104,16 @@ public class DownLoadMusic2 extends AppCompatActivity {
         mWebSouPuWang.loadUrl("https://5sing.kugou.com/index.html");
         //设置下载监听，每当有下载的时候就会进行拦截
         mWebSouPuWang.setDownloadListener(new DownloadListener() {
+
+            private double f1;
+
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-                float size = contentLength / 1024 / 1024;
+                float size = contentLength / 1024.00f / 1024.00f;
                 Log.i("musicSize", "contentLength: ------" + contentLength);
                 //保留两位小数并四舍五入
                 BigDecimal bg = new BigDecimal(size);
-                double f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 String name = url.substring(url.lastIndexOf("/") + 1);
                 showAlear(url, f1 + "MB", name);
             }

@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.example.music"
+        applicationId "com.example.music3"
         minSdkVersion 25
         targetSdkVersion 30
         versionCode 1

@@ -4,12 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.music.ui.activity.zhujiemian.BenDiQuPuActivity;
 import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
@@ -19,12 +26,12 @@ import com.example.music.ui.activity.zhujiemian.DongTaiPuActivity;
 import com.example.music.ui.activity.zhujiemian.LianXiGuJiActivity;
 import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
 import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
-import com.example.music.ui.activity.zhujiemian.XiTongSheZhiActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
-import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout mTvXiaZai;
@@ -64,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTvXiaZai.setOnClickListener(this);
         mTvBenDiYinYue.setOnClickListener(this);
         mLLBenDiQuPu.setOnClickListener(this);
+        mLLZengZhiFuWu.setOnClickListener(this);
         mLLXiaZaiQuPu.setOnClickListener(this);
         mLLDaoRuYuePu.setOnClickListener(this);
         mLLMianFeiJiaoXue.setOnClickListener(this);
@@ -74,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String[] strings = {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.INTERNET,
                 Manifest.permission.CAMERA,};
         PermissionsUtil.requestPermission(this, new PermissionListener() {
             @Override
@@ -116,22 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent9);
                 break;
             case R.id.ll_wenjianguanli://文件管理
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                //系统调用Action属性
-                intent.setType("*/*");
-                //设置文件类型
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                // 添加Category属性
-                try {
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Toast.makeText(this, "没有正确打开文件管理器", Toast.LENGTH_SHORT).show();
-                }
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.addCategory(Intent.CATEGORY_DEFAULT);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.setType("application/pdf");
-//                startActivityForResult(intent, 1);
+                String aPackage = getPackage();
+                openAppWithPackageName(aPackage);
                 break;
             case R.id.ll_dongtaipu://节拍器
                 Intent intent6 = new Intent(MainActivity.this, DongTaiPuActivity.class);
@@ -142,17 +137,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent7);
                 break;
             case R.id.tv_systemsetting://系统设置
-                Intent intent8 = new Intent(MainActivity.this, XiTongSheZhiActivity.class);
+                Intent intent8 = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent8);
+//                Intent intent8 = new Intent(MainActivity.this, XiTongSheZhiActivity.class);
+//                startActivity(intent8);
                 break;
             case R.id.tv_caozuoshuoming://系统设置
                 Intent intent10 = new Intent(MainActivity.this, ShiYongShuoMingActivity.class);
                 startActivity(intent10);
                 break;
             case R.id.ll_zengzhifuwu://增值服务
-                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
+                Intent intent11 = new Intent(Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS);
                 startActivity(intent11);
+//                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
+//                startActivity(intent11);
                 break;
+        }
+    }
+
+    public String getPackage() {
+        String BaoMing = null;
+        final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        final PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
+        for (int i = 0; i < apps.size(); i++) {
+            ResolveInfo info = apps.get(i);
+            CharSequence charSequence = info.activityInfo.loadLabel(packageManager);
+            String name1 = String.valueOf(charSequence);
+            if (name1.contains(Constants.BaoMing) || name1.contains(Constants.BaoMing1)) {
+                BaoMing = info.activityInfo.applicationInfo.packageName;
+                break;
+            }
+            Log.e("包名", info.activityInfo.loadLabel(packageManager) + " 包名 "
+                    + info.activityInfo.applicationInfo.packageName + " 类名 " + info.activityInfo.name);
+        }
+        return BaoMing;
+    }
+
+    private void openAppWithPackageName(String packagename) {
+        // 通过包名获取此APP详细信息，包括Activities、services、versioncode、name等等
+        PackageInfo packageinfo = null;
+        try {
+            packageinfo = getPackageManager().getPackageInfo(packagename, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageinfo == null) {
+            return;
+        }
+
+        // 创建一个类别为CATEGORY_LAUNCHER的该包名的Intent
+        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resolveIntent.setPackage(packageinfo.packageName);
+        // 通过getPackageManager()的queryIntentActivities方法遍历
+        List<ResolveInfo> resolveinfoList = getPackageManager()
+                .queryIntentActivities(resolveIntent, 0);
+
+        if (!resolveinfoList.iterator().hasNext()) {
+            return;
+        }
+        ResolveInfo resolveinfo = resolveinfoList.iterator().next();
+        if (resolveinfo != null) {
+            // packagename = 参数packname
+            String packageName = resolveinfo.activityInfo.packageName;
+            // 这个就是我们要找的该APP的LAUNCHER的Activity[组织形式：packagename.mainActivityname]
+            String className = resolveinfo.activityInfo.name;
+            // LAUNCHER Intent
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);//重点是加这个
+
+            // 设置ComponentName参数1:packagename参数2:MainActivity路径
+            ComponentName cn = new ComponentName(packageName, className);
+            intent.setComponent(cn);
+            startActivity(intent);
         }
     }
 }

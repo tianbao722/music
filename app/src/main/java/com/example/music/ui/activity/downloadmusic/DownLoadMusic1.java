@@ -44,7 +44,12 @@ import com.lzy.okhttputils.callback.FileCallback;
 import com.lzy.okhttputils.request.BaseRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -103,21 +108,22 @@ public class DownLoadMusic1 extends AppCompatActivity {
                 }
             }
         });
-        String url = "https://www.vfinemusic.com/html";
+        String url = "https://www.vfinemusic.com/music-library";
         mWebMusic1.loadUrl(url);
         //设置下载监听，每当有下载的时候就会进行拦截
         mWebMusic1.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-                float size = contentLength / 1024 / 1024;
+                float size = contentLength / 1024.00f / 1024.00f;
                 //保留两位小数并四舍五入
                 BigDecimal bg = new BigDecimal(size);
-                double f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                double f1 = bg.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
                 String name = url.substring(url.lastIndexOf("/") + 1);
                 showAlear(url, f1 + "MB", name);
             }
         });
     }
+
 
     private void showAlear(String url, String size, String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);

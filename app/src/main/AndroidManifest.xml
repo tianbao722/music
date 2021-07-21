@@ -28,7 +28,6 @@
         <activity android:name=".ui.activity.BanZouActivity" />
         <activity android:name=".ui.activity.SearchMusicActivity" />
         <activity android:name=".ui.activity.SearchYuePuActivity" />
-        <activity android:name=".ui.activity.zhujiemian.XiTongSheZhiActivity" />
         <activity android:name=".ui.activity.zhujiemian.LianXiGuJiActivity" />
         <activity android:name=".ui.activity.zhujiemian.DongTaiPuActivity" />
         <activity android:name=".ui.activity.WenJianGuanLiActivity" />
