@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.activity.SearchMusicActivity">
+    tools:context=".ui.activity.search.SearchMusicActivity">
     <!--歌曲的展示列表-->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/music_search_view"

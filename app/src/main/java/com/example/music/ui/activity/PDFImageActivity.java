@@ -571,6 +571,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             return true;
         }
     });
+
     private void updateProgress() {
         // 使用Handler每间隔1s发送一次空消息，通知进度条更新
         Message msg = Message.obtain();// 获取一个现成的消息

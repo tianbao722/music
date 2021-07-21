@@ -260,6 +260,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
                 android:layout_weight="7"
                 android:background="#DBDBDB" />
 

@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.search;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.SearchYuePuAdapter;

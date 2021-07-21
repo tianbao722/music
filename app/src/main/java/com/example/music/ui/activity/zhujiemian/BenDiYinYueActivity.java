@@ -35,7 +35,7 @@ import com.example.music.adapter.MusicAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
-import com.example.music.ui.activity.SearchMusicActivity;
+import com.example.music.ui.activity.search.SearchMusicActivity;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;

@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.example.music.R;
 import com.example.music.adapter.BenDiYuePuPagerAdapter;
-import com.example.music.ui.activity.SearchYuePuActivity;
+import com.example.music.ui.activity.search.SearchYuePuActivity;
 import com.example.music.ui.fragment.DPFYuePuFragment;
 import com.example.music.ui.fragment.TuPianYuePuFragment;
 import com.example.music.utils.StatusBarUtil;

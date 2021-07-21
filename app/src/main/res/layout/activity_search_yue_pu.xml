@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#E4E4E4"
     android:orientation="vertical"
-    tools:context=".ui.activity.SearchYuePuActivity">
+    tools:context=".ui.activity.search.SearchYuePuActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.music.ui.activity;
+package com.example.music.ui.activity.search;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
-import android.view.View;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.example.music.MyApplication;
@@ -43,7 +42,10 @@ public class SearchMusicActivity extends AppCompatActivity {
         mMusicSearchView = findViewById(R.id.music_search_view);
         mMusicRecSearch = findViewById(R.id.music_rec_search);
         setSearchView();
-        allMusic = getAllMusic();
+        allMusic = SPBeanUtile.getAllMusic();
+        if (allMusic == null) {
+            allMusic = new ArrayList<>();
+        }
         Intent intent = getIntent();
         mMusicRecSearch.setLayoutManager(new GridLayoutManager(mContext, 2));
         musicAdapter = new MusicAdapter(allMusic, mContext);
@@ -62,31 +64,6 @@ public class SearchMusicActivity extends AppCompatActivity {
             }
         });
     }
-
-    private ArrayList<MusicBean> getAllMusic() {
-        ArrayList<MusicBean> musicBeans = new ArrayList<>();
-        ArrayList<BenDiYuePuBean> mList = SPBeanUtile.getWoDeYinYueFileList();
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        for (int i = 0; i < mList.size(); i++) {
-            String title = mList.get(i).getTitle();
-            String path = MyApplication.getWoDeYinYueFile().getPath();
-            String currentPath = path + "/" + title;
-            List<File> files = FileUtils.listFilesInDir(currentPath);
-            for (int j = 0; j < files.size(); j++) {
-                String path1 = files.get(j).getPath();
-                mmr.setDataSource(path1);
-                String fileName = FileUtils.getFileName(files.get(j));
-                String name = fileName.substring(0, fileName.length() - 4);
-                String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                String size = FileUtils.getSize(files.get(j));
-                long time1 = Long.parseLong(time);
-                MusicBean musicBean = new MusicBean(name, time1, size, path1);
-                musicBeans.add(musicBean);
-            }
-        }
-        return musicBeans;
-    }
-
 
     public void setSearchView() {
         // 设置搜索文本监听

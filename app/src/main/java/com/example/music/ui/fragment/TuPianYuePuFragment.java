@@ -44,7 +44,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     private TextView mTvXinZheng;
     private boolean classify = false;
     private TuPianYuePuAdapter tuPianYuePuAdapter;
-    private int mPosition;
+    private int mPosition;//当前选择的Title的下标
     private ArrayList<ImageYuePuImageBean> imageFileList;
     private RecImageYuePuAdapter recImageYuePuAdapter;
 
