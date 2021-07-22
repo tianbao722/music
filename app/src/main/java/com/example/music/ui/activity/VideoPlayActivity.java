@@ -5,18 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -25,8 +31,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.music.R;
+import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;
 
 import java.io.IOException;
@@ -37,6 +45,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     private ImageView mIvBack;
     private ImageView mQuanPing;
     private ImageView mSanJiao;
+    private LinearLayout mLL;
+    private LinearLayout mLLYinSu;
+    private LinearLayout mLLYinDiao;
+    private ConstraintLayout mConsl;
     private ImageView mTvPlay;
     private TextView mTvName;
     private TextView mTotalTime;
@@ -47,7 +59,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     private int mWidth;
     private int mHeight;
     private MediaPlayer mediaPlayer;
-    private boolean isQuanPing = true;
+    private boolean isQuanPing = true;      //全屏 ：true  半屏：false
     private Context mContext;
 
     @SuppressLint("HandlerLeak")
@@ -67,6 +79,8 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     });
 
     private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
+    private int videoWidth;
+    private int videoHeight;
 
     private void updateProgress() {
         // 使用Handler每间隔1s发送一次空消息，通知进度条更新
@@ -89,6 +103,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     private void initView() {
         mIvBack = findViewById(R.id.voide_iv_back);
         mTvName = findViewById(R.id.video_play_name);
+        mConsl = findViewById(R.id.voide_play_consl);
+        mLLYinSu = findViewById(R.id.voide_yinsu);
+        mLL = findViewById(R.id.voide_ll);
+        mLLYinDiao = findViewById(R.id.voide_yindiao);
         mTvPlay = findViewById(R.id.video_btn_play_or_pause);
         mPlayTime = findViewById(R.id.video_play_tv_play_time);
         mBar = findViewById(R.id.video_play_time_seekBar);
@@ -105,10 +123,13 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         mIvBack.setOnClickListener(this);
         mTvPlay.setOnClickListener(this);
         mSanJiao.setOnClickListener(this);
+        mLLYinSu.setOnClickListener(this);
+        mLLYinDiao.setOnClickListener(this);
         mQuanPing.setOnClickListener(this);
         getScreen();
         initMediaPlayer();
     }
+
 
     //获取屏幕宽高
     private void getScreen() {
@@ -120,12 +141,43 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         mHeight = metrics.heightPixels;
     }
 
+    /**
+     * 触摸屏幕 按键出现
+     */
+    public boolean onTouchEvent(android.view.MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (isQuanPing) {
+                    if (mConsl.getVisibility() == View.VISIBLE) {
+                        mConsl.setVisibility(View.GONE);
+                        mLL.setVisibility(View.GONE);
+                    } else {
+                        mConsl.setVisibility(View.VISIBLE);
+                        mLL.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (mLL.getVisibility() == View.VISIBLE) {
+                        mLL.setVisibility(View.GONE);
+                    } else {
+                        mLL.setVisibility(View.VISIBLE);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
+
+    ;
 
     private void initMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         try {
             //设置播放的视频路径
             mediaPlayer.setDataSource(path);
+            mediaPlayer.setLooping(true);//循环播放
             //异步加载流媒体
             mediaPlayer.prepareAsync();
             //获取SurfaceHolder
@@ -154,8 +206,8 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     //获取视频的宽高
-                    int videoHeight = mediaPlayer.getVideoHeight();
-                    int videoWidth = mediaPlayer.getVideoWidth();
+                    videoHeight = mediaPlayer.getVideoHeight();
+                    videoWidth = mediaPlayer.getVideoWidth();
                     if (videoHeight > mHeight || videoWidth > mWidth) {
 //                    如果视频的宽或者高超出屏幕,要缩放
                         float widthRatio = (float) videoWidth / (float) mWidth;
@@ -164,27 +216,23 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                         float max = Math.max(widthRatio, heightRatio);
                         videoWidth = (int) Math.ceil(videoWidth / max);
                         videoHeight = (int) Math.ceil(videoHeight / max);
-                        isQuanPing = false;
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
-                        //ConstraintLayout.LayoutParams.MATCH_PARENT
-                        //dp2px(mContext, 200)
-                        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(videoWidth, videoHeight);
-                        mSur.setLayoutParams(lp);
                     }
+                    setBanPing();
                     mediaPlayer.start();
                     // 切歌时重置进度条并展示歌曲时长
                     mBar.setProgress(0);
                     mBar.setMax(mediaPlayer.getDuration());
                     mTotalTime.setText(parseTime(mediaPlayer.getDuration()));
                     updateProgress();
-                    //mediaPlayer.setLooping(true);
                 }
             });
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     //播放完成监听
-                    finish();
+                    if (isQuanPing) {
+                        setBanPing();
+                    }
                 }
             });
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -207,21 +255,33 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.video_play_quanping://全屏
                 if (isQuanPing) {//全屏切换半屏
-                    isQuanPing = false;
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
-                    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                            dp2px(mContext, 200));
-                    mSur.setLayoutParams(lp);
+                    setBanPing();
                 } else {//半屏切换全屏
-                    isQuanPing = true;
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 手动横屏
-                    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                            ConstraintLayout.LayoutParams.MATCH_PARENT);
-                    mSur.setLayoutParams(lp);
+                    setQuanPing();
                 }
                 break;
             case R.id.video_play_sanjiao://显示||隐藏音速，音调
-
+                if (mLLYinSu.getVisibility() == View.VISIBLE) {
+                    mLLYinSu.setVisibility(View.GONE);
+                    mLLYinDiao.setVisibility(View.GONE);
+                } else {
+                    mLLYinSu.setVisibility(View.VISIBLE);
+                    mLLYinDiao.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.voide_yinsu://音速
+                if (mediaPlayer != null) {
+                    showSpeedPop();
+                } else {
+                    Toast.makeText(mContext, "请先播放", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.voide_yindiao://音调
+                if (mediaPlayer != null) {
+                    showYinDiao();
+                } else {
+                    Toast.makeText(mContext, "请先播放", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.video_btn_play_or_pause://暂停||播放
                 if (mediaPlayer.isPlaying()) {
@@ -233,6 +293,135 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 }
                 break;
         }
+    }
+
+    /**
+     * 显示音调弹窗
+     */
+    private int yindiao;
+
+    private void showYinDiao() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_yindiao, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.setCanceledOnTouchOutside(true);//点击弹窗外可关闭弹窗
+        //找控件ID
+        TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyindiao);
+        TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yindiaozhi);
+        TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayindiao);
+        //减音调
+        mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao <= -6) {
+                    return;
+                } else {
+                    yindiao -= 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.00f);
+                                break;
+                            case -1:
+                                setYinDaio(params, 1.25f);
+                                break;
+                            case -2:
+                                setYinDaio(params, 1.50f);
+                                break;
+                            case -3:
+                                setYinDaio(params, 1.75f);
+                                break;
+                            case -4:
+                                setYinDaio(params, 2.00f);
+                                break;
+                            case -5:
+                                setYinDaio(params, 2.25f);
+                                break;
+                            case -6:
+                                setYinDaio(params, 2.50f);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+        //加音调
+        mTvJiaYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                yindiao = Integer.parseInt(s);
+                if (yindiao < 6) {
+                    yindiao += 1;
+                    mTvYinDiaoZhi.setText(yindiao + "");
+                    if (mediaPlayer != null) {
+                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        switch (yindiao) {
+                            case 0:
+                                setYinDaio(params, 1.0f);
+                                break;
+                            case 1:
+                                setYinDaio(params, 0.884f);
+                                break;
+                            case 2:
+                                setYinDaio(params, 0.768f);
+                                break;
+                            case 3:
+                                setYinDaio(params, 0.652f);
+                                break;
+                            case 4:
+                                setYinDaio(params, 0.536f);
+                                break;
+                            case 5:
+                                setYinDaio(params, 0.420f);
+                                break;
+                            case 6:
+                                setYinDaio(params, 0.304f);
+                                break;
+                        }
+                    }
+                } else if (yindiao >= 6) {
+                    return;
+                }
+            }
+        });
+    }
+
+    private void setYinDaio(PlaybackParams params, float v2) {
+        params.setPitch(v2);//音调
+        mediaPlayer.setPlaybackParams(params);
+    }
+
+    /**
+     * 显示速度弹窗
+     */
+    private SpeedDialog speedDialog;
+
+    private void showSpeedPop() {
+        if (speedDialog == null) {
+            speedDialog = new SpeedDialog(this, R.style.my_dialog);
+            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
+                @Override
+                public void OnChange(float speed) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        try {
+                            PlaybackParams params = mediaPlayer.getPlaybackParams();
+                            params.setSpeed(speed);//音速
+                            mediaPlayer.setPlaybackParams(params);
+                        } catch (Exception e) {
+                            Log.e("速度异常", "异常: " + e.getMessage(), e);
+                        }
+                    }
+                }
+            });
+        }
+        speedDialog.show();
     }
 
     /**
@@ -252,11 +441,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK://监听返回键
                 if (isQuanPing) {   //全屏切换半屏
-                    isQuanPing = false;
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
-                    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                            dp2px(mContext, 200));
-                    mSur.setLayoutParams(lp);
+                    setBanPing();
                     return true;
                 } else {
                     if (mediaPlayer != null) {
@@ -270,6 +455,29 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    //半屏
+    private void setBanPing() {
+        isQuanPing = false;
+        if (videoWidth < mWidth) {
+            int cha = mWidth - videoWidth;
+            videoHeight = videoHeight + cha;
+        }
+        mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quanping));
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, videoHeight);
+        mSur.setLayoutParams(lp);
+    }
+
+    //全屏
+    private void setQuanPing() {
+        isQuanPing = true;
+        mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quxiaoquanping));
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 手动横屏
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT);
+        mSur.setLayoutParams(lp);
     }
 
     //滑动条监听
@@ -298,11 +506,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
 
     public void finis() {
         if (isQuanPing) { // 全屏转半屏
-            isQuanPing = false;
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
-            ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    dp2px(mContext, 200));
-            mSur.setLayoutParams(lp);
+            setBanPing();
         } else {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
