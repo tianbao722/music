@@ -1,6 +1,5 @@
 package com.example.music.ui.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -17,9 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -178,8 +175,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             //设置播放的视频路径
             mediaPlayer.setDataSource(path);
             mediaPlayer.setLooping(true);//循环播放
-            //异步加载流媒体
-            mediaPlayer.prepareAsync();
+//            //异步加载流媒体
+//            mediaPlayer.prepareAsync();
+            // 开始播放前的准备工作，加载多媒体资源，获取相关信息
+            mediaPlayer.prepare();
             //获取SurfaceHolder
             SurfaceHolder holder = mSur.getHolder();
             //确保surfaceHolder已经准备好了。因此需要给surfaceHolder设置一个callback，
@@ -422,18 +421,6 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             });
         }
         speedDialog.show();
-    }
-
-    /**
-     * dp2px  动态设置视频的宽高
-     *
-     * @param context
-     * @param dpValue
-     * @return
-     */
-    public static int dp2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
     }
 
     @Override

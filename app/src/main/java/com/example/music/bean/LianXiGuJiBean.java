@@ -2,12 +2,12 @@ package com.example.music.bean;
 
 public class LianXiGuJiBean {
     private String name;
-    private String path;
+    private int raw;
     private boolean isSelected;
 
-    public LianXiGuJiBean(String name, String path, boolean isSelected) {
+    public LianXiGuJiBean(String name, int raw, boolean isSelected) {
         this.name = name;
-        this.path = path;
+        this.raw = raw;
         this.isSelected = isSelected;
     }
 
@@ -19,12 +19,12 @@ public class LianXiGuJiBean {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public int getPath() {
+        return raw;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath(int raw) {
+        this.raw = raw;
     }
 
     public boolean isSelected() {

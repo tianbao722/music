@@ -28,7 +28,6 @@
         <activity android:name=".ui.activity.zhujiemian.MianFeiJiaoXueActivity" />
         <activity android:name=".ui.activity.downloadmusic.DownLoadMusic1" />
         <activity android:name=".ui.activity.PDFImageActivity" />
-        <activity android:name=".ui.activity.DownLoadGuJiActivity" />
         <activity android:name=".ui.activity.BanZouActivity" />
         <activity android:name=".ui.activity.search.SearchMusicActivity" />
         <activity android:name=".ui.activity.search.SearchYuePuActivity" />

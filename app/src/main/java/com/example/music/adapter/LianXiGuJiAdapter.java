@@ -65,24 +65,17 @@ public class LianXiGuJiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        if (list != null && list.size() > 0) {
-            return list.size() + 1;
-        } else {
-            return 1;
-        }
+        return list.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (list != null && list.size() > 0) {
-            if (position == list.size()) {
-                return 2;
-            } else {
-                return 1;
-            }
-        } else {
-            return 2;
-        }
+        return 1;
+    }
+
+    public void setData(ArrayList<LianXiGuJiBean> mList) {
+        list = mList;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
