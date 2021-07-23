@@ -85,4 +85,6 @@ dependencies {
 
     compile 'com.lzy.net:okhttputils:1.6.5'  //可以单独使用，不需要依赖下方的扩展包
 
+    implementation 'ywl.ywl5320:libmusic:1.2.6'//音乐播放器
+
 }

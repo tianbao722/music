@@ -27,6 +27,7 @@ import com.example.music.ui.activity.zhujiemian.DongTaiPuActivity;
 import com.example.music.ui.activity.zhujiemian.LianXiGuJiActivity;
 import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
 import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
+import com.example.music.ui.activity.zhujiemian.WoDeYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
 import com.example.music.utils.StatusBarUtil;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent5);
                 break;
             case R.id.ll_bendiyinyue://本地音乐
-                Intent intent1 = new Intent(MainActivity.this, BenDiYinYueActivity.class);
+                Intent intent1 = new Intent(MainActivity.this, WoDeYinYueActivity.class);
                 startActivity(intent1);
                 break;
             case R.id.ll_bendiqupu://本地曲谱

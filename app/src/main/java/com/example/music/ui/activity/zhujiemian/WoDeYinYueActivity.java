@@ -1,16 +1,15 @@
 package com.example.music.ui.activity.zhujiemian;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,92 +38,143 @@ import com.example.music.ui.activity.search.SearchMusicActivity;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.ywl5320.bean.TimeBean;
+import com.ywl5320.libenum.SampleRateEnum;
+import com.ywl5320.libmusic.WlMusic;
+import com.ywl5320.listener.OnErrorListener;
+import com.ywl5320.listener.OnInfoListener;
+import com.ywl5320.listener.OnPreparedListener;
+import com.ywl5320.util.WlTimeUtil;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.OnClick;
 
-import static com.example.music.utils.DateUtil.parseTime;
-
-public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener {
-    private ArrayList<MusicBean> mList;//歌曲列表
-    private MediaPlayer mediaPlayer;//音频播放器
-    // 记录当前播放歌曲的位置
-    public int mCurrentPosition;
-    //记录播放模式
-    private int mPattern = 0;//0：列表循环 1：单曲循环 2：单曲播放
-    private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
-    private ArrayList<BenDiYuePuBean> strings;
-    private Context mContext;
-    private TuPianYuePuAdapter tuPianYuePuAdapter;
-    private int mPosition;
-    private boolean classify = false;
-    private MusicAdapter musicAdapter;
-
-    private Handler mHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message message) {
-            // 展示给进度条和当前时间
-            if (mediaPlayer != null) {
-//                PlaybackParams params = mediaPlayer.getPlaybackParams();
-//                float pitch = params.getPitch();//音调
-//                float speed = params.getSpeed();//音速
-//                Log.i("音调", "音调: -----"+pitch);
-//                Log.i("音速", "音速: -----"+speed);
-                int progress = mediaPlayer.getCurrentPosition();
-                timeSeekBar.setProgress(progress);
-                tvPlayTime.setText(parseTime(progress));
-                // 继续定时发送数据
-                updateProgress();
-            }
-            return true;
-        }
-    });
-    private int yindiao;
+public class WoDeYinYueActivity extends AppCompatActivity {
     private TextView mTvBeiSu;
     private ImageView mTvSearchWoDeYinYue;
     private TextView mTvYinDiao;
     private TextView mTvBoFangMoShi;
     private TextView mYinYueTvXinZeng;
-    private TextView tvPlaySongInfo;
     private TextView tvTotalTime;
+    private TextView mTvMusicName;
     private TextView tvPlayTime;
     private ImageView mIvBack;
     private ImageView mBtnPreVious;
     private ImageView btnPlayOrPause;
     private ImageView mBtnNext;
-    private ImageView playStateImg;
-    private LinearLayout playStateLay;
     private SeekBar timeSeekBar;
     private RecyclerView mYinYue_Rec_image;
     private RecyclerView mYinYueRecTitle;
+    private Context mContext;
+    private ArrayList<BenDiYuePuBean> strings;
+    private TuPianYuePuAdapter tuPianYuePuAdapter;
+    private int mPosition;
+    private ArrayList<MusicBean> mList;//歌曲列表
+    private MusicAdapter musicAdapter;
+    // 记录当前播放歌曲的位置
+    public int mCurrentPosition;
+    private boolean classify = false;
+    private int mPattern = 0;//0：列表循环 1：单曲循环 2：单曲播放
+    private WlMusic wlMusic;
+    private int position = 0;
+    private int isPause = 0;//0:表示没有播放音乐，从0开始播放， 1：表示暂停 继续播放
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    TimeBean timeBean = (TimeBean) msg.obj;
+                    timeSeekBar.setProgress(timeBean.getCurrSecs() * 100 / timeBean.getTotalSecs());
+                    String playTime = WlTimeUtil.secdsToDateFormat(timeBean.getCurrSecs(), timeBean.getTotalSecs());
+                    String totalTime = WlTimeUtil.secdsToDateFormat(timeBean.getTotalSecs(), timeBean.getTotalSecs());
+                    tvPlayTime.setText(playTime);
+                    tvTotalTime.setText(totalTime);
+                    mTvMusicName.setText(mList.get(mCurrentPosition).getName());
+                    if (playTime.equals(totalTime)) {
+                        changeMusic(++mCurrentPosition);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ben_di_yin_yue);
-        initView();
+        setContentView(R.layout.activity_wo_de_yin_yue);
         mContext = this;
         StatusBarUtil.transparencyBar(this);
-        StatusBarUtil.StatusBarLightMode(this);
-        timeSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
+        initView();
+        initWlMusic();
+        initListener();
         //初始化音乐左边title
         initRecTuPianYuePu();
         //初始化音乐右边歌曲
         initRecImageYuePu();
     }
 
+    private void initListener() {
+        timeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                position = wlMusic.getDuration() * progress / 100;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                wlMusic.seek(position, false, false);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                wlMusic.seek(position, true, true);
+            }
+        });
+        //可以播放的回调
+        wlMusic.setOnPreparedListener(new OnPreparedListener() {
+            @Override
+            public void onPrepared() {
+                wlMusic.start();
+            }
+        });
+        //更新进度
+        wlMusic.setOnInfoListener(new OnInfoListener() {
+            @Override
+            public void onInfo(TimeBean timeBean) {
+//                MyLog.d("curr:" + timeBean.getCurrSecs() + ", total:" + timeBean.getTotalSecs());
+                Message message = Message.obtain();
+                message.obj = timeBean;
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
+    private void initWlMusic() {
+        wlMusic = WlMusic.getInstance();
+        wlMusic.setCallBackPcmData(true);//是否返回音频PCM数据
+        wlMusic.setShowPCMDB(true);//是否返回音频分贝大小
+        wlMusic.setPlayCircle(false);//循环播放
+        wlMusic.setVolume(100);//声音大小100%
+        wlMusic.setPlaySpeed(1.0f);//播放速度正常
+        wlMusic.setPlayPitch(1.0f);//播放音调正常
+        wlMusic.setConvertSampleRate(SampleRateEnum.RATE_44100);//设定恒定采样率（null为取消）
+    }
+
     private void initView() {
         mBtnPreVious = findViewById(R.id.btn_previous);
-        playStateImg = findViewById(R.id.play_state_img);
         timeSeekBar = findViewById(R.id.time_seekBar);
         btnPlayOrPause = findViewById(R.id.btn_play_or_pause);
-        playStateLay = findViewById(R.id.play_state_lay);
+        mTvMusicName = findViewById(R.id.tv_gequname);
         mBtnNext = findViewById(R.id.btn_next);
         mTvBeiSu = findViewById(R.id.tv_beisu);
         tvTotalTime = findViewById(R.id.tv_total_time);
@@ -137,7 +186,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         mYinYueTvXinZeng = findViewById(R.id.yinyue_tv_xinzeng);
         mTvSearchWoDeYinYue = findViewById(R.id.tv_search_wodeyinyue);
         mIvBack = findViewById(R.id.iv_back);
-        tvPlaySongInfo = findViewById(R.id.tv_play_song_info);
 
         mBtnPreVious.setOnClickListener(this::onViewClicked);
         btnPlayOrPause.setOnClickListener(this::onViewClicked);
@@ -154,48 +202,45 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_previous://上一曲
-                if (mList != null) {
-                    changeMusic(--mCurrentPosition);//当前歌曲位置减1
+                if (wlMusic != null && mList != null && mList.size() > 0) {
+                    changeMusic(--mCurrentPosition);
                 } else {
                     Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_play_or_pause://播放或者暂停
-                // 首次点击播放按钮，默认播放第0首，下标从0开始
-                if (mList != null) {
-                    if (mediaPlayer == null) {
-                        changeMusic(0);
-                    } else {
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-                            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
-                        } else {
-                            mediaPlayer.start();
-                            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
-                            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_pause_state));
-                        }
-                    }
-                } else {
-                    Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
+                if (wlMusic != null && wlMusic.isPlaying() && isPause == 2) {
+                    isPause = 1;
+                    wlMusic.pause();//暂停
+                    btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                } else if (isPause == 0 && wlMusic != null && !wlMusic.isPlaying() && mList != null && mList.size() > 0) {
+                    mCurrentPosition = 0;
+                    wlMusic.setSource(mList.get(0).getPath());
+                    wlMusic.prePared();
+                    isPause = 2;
+                    btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                } else if (wlMusic != null && wlMusic.isPlaying() && isPause == 1) {
+                    isPause = 2;
+                    wlMusic.resume();
+                    btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
                 }
                 break;
             case R.id.btn_next://下一曲
-                if (mList != null) {
-                    changeMusic(++mCurrentPosition);//当前歌曲位置加1
+                if (wlMusic != null && mList != null && mList.size() > 0) {
+                    changeMusic(++mCurrentPosition);
                 } else {
                     Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.tv_beisu://播放倍速
-                if (mList != null && mediaPlayer != null) {
+                if (mList != null && wlMusic != null) {
                     showSpeedPop();
                 } else {
                     Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.tv_yindiao://音调
-                if (mList != null && mediaPlayer != null) {
+                if (mList != null && wlMusic != null) {
                     showYinDiao();
                 } else {
                     Toast.makeText(mContext, "请先添加音乐", Toast.LENGTH_SHORT).show();
@@ -291,50 +336,12 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                 });
                 break;
             case R.id.iv_back://返回
-                BenDiYinYueActivity.this.finish();
+                WoDeYinYueActivity.this.finish();
                 break;
         }
     }
 
-    //播放模式
-    private void showBoFangMoShi() {
-        if (mTvBoFangMoShi.getText().equals("列表循环")) {
-            mPattern = 1;
-            mTvBoFangMoShi.setText("单曲循环");
-        } else if (mTvBoFangMoShi.getText().equals("单曲循环")) {
-            mPattern = 2;
-            mTvBoFangMoShi.setText("单曲播放");
-        } else if (mTvBoFangMoShi.getText().equals("单曲播放")) {
-            mPattern = 0;
-            mTvBoFangMoShi.setText("列表循环");
-        }
-    }
-
-    /**
-     * 显示速度弹窗
-     */
-    private SpeedDialog speedDialog;
-
-    private void showSpeedPop() {
-        if (speedDialog == null) {
-            speedDialog = new SpeedDialog(this, R.style.my_dialog);
-            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
-                @Override
-                public void OnChange(float speed) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        try {
-                            PlaybackParams params = mediaPlayer.getPlaybackParams();
-                            params.setSpeed(speed);//音速
-                            mediaPlayer.setPlaybackParams(params);
-                        } catch (Exception e) {
-                            Log.e("Exception", "setPlaySpeed: ", e);
-                        }
-                    }
-                }
-            });
-        }
-        speedDialog.show();
-    }
+    private int yindiao;
 
     private void showYinDiao() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -358,29 +365,28 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                 } else {
                     yindiao -= 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMusic != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.00f);
+                                setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(params, 1.25f);
+                                setYinDaio(1.25f);
                                 break;
                             case -2:
-                                setYinDaio(params, 1.50f);
+                                setYinDaio(1.50f);
                                 break;
                             case -3:
-                                setYinDaio(params, 1.75f);
+                                setYinDaio(1.75f);
                                 break;
                             case -4:
-                                setYinDaio(params, 2.00f);
+                                setYinDaio(2.00f);
                                 break;
                             case -5:
-                                setYinDaio(params, 2.25f);
+                                setYinDaio(2.25f);
                                 break;
                             case -6:
-                                setYinDaio(params, 2.50f);
+                                setYinDaio(2.50f);
                                 break;
                         }
                     }
@@ -396,29 +402,28 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                 if (yindiao < 6) {
                     yindiao += 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMusic != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.0f);
+                                setYinDaio(1.0f);
                                 break;
                             case 1:
-                                setYinDaio(params, 0.884f);
+                                setYinDaio(0.884f);
                                 break;
                             case 2:
-                                setYinDaio(params, 0.768f);
+                                setYinDaio(0.768f);
                                 break;
                             case 3:
-                                setYinDaio(params, 0.652f);
+                                setYinDaio(0.652f);
                                 break;
                             case 4:
-                                setYinDaio(params, 0.536f);
+                                setYinDaio(0.536f);
                                 break;
                             case 5:
-                                setYinDaio(params, 0.420f);
+                                setYinDaio(0.420f);
                                 break;
                             case 6:
-                                setYinDaio(params, 0.304f);
+                                setYinDaio(0.304f);
                                 break;
                         }
                     }
@@ -429,171 +434,41 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         });
     }
 
-    private void setYinDaio(PlaybackParams params, float v2) {
-        params.setPitch(v2);//音调
-        mediaPlayer.setPlaybackParams(params);
+    private void setYinDaio(float v2) {
+        wlMusic.setPlayPitch(v2);
     }
 
-    //切歌
-    private void changeMusic(int position) {
-        Log.e("BenDiYinYueActivity", "position:" + position);
-        if (position < 0) {
-            mCurrentPosition = position = mList.size() - 1;
-            Log.e("BenDiYinYueActivity", "mList.size:" + mList.size());
-        } else if (position > mList.size() - 1) {//如果当前播放的是最后一首歌，则把下标改成0
-            mCurrentPosition = position = 0;
-        }
-        Log.e("BenDiYinYueActivity", "position:" + position);
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setOnCompletionListener(this);//监听音乐播放完毕事件，自动下一曲
-        }
+    /**
+     * 显示速度弹窗
+     */
+    private SpeedDialog speedDialog;
 
-        try {
-            // 切歌之前先重置，释放掉之前的资源
-            mediaPlayer.reset();
-            // 设置播放源
-            Log.d("Music", mList.get(position).getPath());
-            mediaPlayer.setDataSource(mList.get(position).getPath());
-            tvPlaySongInfo.setText("歌名： " + mList.get(position).getName());
-//            Glide.with(this).load(mList.get(position).album_art).into(songImage);
-            tvPlaySongInfo.setSelected(true);//跑马灯效果
-            playStateLay.setVisibility(View.VISIBLE);
-            // 开始播放前的准备工作，加载多媒体资源，获取相关信息
-            mediaPlayer.prepare();
-            // 开始播放
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void showSpeedPop() {
+        if (speedDialog == null) {
+            speedDialog = new SpeedDialog(this, R.style.my_dialog);
+            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
+                @Override
+                public void OnChange(float speed) {
+                    wlMusic.setPlaySpeed(speed);
+                }
+            });
         }
-
-        // 切歌时重置进度条并展示歌曲时长
-        timeSeekBar.setProgress(0);
-        timeSeekBar.setMax(mediaPlayer.getDuration());
-        tvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
-        updateProgress();
-        if (mediaPlayer.isPlaying()) {
-            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
-            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_pause_state));
-        } else {
-            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
-        }
+        speedDialog.show();
     }
 
-    private void updateProgress() {
-        // 使用Handler每间隔1s发送一次空消息，通知进度条更新
-        Message msg = Message.obtain();// 获取一个现成的消息
-        // 使用MediaPlayer获取当前播放时间除以总时间的进度
-        int progress = mediaPlayer.getCurrentPosition();
-        msg.arg1 = progress;
-        mHandler.sendMessageDelayed(msg, INTERNAL_TIME);
-    }
-
-    //滑动条监听
-    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+    //播放模式
+    private void showBoFangMoShi() {
+        if (mTvBoFangMoShi.getText().equals("列表循环")) {
+            mPattern = 1;
+            mTvBoFangMoShi.setText("单曲循环");
+            wlMusic.setPlayCircle(true);//设置单曲循环
+        } else if (mTvBoFangMoShi.getText().equals("单曲循环")) {
+            mPattern = 2;
+            mTvBoFangMoShi.setText("单曲播放");
+        } else if (mTvBoFangMoShi.getText().equals("单曲播放")) {
+            mPattern = 0;
+            mTvBoFangMoShi.setText("列表循环");
         }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        // 当手停止拖拽进度条时执行该方法
-        // 获取拖拽进度
-        // 将进度对应设置给MediaPlayer
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            int progress = seekBar.getProgress();
-            if (mediaPlayer != null) {
-                mediaPlayer.seekTo(progress);
-            }
-        }
-    };
-
-    //播放完成之后自动下一曲
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        if (mPattern == 1) {//单曲循环
-            changeMusic(mCurrentPosition);
-        } else if (mPattern == 2) {//单曲播放
-            if (mediaPlayer != null) {
-                mediaPlayer.reset();
-                mediaPlayer.stop();
-                mediaPlayer = null;
-                timeSeekBar.setProgress(0);
-                timeSeekBar.setMax(0);
-                tvTotalTime.setText(parseTime(0));
-                tvPlayTime.setText(parseTime(0));
-                playStateLay.setVisibility(View.GONE);
-            }
-            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-            playStateImg.setBackground(getResources().getDrawable(R.mipmap.list_play_state));
-            return;
-        } else {//列表循环
-            changeMusic(++mCurrentPosition);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mHandler != null) {
-            Message message = new Message();
-            mHandler.handleMessage(message);
-        }
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
-
-
-    private void initRecImageYuePu() {
-        mYinYue_Rec_image.setLayoutManager(new GridLayoutManager(mContext, 2));
-        mList = getImageFileList();
-        musicAdapter = new MusicAdapter(mList, mContext);
-        mYinYue_Rec_image.setAdapter(musicAdapter);
-        //条目点击事件
-        musicAdapter.setOnItemClickListener(new MusicAdapter.onItemClickListener() {
-            @Override
-            public void onItemClick(int position, MusicBean musicBean) {
-                mCurrentPosition = position;
-                changeMusic(mCurrentPosition);
-            }
-        });
-    }
-
-    private ArrayList<MusicBean> getImageFileList() {
-        ArrayList<MusicBean> musicBeans = new ArrayList<>();
-        String path = MyApplication.getWoDeYinYueFile().getPath();
-        if (strings == null || strings.size() == 0) {
-            return null;
-        }
-        String currentPath = path + "/" + strings.get(mPosition).getTitle();
-        List<File> files2 = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return (pathname.getPath().endsWith(".mp3"));
-            }
-        });
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        for (int i = 0; i < files2.size(); i++) {
-            String path1 = files2.get(i).getPath();
-            mmr.setDataSource(path1);
-            String fileName = FileUtils.getFileName(files2.get(i));
-            String name = fileName.substring(0, fileName.length() - 4);
-            String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            String size = FileUtils.getSize(files2.get(i));
-            long time1 = Long.parseLong(time);
-            MusicBean musicBean = new MusicBean(name, time1, size, path1);
-            musicBeans.add(musicBean);
-        }
-        return musicBeans;
     }
 
     private void initRecTuPianYuePu() {
@@ -626,37 +501,71 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case 2:
-                String name = data.getStringExtra("name");
-                String title = data.getStringExtra("title");
-                for (int i = 0; i < strings.size(); i++) {
-                    BenDiYuePuBean benDiYuePuBean = strings.get(i);
-                    String title1 = benDiYuePuBean.getTitle();
-                    if (title1.equals(title)) {
-                        mPosition = i;//选中文件夹的下标
-                        benDiYuePuBean.setSelected(true);
-                    } else {
-                        benDiYuePuBean.setSelected(false);
-                    }
-                }
-                tuPianYuePuAdapter.notifyDataSetChanged();
-                mList.clear();
-                mList = getImageFileList();
-                musicAdapter.notifyDataSetChanged();
-                for (int i = 0; i < mList.size(); i++) {
-                    MusicBean musicBean = mList.get(i);
-                    String name1 = musicBean.getName();
-                    if (name1.equals(name)) {
-                        mCurrentPosition = i;//歌曲的下标
-                        break;
-                    }
-                }
+    private void initRecImageYuePu() {
+        mYinYue_Rec_image.setLayoutManager(new GridLayoutManager(mContext, 2));
+        mList = getImageFileList();
+        musicAdapter = new MusicAdapter(mList, mContext);
+        mYinYue_Rec_image.setAdapter(musicAdapter);
+        //条目点击事件
+        musicAdapter.setOnItemClickListener(new MusicAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position, MusicBean musicBean) {
+                mCurrentPosition = position;
                 changeMusic(mCurrentPosition);
-                break;
+            }
+        });
+    }
+
+    //切歌
+    private void changeMusic(int mCurrentPosition) {
+        if (wlMusic == null) return;
+        if (mCurrentPosition > mList.size() - 1) {
+            mCurrentPosition = 0;
+        } else if (mCurrentPosition < 0) {
+            mCurrentPosition = mList.size() - 1;
+        }
+        this.mCurrentPosition = mCurrentPosition;
+        wlMusic.playNext(mList.get(mCurrentPosition).getPath());
+        if (wlMusic.isPlaying()) {
+            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+        } else {
+            btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+        }
+    }
+
+    private ArrayList<MusicBean> getImageFileList() {
+        ArrayList<MusicBean> musicBeans = new ArrayList<>();
+        String path = MyApplication.getWoDeYinYueFile().getPath();
+        if (strings == null || strings.size() == 0) {
+            return null;
+        }
+        String currentPath = path + "/" + strings.get(mPosition).getTitle();
+        List<File> files2 = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return (pathname.getPath().endsWith(".mp3"));
+            }
+        });
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        for (int i = 0; i < files2.size(); i++) {
+            String path1 = files2.get(i).getPath();
+            mmr.setDataSource(path1);
+            String fileName = FileUtils.getFileName(files2.get(i));
+            String name = fileName.substring(0, fileName.length() - 4);
+            String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            String size = FileUtils.getSize(files2.get(i));
+            long time1 = Long.parseLong(time);
+            MusicBean musicBean = new MusicBean(name, time1, size, path1);
+            musicBeans.add(musicBean);
+        }
+        return musicBeans;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (wlMusic != null) {
+            wlMusic.stop();
         }
     }
 }

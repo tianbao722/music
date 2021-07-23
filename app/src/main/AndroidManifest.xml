@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Music">
+        <activity android:name=".ui.activity.zhujiemian.WoDeYinYueActivity"></activity>
         <activity
             android:name=".ui.activity.VideoPlayActivity"
             android:configChanges="orientation|screenSize" />

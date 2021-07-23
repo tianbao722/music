@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
@@ -215,8 +216,13 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                         float max = Math.max(widthRatio, heightRatio);
                         videoWidth = (int) Math.ceil(videoWidth / max);
                         videoHeight = (int) Math.ceil(videoHeight / max);
+                        mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quanping));
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
+                        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(videoWidth, videoHeight);
+                        mSur.setLayoutParams(lp);
+                    } else {
+                        setBanPing();
                     }
-                    setBanPing();
                     mediaPlayer.start();
                     // 切歌时重置进度条并展示歌曲时长
                     mBar.setProgress(0);
@@ -244,6 +250,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -393,8 +400,12 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setYinDaio(PlaybackParams params, float v2) {
-        params.setPitch(v2);//音调
-        mediaPlayer.setPlaybackParams(params);
+        try {
+            params.setPitch(v2);//音调
+            mediaPlayer.setPlaybackParams(params);
+        } catch (Exception e) {
+            Toast.makeText(mContext, "错误", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
