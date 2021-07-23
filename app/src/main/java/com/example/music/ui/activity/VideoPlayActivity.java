@@ -175,10 +175,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             //设置播放的视频路径
             mediaPlayer.setDataSource(path);
             mediaPlayer.setLooping(true);//循环播放
-//            //异步加载流媒体
-//            mediaPlayer.prepareAsync();
+////            //异步加载流媒体
+            mediaPlayer.prepareAsync();
             // 开始播放前的准备工作，加载多媒体资源，获取相关信息
-            mediaPlayer.prepare();
+//            mediaPlayer.prepare();
             //获取SurfaceHolder
             SurfaceHolder holder = mSur.getHolder();
             //确保surfaceHolder已经准备好了。因此需要给surfaceHolder设置一个callback，

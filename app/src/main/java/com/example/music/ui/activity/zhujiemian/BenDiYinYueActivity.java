@@ -327,7 +327,6 @@ public class BenDiYinYueActivity extends AppCompatActivity implements MediaPlaye
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         try {
                             PlaybackParams params = mediaPlayer.getPlaybackParams();
-                            params.setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_FAIL);//设置音频后备模式
                             params.setSpeed(speed);//音速
                             mediaPlayer.setPlaybackParams(params);
                         } catch (Exception e) {

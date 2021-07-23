@@ -107,6 +107,11 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
                 LianXiGuJiActivity.this.finish();
                 break;
             case R.id.tv_guji_yinsu_jian://减音速
@@ -129,7 +134,22 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
     private void setJianYinSu() {
         String s = mTvYinSuZhi.getText().toString();
         float YinSu = Float.parseFloat(s);
-        if (YinSu == 1.5f) {
+        if (YinSu == 2.0f) {
+            mTvYinSuZhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            mTvYinSuZhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            mTvYinSuZhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            mTvYinSuZhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            mTvYinSuZhi.setText("1.5");
+            setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
             mTvYinSuZhi.setText("1.4");
             setYinSu(1.4f);
         } else if (YinSu == 1.4f) {
@@ -195,16 +215,33 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
         } else if (YinSu == 1.4f) {
             mTvYinSuZhi.setText("1.5");
             setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
+            mTvYinSuZhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            mTvYinSuZhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            mTvYinSuZhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            mTvYinSuZhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            mTvYinSuZhi.setText("2.0");
+            setYinSu(2.0f);
         }
     }
 
     //设置音速
     public void setYinSu(float speed) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (speed >= 0.5) {
-                PlaybackParams params = mediaPlayer.getPlaybackParams();
-                params.setSpeed(0.5f);//音速
-                mediaPlayer.setPlaybackParams(params);
+            try {
+                PlaybackParams playbackParams = mediaPlayer.getPlaybackParams();
+                playbackParams.setSpeed(speed);
+                mediaPlayer.setPlaybackParams(playbackParams);
+            } catch (Exception e) {
+                Log.i("音速异常", "setYinSu: " + e);
             }
         }
     }
@@ -231,6 +268,8 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
             mediaPlayer = null;
         }
         mediaPlayer = MediaPlayer.create(mContext, mList.get(position).getPath());
+//        //异步加载流媒体
+//        mediaPlayer.prepareAsync();
         // 开始播放
         mediaPlayer.start();
     }
