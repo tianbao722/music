@@ -58,7 +58,16 @@ public class MyApplication extends Application {
     //获取图片曲谱文件
     public static File getTuPianYuePuFile() {
         File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.TuPianYuePu);
-        if (!tupianyuepu.exists()){
+        if (!tupianyuepu.exists()) {
+            tupianyuepu.mkdirs();
+        }
+        return tupianyuepu;
+    }
+
+    //获取图片曲谱文件
+    public static File getLianXiGuJiPuFile() {
+        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.LIANXIGUJI);
+        if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();
         }
         return tupianyuepu;
@@ -67,7 +76,7 @@ public class MyApplication extends Application {
     //获取动态乐谱文件
     public static File getDongTaiYuePuFile() {
         File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.DONGTAIYUEPU);
-        if (!tupianyuepu.exists()){
+        if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();
         }
         return tupianyuepu;
@@ -76,7 +85,7 @@ public class MyApplication extends Application {
     //获取我的音乐文件
     public static File getWoDeYinYueFile() {
         File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.WoDeYinYue);
-        if (!tupianyuepu.exists()){
+        if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();
         }
         return tupianyuepu;
@@ -85,20 +94,9 @@ public class MyApplication extends Application {
     //获取PDF曲谱文件
     public static File getDefYuePuFile() {
         File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.PDF);
-        if (!tupianyuepu.exists()){
+        if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();
         }
         return tupianyuepu;
     }
-
-    //获取节奏训练歌曲文件
-    public static File getJieZouXunLianFile() {
-        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.JieZouXunLian);
-        if (!tupianyuepu.exists()){
-            tupianyuepu.mkdirs();
-        }
-        return tupianyuepu;
-    }
-
-
 }

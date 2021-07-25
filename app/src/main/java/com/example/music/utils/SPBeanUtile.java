@@ -16,6 +16,7 @@ import com.example.music.Constants;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.LianXiGuJiBean;
 import com.example.music.bean.MusicBean;
 
 import java.io.File;
@@ -184,29 +185,6 @@ public class SPBeanUtile {
         return null;
     }
 
-    //获取节奏训练文件夹名字集合
-    public static ArrayList<BenDiYuePuBean> getJieZouXunLianFileList() {
-        ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
-        File tuPianYuePuFile = MyApplication.getJieZouXunLianFile();
-        boolean orExistsDir = FileUtils.createOrExistsDir(tuPianYuePuFile);
-        if (orExistsDir) {//判断目录是否存在,不存在判断是否创建成功
-            List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
-            if (files != null && files.size() > 0) {
-                for (int i = 0; i < files.size(); i++) {
-                    if (i == 0) {
-                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
-                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, true));
-                    } else {
-                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
-                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, false));
-                    }
-                }
-                return benDiYuePuBeans;
-            }
-        }
-        return null;
-    }
-
     //获取所有文件夹下的音乐
     public static ArrayList<MusicBean> getAllMusic() {
         ArrayList<MusicBean> musicBeans = new ArrayList<>();
@@ -264,6 +242,25 @@ public class SPBeanUtile {
         } else {
             return null;
         }
+    }
 
+    //获取练习鼓机文件夹下的所有鼓机音乐
+    public static ArrayList<MusicBean> getAllGuJi() {
+        ArrayList<MusicBean> musicBeans = new ArrayList<>();
+        File tuPianYuePuFile = MyApplication.getLianXiGuJiPuFile();
+        boolean orExistsDir = FileUtils.createOrExistsDir(tuPianYuePuFile);
+        if (orExistsDir) {
+            List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
+            for (int j = 0; j < files.size(); j++) {
+                String path1 = files.get(j).getPath();
+                String fileName = FileUtils.getFileName(files.get(j));
+                String name = fileName.substring(0, fileName.length() - 4);
+                MusicBean musicBean = new MusicBean(name, 0, null, path1);
+                musicBeans.add(musicBean);
+            }
+            return musicBeans;
+        } else {
+            return null;
+        }
     }
 }

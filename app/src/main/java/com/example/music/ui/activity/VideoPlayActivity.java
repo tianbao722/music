@@ -262,6 +262,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 } else {
                     setBanPing();
                 }
+                if (wlMedia != null)
                 wlMedia.prepared();
             }
 
@@ -273,14 +274,17 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void moveX(double value, int move_type) {
                 if (move_type == WlSurfaceView.MOVE_START) {//滑动前 显示UI
-                    wlMedia.seekStart();
+                    if (wlMedia != null)
+                        wlMedia.seekStart();
                 } else if (move_type == WlSurfaceView.MOVE_ING) {//滑动中
                     wlSeekBar.setProgress((int) (value));
                 } else if (move_type == WlSurfaceView.MOVE_STOP) {//滑动结束 seek
                     if (value >= 0 && wlMedia.getDuration() > 0) {
-                        wlMedia.seek(value);
+                        if (wlMedia != null)
+                            wlMedia.seek(value);
                     } else {
-                        wlMedia.seekEnd();
+                        if (wlMedia != null)
+                            wlMedia.seekEnd();
                     }
                 }
             }
@@ -355,10 +359,12 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.video_btn_play_or_pause://暂停||播放
                 if (wlMedia.isPause()) {
-                    wlMedia.resume();
+                    if (wlMedia != null)
+                        wlMedia.resume();
                     mTvPlay.setBackground(getResources().getDrawable(R.mipmap.icon_play));
                 } else {
-                    wlMedia.pause();
+                    if (wlMedia != null)
+                        wlMedia.pause();
                     mTvPlay.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
                 }
                 break;
@@ -462,7 +468,8 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setYinDaio(float v2) {
-        wlMedia.setPitch(v2);
+        if (wlMedia != null)
+            wlMedia.setPitch(v2);
     }
 
     /**
@@ -476,7 +483,8 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
                 @Override
                 public void OnChange(float speed) {
-                    wlMedia.setSpeed(speed);
+                    if (wlMedia != null)
+                        wlMedia.setSpeed(speed);
                 }
             });
         }
@@ -548,8 +556,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     public class WlmediaListener implements WlOnMediaInfoListener {
         @Override
         public void onPrepared() {
-            wlMedia.start();
-            updateProgress();
+            if (wlMedia != null) {
+                wlMedia.start();
+                updateProgress();
+            }
         }
 
         @Override

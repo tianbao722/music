@@ -15,7 +15,7 @@
         android:paddingBottom="@dimen/dp_10"
         android:text="图片乐谱"
         android:textColor="#ffffff"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/sp_10"
         android:textStyle="bold" />
 
 </LinearLayout>

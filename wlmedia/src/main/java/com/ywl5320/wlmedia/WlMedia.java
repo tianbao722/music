@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class WlMedia {
-
     static {
         System.loadLibrary("wlmedia-2.0.0");
     }

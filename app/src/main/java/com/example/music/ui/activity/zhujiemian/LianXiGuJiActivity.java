@@ -1,16 +1,23 @@
 package com.example.music.ui.activity.zhujiemian;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,11 +30,20 @@ import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.LianXiGuJiAdapter;
 import com.example.music.bean.LianXiGuJiBean;
+import com.example.music.bean.MusicBean;
+import com.example.music.utils.HomeProgressDialog;
+import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
+import com.ywl5320.libenum.SampleRateEnum;
+import com.ywl5320.libmusic.WlMusic;
+import com.ywl5320.listener.OnPreparedListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +58,21 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
     private Context mContext;
     private LianXiGuJiAdapter lianXiGuJiAdapter;
     private ArrayList<LianXiGuJiBean> mList;
+    private ArrayList<MusicBean> allGuJi;
+    private ProgressDialog dialog;
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            dialog.incrementProgressBy(msg.arg1);
+            if (msg.arg1 == 19) {
+                dialog.dismiss();
+                dialog = null;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +81,27 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
         StatusBarUtil.transparencyBar(this);
         mContext = this;
         initView();
+        initWlMusic();
+    }
+
+    private WlMusic wlMusic;
+
+    private void initWlMusic() {
+        wlMusic = WlMusic.getInstance();
+        wlMusic.setCallBackPcmData(false);//是否返回音频PCM数据
+        wlMusic.setShowPCMDB(false);//是否返回音频分贝大小
+        wlMusic.setPlayCircle(false);//循环播放
+        wlMusic.setVolume(100);//声音大小100%
+        wlMusic.setPlaySpeed(1.0f);//播放速度正常
+        wlMusic.setPlayPitch(1.0f);//播放音调正常
+        wlMusic.setConvertSampleRate(SampleRateEnum.RATE_44100);//设定恒定采样率（null为取消）
+        //可以播放的回调
+        wlMusic.setOnPreparedListener(new OnPreparedListener() {
+            @Override
+            public void onPrepared() {
+                wlMusic.start();
+            }
+        });
     }
 
     private void initView() {
@@ -82,6 +134,36 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
         mList.add(new LianXiGuJiBean("摇滚节奏三", R.raw.ddd, false));
         mList.add(new LianXiGuJiBean("摇滚节奏四", R.raw.eee, false));
         mList.add(new LianXiGuJiBean("摇滚节奏一", R.raw.fff, false));
+        allGuJi = SPBeanUtile.getAllGuJi();
+        if (allGuJi.size() == 20) {
+
+        } else {
+            dialog = HomeProgressDialog.getInstance(mContext);
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setCanceledOnTouchOutside(false);//点击屏幕其他地方不响应
+            dialog.show();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        saveToSDCard();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            }).start();
+            dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (event.getAction() == KeyEvent.KEYCODE_BACK) {
+                        Toast.makeText(mContext, "请稍等，正在加载鼓机文件，预计需要两分钟", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
         mRecGuJi.setLayoutManager(new GridLayoutManager(mContext, 4));
         lianXiGuJiAdapter = new LianXiGuJiAdapter(mList, mContext);
         mRecGuJi.setAdapter(lianXiGuJiAdapter);
@@ -98,31 +180,54 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
                 lianXiGuJiBean.setSelected(true);
                 mList.set(position, lianXiGuJiBean);
                 lianXiGuJiAdapter.setData(mList);
-                changeMusic(position);
+                changeMusic(mList.get(position).getName());
             }
         });
+    }
+
+    //添鼓机到本地
+    public void saveToSDCard() throws Throwable {
+        for (int i = 0; i < mList.size(); i++) {
+            InputStream inStream = getResources().openRawResource(mList.get(i).getPath());
+            File file = new File(MyApplication.getLianXiGuJiPuFile(), mList.get(i).getName() + ".mp3");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);//存入SDCard
+            byte[] buffer = new byte[10];
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            int len = 0;
+            while ((len = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, len);
+            }
+            byte[] bs = outStream.toByteArray();
+            fileOutputStream.write(bs);
+            outStream.close();
+            inStream.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            Message message = new Message();
+            message.arg1 = i;
+            handler.sendMessage(message);
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
+                if (wlMusic != null) {
+                    wlMusic.stop();
+                    wlMusic = null;
                 }
                 LianXiGuJiActivity.this.finish();
                 break;
             case R.id.tv_guji_yinsu_jian://减音速
-                if (mediaPlayer != null) {
+                if (wlMusic != null) {
                     setJianYinSu();
                 } else {
                     Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.tv_guji_yinsu_jia://加音速
-                if (mediaPlayer != null) {
+                if (wlMusic != null) {
                     setJiaYinSu();
                 } else {
                     Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
@@ -130,6 +235,7 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
                 break;
         }
     }
+
 
     private void setJianYinSu() {
         String s = mTvYinSuZhi.getText().toString();
@@ -235,42 +341,32 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
 
     //设置音速
     public void setYinSu(float speed) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                PlaybackParams playbackParams = mediaPlayer.getPlaybackParams();
-                playbackParams.setSpeed(speed);
-                mediaPlayer.setPlaybackParams(playbackParams);
-            } catch (Exception e) {
-                Log.i("音速异常", "setYinSu: " + e);
-            }
-        }
+        wlMusic.setPlaySpeed(speed);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
+            if (wlMusic != null) {
+                wlMusic.stop();
+                wlMusic = null;
             }
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    //切歌
-    private MediaPlayer mediaPlayer;//音频播放器
-
-    private void changeMusic(int position) {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
+    private void changeMusic(String name) {
+        allGuJi = SPBeanUtile.getAllGuJi();
+        String path = null;
+        for (int i = 0; i < allGuJi.size(); i++) {
+            String name1 = allGuJi.get(i).getName();
+            if (name1.equals(name)) {
+                path = allGuJi.get(i).getPath();
+                break;
+            }
         }
-        mediaPlayer = MediaPlayer.create(mContext, mList.get(position).getPath());
-//        //异步加载流媒体
-//        mediaPlayer.prepareAsync();
-        // 开始播放
-        mediaPlayer.start();
+        if (wlMusic != null && path != null) {
+            wlMusic.playNext(path);
+        }
     }
 }
