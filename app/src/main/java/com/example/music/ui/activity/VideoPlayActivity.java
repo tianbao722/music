@@ -34,8 +34,17 @@ import android.widget.Toast;
 import com.example.music.R;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.StatusBarUtil;
+import com.ywl5320.wlmedia.WlMedia;
+import com.ywl5320.wlmedia.enums.WlComplete;
+import com.ywl5320.wlmedia.listener.WlOnMediaInfoListener;
+import com.ywl5320.wlmedia.listener.WlOnPcmDataListener;
+import com.ywl5320.wlmedia.listener.WlOnVideoViewListener;
+import com.ywl5320.wlmedia.log.WlLog;
+import com.ywl5320.wlmedia.surface.WlSurfaceView;
+import com.ywl5320.wlmedia.widget.WlSeekBar;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import static com.example.music.utils.DateUtil.parseTime;
 
@@ -47,45 +56,85 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     private LinearLayout mLLYinSu;
     private LinearLayout mLLYinDiao;
     private ConstraintLayout mConsl;
+    private ConstraintLayout mVideoConsl;
     private ImageView mTvPlay;
     private TextView mTvName;
     private TextView mTotalTime;
     private TextView mPlayTime;
-    private SeekBar mBar;
-    private SurfaceView mSur;
+    private SeekBar wlSeekBar;
+    private WlSurfaceView wlSurfaceView;
     private String path;
     private int mWidth;
     private int mHeight;
-    private MediaPlayer mediaPlayer;
     private boolean isQuanPing = true;      //全屏 ：true  半屏：false
     private Context mContext;
+    private WlMedia wlMedia;
+    private WlmediaListener wlmediaListener;
+    final static int[] sizeTable = {9, 99, 999, 9999, 99999, 999999, 9999999,
+            99999999, 999999999, Integer.MAX_VALUE};
+
+    public int sizeOfInt(int x) {
+        for (int i = 0; ; i++)
+            if (x <= sizeTable[i])
+                return i + 1;
+    }
 
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
             // 展示给进度条和当前时间
-            if (mediaPlayer != null) {
-                int progress = mediaPlayer.getCurrentPosition();
-                mBar.setProgress(progress);
-                mPlayTime.setText(parseTime(progress));
+            if (wlMedia != null) {
+                int progress = (int) wlMedia.getNowTime();
+                wlSeekBar.setProgress(progress);
+                double nowTime = wlMedia.getNowTime();
+                if (nowTime <= 0) {
+                    mPlayTime.setText("00:00");
+                } else {
+                    int mm = (int) (nowTime / 60);
+                    int ss = (int) (nowTime % 60);
+                    int mmm = sizeOfInt(mm);
+                    int sss = sizeOfInt(ss);
+                    if (mmm == 1 && sss == 1) {
+                        mPlayTime.setText("0" + mm + ":0" + ss);
+                    } else if (sss == 1) {
+                        mPlayTime.setText(mm + ":0" + ss);
+                    } else if (mmm == 1) {
+                        mPlayTime.setText("0" + mm + ":" + ss);
+                    }
+                }
+                double duration = wlMedia.getDuration();
+                if (duration <= 0) {
+                    mTotalTime.setText("00:00");
+                } else {
+                    int tmm = (int) (duration / 60);
+                    int tss = (int) (duration % 60);
+                    int tmmm = sizeOfInt(tmm);
+                    int tsss = sizeOfInt(tss);
+                    if (tmmm == 1 && tsss == 1) {
+                        mTotalTime.setText("0" + tmm + ":0" + tss);
+                    } else if (tsss == 1) {
+                        mTotalTime.setText(tmm + ":0" + tss);
+                    } else if (tmmm == 1) {
+                        mTotalTime.setText("0" + tmm + ":" + tss);
+                    }
+                }
+                wlSeekBar.setMax((int) duration);
                 // 继续定时发送数据
                 updateProgress();
             }
             return true;
         }
     });
-
     private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
     private int videoWidth;
     private int videoHeight;
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener;
 
     private void updateProgress() {
         // 使用Handler每间隔1s发送一次空消息，通知进度条更新
         Message msg = Message.obtain();// 获取一个现成的消息
         // 使用MediaPlayer获取当前播放时间除以总时间的进度
-        int progress = mediaPlayer.getCurrentPosition();
-        msg.arg1 = progress;
         mHandler.sendMessageDelayed(msg, INTERNAL_TIME);
     }
 
@@ -98,26 +147,72 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         initView();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         mIvBack = findViewById(R.id.voide_iv_back);
         mTvName = findViewById(R.id.video_play_name);
         mConsl = findViewById(R.id.voide_play_consl);
+        mVideoConsl = findViewById(R.id.voide_consl);
         mLLYinSu = findViewById(R.id.voide_yinsu);
         mLL = findViewById(R.id.voide_ll);
         mLLYinDiao = findViewById(R.id.voide_yindiao);
         mTvPlay = findViewById(R.id.video_btn_play_or_pause);
         mPlayTime = findViewById(R.id.video_play_tv_play_time);
-        mBar = findViewById(R.id.video_play_time_seekBar);
+        wlSeekBar = findViewById(R.id.video_play_time_seekBar);
         mTotalTime = findViewById(R.id.video_play_tv_total_time);
         mQuanPing = findViewById(R.id.video_play_quanping);
         mSanJiao = findViewById(R.id.video_play_sanjiao);
-        mSur = findViewById(R.id.surface);
+        wlSurfaceView = findViewById(R.id.surface);
+        wlSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        if (isQuanPing) {
+                            if (mConsl.getVisibility() == View.VISIBLE) {
+                                mConsl.setVisibility(View.GONE);
+                                mLL.setVisibility(View.GONE);
+                            } else {
+                                mConsl.setVisibility(View.VISIBLE);
+                                mLL.setVisibility(View.VISIBLE);
+                            }
+                        } else {
+                            if (mLL.getVisibility() == View.VISIBLE) {
+                                mLL.setVisibility(View.GONE);
+                            } else {
+                                mLL.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+        //滑动监听
+        wlSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                if (wlMedia.getDuration() > 0) {
+                    wlMedia.seek(progress);
+                } else {
+                    wlMedia.seekEnd();
+                }
+            }
+        });
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         path = intent.getStringExtra("path");
         mTvName.setText(name);
-        mBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
         mIvBack.setOnClickListener(this);
         mTvPlay.setOnClickListener(this);
         mSanJiao.setOnClickListener(this);
@@ -125,9 +220,92 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         mLLYinDiao.setOnClickListener(this);
         mQuanPing.setOnClickListener(this);
         getScreen();
-        initMediaPlayer();
+        initWlMedia();
     }
 
+    private void initWlMedia() {
+        wlMedia = new WlMedia();
+        wlMedia.setSource(path);
+        wlMedia.setUseSoundTouch(true);
+        wlMedia.setClearLastPicture(false);
+        wlMedia.setLoopPlay(true);
+        wlMedia.setTimeOut(30);
+        wlSurfaceView.setWlMedia(wlMedia);
+        wlmediaListener = new WlmediaListener();
+        wlMedia.setOnMediaInfoListener(wlmediaListener);
+        wlMedia.setOnPcmDataListener(new WlOnPcmDataListener() {
+            @Override
+            public void onPcmInfo(int bit, int channel, int samplerate) {
+                WlLog.d("pcmcallback bit:" + bit + ",channel:" + channel + ",sample" + samplerate);
+            }
+
+            @Override
+            public void onPcmData(int size, byte[] data, double db) {
+                WlLog.d("pcmcallback size:" + size + ",db:" + db);
+            }
+        });
+        wlSurfaceView.setOnVideoViewListener(new WlOnVideoViewListener() {
+            @Override
+            public void initSuccess() {
+                if (videoHeight > mHeight || videoWidth > mWidth) {
+//                    如果视频的宽或者高超出屏幕,要缩放
+                    float widthRatio = (float) videoWidth / (float) mWidth;
+                    float heightRatio = (float) videoHeight / (float) mHeight;
+                    //选择大的进行缩放
+                    float max = Math.max(widthRatio, heightRatio);
+                    videoWidth = (int) Math.ceil(videoWidth / max);
+                    videoHeight = (int) Math.ceil(videoHeight / max);
+                    mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quanping));
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
+                    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(videoWidth, videoHeight);
+                    mVideoConsl.setLayoutParams(lp);
+                } else {
+                    setBanPing();
+                }
+                wlMedia.prepared();
+            }
+
+            @Override
+            public void onSurfaceChange(int width, int height) {
+
+            }
+
+            @Override
+            public void moveX(double value, int move_type) {
+                if (move_type == WlSurfaceView.MOVE_START) {//滑动前 显示UI
+                    wlMedia.seekStart();
+                } else if (move_type == WlSurfaceView.MOVE_ING) {//滑动中
+                    wlSeekBar.setProgress((int) (value));
+                } else if (move_type == WlSurfaceView.MOVE_STOP) {//滑动结束 seek
+                    if (value >= 0 && wlMedia.getDuration() > 0) {
+                        wlMedia.seek(value);
+                    } else {
+                        wlMedia.seekEnd();
+                    }
+                }
+            }
+
+            @Override
+            public void onSingleClick() {
+
+            }
+
+            @Override
+            public void onDoubleClick() {
+
+            }
+
+            @Override
+            public void moveLeft(double value, int move_type) {
+
+            }
+
+            @Override
+            public void moveRight(double value, int move_type) {
+
+            }
+        });
+    }
 
     //获取屏幕宽高
     private void getScreen() {
@@ -137,120 +315,6 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         defaultDisplay.getMetrics(metrics);
         mWidth = metrics.widthPixels;
         mHeight = metrics.heightPixels;
-    }
-
-    /**
-     * 触摸屏幕 按键出现
-     */
-    public boolean onTouchEvent(android.view.MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (isQuanPing) {
-                    if (mConsl.getVisibility() == View.VISIBLE) {
-                        mConsl.setVisibility(View.GONE);
-                        mLL.setVisibility(View.GONE);
-                    } else {
-                        mConsl.setVisibility(View.VISIBLE);
-                        mLL.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if (mLL.getVisibility() == View.VISIBLE) {
-                        mLL.setVisibility(View.GONE);
-                    } else {
-                        mLL.setVisibility(View.VISIBLE);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return true;
-    }
-
-    ;
-
-    private void initMediaPlayer() {
-        mediaPlayer = new MediaPlayer();
-        try {
-            //设置播放的视频路径
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.setLooping(true);//循环播放
-////            //异步加载流媒体
-            mediaPlayer.prepareAsync();
-            // 开始播放前的准备工作，加载多媒体资源，获取相关信息
-//            mediaPlayer.prepare();
-            //获取SurfaceHolder
-            SurfaceHolder holder = mSur.getHolder();
-            //确保surfaceHolder已经准备好了。因此需要给surfaceHolder设置一个callback，
-            //调用addCallback()方法。Callback 有三个回调函数
-            holder.addCallback(new SurfaceHolder.Callback() {
-                @Override
-                public void surfaceCreated(SurfaceHolder holder) {
-                    //SurfaceHolder被创建的时候回调
-                    mediaPlayer.setDisplay(holder);
-                }
-
-                @Override
-                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-                }
-
-                @Override
-                public void surfaceDestroyed(SurfaceHolder holder) {
-                    //SurfaceHolder被销毁的时候回调，在这里可以做一些释放资源的操作，防止内存泄漏
-                }
-            });
-            //MediaPlayer加载流媒体完毕的监听
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    //获取视频的宽高
-                    videoHeight = mediaPlayer.getVideoHeight();
-                    videoWidth = mediaPlayer.getVideoWidth();
-                    if (videoHeight > mHeight || videoWidth > mWidth) {
-//                    如果视频的宽或者高超出屏幕,要缩放
-                        float widthRatio = (float) videoWidth / (float) mWidth;
-                        float heightRatio = (float) videoHeight / (float) mHeight;
-                        //选择大的进行缩放
-                        float max = Math.max(widthRatio, heightRatio);
-                        videoWidth = (int) Math.ceil(videoWidth / max);
-                        videoHeight = (int) Math.ceil(videoHeight / max);
-                        mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quanping));
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
-                        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(videoWidth, videoHeight);
-                        mSur.setLayoutParams(lp);
-                    } else {
-                        setBanPing();
-                    }
-                    mediaPlayer.start();
-                    // 切歌时重置进度条并展示歌曲时长
-                    mBar.setProgress(0);
-                    mBar.setMax(mediaPlayer.getDuration());
-                    mTotalTime.setText(parseTime(mediaPlayer.getDuration()));
-                    updateProgress();
-                }
-            });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    //播放完成监听
-                    if (isQuanPing) {
-                        setBanPing();
-                    }
-                }
-            });
-            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    //发生错误监听
-                    return false;
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
@@ -276,26 +340,26 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 }
                 break;
             case R.id.voide_yinsu://音速
-                if (mediaPlayer != null) {
+                if (wlMedia != null) {
                     showSpeedPop();
                 } else {
                     Toast.makeText(mContext, "请先播放", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.voide_yindiao://音调
-                if (mediaPlayer != null) {
+                if (wlMedia != null) {
                     showYinDiao();
                 } else {
                     Toast.makeText(mContext, "请先播放", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.video_btn_play_or_pause://暂停||播放
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    mTvPlay.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-                } else {
-                    mediaPlayer.start();
+                if (wlMedia.isPause()) {
+                    wlMedia.resume();
                     mTvPlay.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                } else {
+                    wlMedia.pause();
+                    mTvPlay.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
                 }
                 break;
         }
@@ -328,29 +392,28 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 } else {
                     yindiao -= 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMedia != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.00f);
+                                setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(params, 1.25f);
+                                setYinDaio(1.25f);
                                 break;
                             case -2:
-                                setYinDaio(params, 1.50f);
+                                setYinDaio(1.50f);
                                 break;
                             case -3:
-                                setYinDaio(params, 1.75f);
+                                setYinDaio(1.75f);
                                 break;
                             case -4:
-                                setYinDaio(params, 2.00f);
+                                setYinDaio(2.00f);
                                 break;
                             case -5:
-                                setYinDaio(params, 2.25f);
+                                setYinDaio(2.25f);
                                 break;
                             case -6:
-                                setYinDaio(params, 2.50f);
+                                setYinDaio(2.50f);
                                 break;
                         }
                     }
@@ -366,29 +429,28 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                 if (yindiao < 6) {
                     yindiao += 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMedia != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.0f);
+                                setYinDaio(1.0f);
                                 break;
                             case 1:
-                                setYinDaio(params, 0.884f);
+                                setYinDaio(0.884f);
                                 break;
                             case 2:
-                                setYinDaio(params, 0.768f);
+                                setYinDaio(0.768f);
                                 break;
                             case 3:
-                                setYinDaio(params, 0.652f);
+                                setYinDaio(0.652f);
                                 break;
                             case 4:
-                                setYinDaio(params, 0.536f);
+                                setYinDaio(0.536f);
                                 break;
                             case 5:
-                                setYinDaio(params, 0.420f);
+                                setYinDaio(0.420f);
                                 break;
                             case 6:
-                                setYinDaio(params, 0.304f);
+                                setYinDaio(0.304f);
                                 break;
                         }
                     }
@@ -399,13 +461,8 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-    private void setYinDaio(PlaybackParams params, float v2) {
-        try {
-            params.setPitch(v2);//音调
-            mediaPlayer.setPlaybackParams(params);
-        } catch (Exception e) {
-            Toast.makeText(mContext, "错误", Toast.LENGTH_SHORT).show();
-        }
+    private void setYinDaio(float v2) {
+        wlMedia.setPitch(v2);
     }
 
     /**
@@ -419,15 +476,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
             speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
                 @Override
                 public void OnChange(float speed) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        try {
-                            PlaybackParams params = mediaPlayer.getPlaybackParams();
-                            params.setSpeed(speed);//音速
-                            mediaPlayer.setPlaybackParams(params);
-                        } catch (Exception e) {
-                            Log.e("速度异常", "异常: " + e.getMessage(), e);
-                        }
-                    }
+                    wlMedia.setSpeed(speed);
                 }
             });
         }
@@ -442,10 +491,10 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                     setBanPing();
                     return true;
                 } else {
-                    if (mediaPlayer != null) {
-                        mediaPlayer.stop();
-                        mediaPlayer.release();
-                        mediaPlayer = null;
+                    if (wlMedia != null) {
+                        wlMedia.stop();
+                        wlMedia.release();
+                        wlMedia = null;
                     }
                 }
                 break;
@@ -456,16 +505,21 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     }
 
     //半屏
+    private boolean isHeight = false;
+
     private void setBanPing() {
         isQuanPing = false;
         if (videoWidth < mWidth) {
-            int cha = mWidth - videoWidth;
-            videoHeight = videoHeight + cha;
+            if (!isHeight) {
+                int cha = mWidth - videoWidth;
+                videoHeight = videoHeight + cha;
+                isHeight = true;
+            }
         }
         mQuanPing.setImageDrawable(getResources().getDrawable(R.mipmap.quanping));
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 手动横屏
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, videoHeight);
-        mSur.setLayoutParams(lp);
+        mVideoConsl.setLayoutParams(lp);
     }
 
     //全屏
@@ -475,43 +529,98 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 手动横屏
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.MATCH_PARENT);
-        mSur.setLayoutParams(lp);
+        mVideoConsl.setLayoutParams(lp);
     }
-
-    //滑动条监听
-    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        // 当手停止拖拽进度条时执行该方法
-        // 获取拖拽进度
-        // 将进度对应设置给MediaPlayer
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            int progress = seekBar.getProgress();
-            if (mediaPlayer != null) {
-                mediaPlayer.seekTo(progress);
-            }
-        }
-    };
 
     public void finis() {
         if (isQuanPing) { // 全屏转半屏
             setBanPing();
         } else {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
+            if (wlMedia != null) {
+                wlMedia.stop();
+                wlMedia.release();
+                wlMedia = null;
             }
             VideoPlayActivity.this.finish();
         }
+    }
+
+    public class WlmediaListener implements WlOnMediaInfoListener {
+        @Override
+        public void onPrepared() {
+            wlMedia.start();
+            updateProgress();
+        }
+
+        @Override
+        public void onError(int code, String msg) {
+            WlLog.d("onError " + msg);
+            showToast(msg);
+        }
+
+        @Override
+        public void onComplete(WlComplete type, String msg) {
+//            if(type == WlComplete.WL_COMPLETE_EOF)
+//            {
+//                showToast("播放完成");
+//            }
+//            else if(type == WlComplete.WL_COMPLETE_ERROR)
+//            {
+//                showToast("播放出错：" + msg);
+//            }
+//            else if(type == WlComplete.WL_COMPLETE_TIMEOUT)
+//            {
+//                showToast("链接超时，正在重连");
+//                wlMedia.next();
+//            }
+        }
+
+        @Override
+        public void onTimeInfo(double currentTime, double bufferTime) {
+//            if (wlMedia.getDuration() > 0) {
+//                wlSeekBar.setProgress(currentTime / wlMedia.getDuration(), bufferTime / wlMedia.getDuration());
+//            } else {
+//                wlSeekBar.setProgress(0.5);
+//            }
+//            WlLog.d("onTimeInfo 2 " + currentTime + " " + bufferTime);
+        }
+
+        @Override
+        public void onSeekFinish() {
+
+        }
+
+        @Override
+        public void onLoopPlay(int loopCount) {
+
+        }
+
+        @Override
+        public void onLoad(boolean load) {
+//            if (load) {
+//                wlCircleLoadView.setVisibility(View.VISIBLE);
+//            } else {
+//                wlCircleLoadView.setVisibility(View.GONE);
+//            }
+        }
+
+        @Override
+        public byte[] decryptBuffer(byte[] encryptBuffer) {
+            return new byte[0];
+        }
+
+        @Override
+        public byte[] readBuffer(int read_size) {
+            return new byte[0];
+        }
+
+        @Override
+        public void onPause(boolean pause) {
+
+        }
+    }
+
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT);
     }
 }

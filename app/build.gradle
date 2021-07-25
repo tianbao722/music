@@ -87,4 +87,6 @@ dependencies {
 
     implementation 'ywl.ywl5320:libmusic:1.2.6'//音乐播放器
 
+    implementation project(path: ':wlmedia')
+
 }
