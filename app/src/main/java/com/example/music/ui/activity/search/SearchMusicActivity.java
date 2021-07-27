@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.example.music.MyApplication;
@@ -28,6 +30,7 @@ public class SearchMusicActivity extends AppCompatActivity {
     private RecyclerView mMusicRecSearch;
     private Context mContext;
     private MusicAdapter musicAdapter;
+    private ImageView mIvBack;
     private ArrayList<MusicBean> allMusic;
 
     @Override
@@ -41,6 +44,13 @@ public class SearchMusicActivity extends AppCompatActivity {
     private void initView() {
         mMusicSearchView = findViewById(R.id.music_search_view);
         mMusicRecSearch = findViewById(R.id.music_rec_search);
+        mIvBack = findViewById(R.id.iv_back);
+        mIvBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchMusicActivity.this.finish();
+            }
+        });
         setSearchView();
         allMusic = SPBeanUtile.getAllMusic();
         if (allMusic == null) {

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +16,18 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.ui.activity.zhujiemian.BenDiQuPuActivity;
 import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.DaoRuQuPuActivity;
@@ -30,10 +39,14 @@ import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
 import com.example.music.ui.activity.zhujiemian.WoDeYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
+import com.example.music.utils.PreferenceUtil;
+import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -49,12 +62,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLMianFeiJiaoXue;
     private LinearLayout mLLLianXiGuJi;
     private LinearLayout mTvSystemSetting;
+    private String system;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         StatusBarUtil.transparencyBar(this);
+        mContext = this;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initView();
     }
@@ -87,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String[] strings = {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.CAMERA,};
         PermissionsUtil.requestPermission(this, new PermissionListener() {
@@ -100,6 +117,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i("TAG", "permissionDenied: " + "权限请求失败");
             }
         }, strings);
+        system = getSystem();
+        PreferenceUtil.getInstance().saveString("systemId", system);
+//        showAlert();
+    }
+
+    private void showAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_jihuo, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvJiHuo = inflate.findViewById(R.id.tv_jihuo);
+        EditText mEdJiHuoMa = inflate.findViewById(R.id.edt_jihuoma);
+        //确定
+        mTvJiHuo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdJiHuoMa.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    alertDialog.dismiss();
+                } else {
+                    Toast.makeText(mContext, "请输入设备激活码", Toast.LENGTH_SHORT).show();
+                 }
+            }
+        });
+    }
+
+    private String getSystem() {
+        String macAddress = null;
+        StringBuffer buf = new StringBuffer();
+        NetworkInterface networkInterface = null;
+        try {
+            networkInterface = NetworkInterface.getByName("eth1");
+            if (networkInterface == null) {
+                networkInterface = NetworkInterface.getByName("wlan0");
+            }
+            if (networkInterface == null) {
+                return "02:00:00:00:00:02";
+            }
+            byte[] addr = networkInterface.getHardwareAddress();
+            for (byte b : addr) {
+                buf.append(String.format("%02X:", b));
+            }
+            if (buf.length() > 0) {
+                buf.deleteCharAt(buf.length() - 1);
+            }
+            macAddress = buf.toString();
+        } catch (SocketException e) {
+            e.printStackTrace();
+            return "02:00:00:00:00:02";
+        }
+        return macAddress;
     }
 
     @Override
@@ -197,7 +268,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 通过getPackageManager()的queryIntentActivities方法遍历
         List<ResolveInfo> resolveinfoList = getPackageManager()
                 .queryIntentActivities(resolveIntent, 0);
-
         if (!resolveinfoList.iterator().hasNext()) {
             return;
         }
@@ -211,7 +281,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);//重点是加这个
-
             // 设置ComponentName参数1:packagename参数2:MainActivity路径
             ComponentName cn = new ComponentName(packageName, className);
             intent.setComponent(cn);

@@ -207,14 +207,14 @@
                         android:layout_height="match_parent"
                         android:layout_alignBottom="@+id/yinyue_tv_xinzeng"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginBottom="@dimen/dp_50"
+                        android:layout_marginBottom="@dimen/dp_40"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/yinyue_tv_xinzeng"
                         android:layout_width="@dimen/dp_80"
-                        android:layout_height="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_30"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
@@ -223,7 +223,7 @@
                         android:gravity="center"
                         android:text="新增"
                         android:textColor="#65FFE9"
-                        android:textSize="@dimen/sp_15"
+                        android:textSize="@dimen/sp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent" />

@@ -18,7 +18,7 @@
         android:paddingLeft="@dimen/dp_10"
         android:text="名字"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/sp_10"
         android:textStyle="bold" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:paddingLeft="@dimen/dp_15"
         android:text="大小"
         android:textColor="#A8A8A8"
-        android:textSize="@dimen/sp_10" />
+        android:textSize="@dimen/sp_8" />
 
     <View
         android:layout_width="match_parent"

@@ -42,6 +42,7 @@ import java.util.List;
 public class DongTaiPuActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView mIvBack;
     private TextView mTvXinZeng;
+    private TextView mTvDownLoad;
     private ImageView mIvSearch;
     private RecyclerView mRecDongTitle;
     private RecyclerView mRecDongVideo;
@@ -64,12 +65,14 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
     private void initView() {
         mIvBack = findViewById(R.id.dong_iv_back);
         mIvSearch = findViewById(R.id.dong_iv_shear);
+        mTvDownLoad = findViewById(R.id.dong_tv_download);
         mTvXinZeng = findViewById(R.id.dong_tv_xinzeng);
         mRecDongTitle = findViewById(R.id.dong_rec_tupianyuepy);
         mRecDongVideo = findViewById(R.id.dong_rec_image_yuepu);
         mIvBack.setOnClickListener(this);
         mIvSearch.setOnClickListener(this);
         mTvXinZeng.setOnClickListener(this);
+        mTvDownLoad.setOnClickListener(this);
 
         //初始化动态乐谱左边title
         initRecTuPianYuePu();
@@ -137,7 +140,6 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                                 } else {
                                     Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
                                 }
-
                             } else {
                                 boolean tuPiQuPuFile = SPBeanUtile.createDongTaiYuePuFile(text);
                                 if (tuPiQuPuFile) {
@@ -166,6 +168,9 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                         }
                     }
                 });
+                break;
+            case R.id.dong_tv_download:
+
                 break;
         }
     }

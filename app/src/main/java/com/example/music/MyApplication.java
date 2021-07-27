@@ -64,9 +64,9 @@ public class MyApplication extends Application {
         return tupianyuepu;
     }
 
-    //获取图片曲谱文件
+    //获取节奏训练文件
     public static File getLianXiGuJiPuFile() {
-        File tupianyuepu = new File(Environment.getExternalStorageDirectory().getPath(), Constants.LIANXIGUJI);
+        File tupianyuepu = new File(myApplication.getExternalFilesDir(null), Constants.LIANXIGUJI);
         if (!tupianyuepu.exists()) {
             tupianyuepu.mkdirs();
         }

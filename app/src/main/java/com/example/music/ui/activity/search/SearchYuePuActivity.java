@@ -57,7 +57,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mTvSearchTuPianYuePu.setOnClickListener(this);
         ArrayList<BenDiYuePuBean> tuPianQuPuFileList = SPBeanUtile.getTuPianQuPuFileList();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
-        benDiYuePuBeans.addAll(tuPianQuPuFileList);
+        if (tuPianQuPuFileList != null && tuPianQuPuFileList.size() > 0) {
+            benDiYuePuBeans.addAll(tuPianQuPuFileList);
+        }
         list = new ArrayList<>();
         getImageFileList(true, benDiYuePuBeans);
         mREcSearchYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
@@ -117,14 +119,17 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 mTvSearchTuPianYuePu.setTextColor(getResources().getColor(R.color.black));
                 mTvSearchDefYuePu.setTextColor(getResources().getColor(R.color.hui));
                 ArrayList<BenDiYuePuBean> tuPianQuPuFileList = SPBeanUtile.getTuPianQuPuFileList();
-                getImageFileList(true, tuPianQuPuFileList);
+                if (tuPianQuPuFileList != null && tuPianQuPuFileList.size() > 0)
+                    getImageFileList(true, tuPianQuPuFileList);
                 searchYuePuAdapter.getFilter().filter(txt);
                 break;
             case R.id.tv_search_defyuepu://Def乐谱
                 mTvSearchTuPianYuePu.setTextColor(getResources().getColor(R.color.hui));
                 mTvSearchDefYuePu.setTextColor(getResources().getColor(R.color.black));
                 ArrayList<BenDiYuePuBean> defQuPuFileList = SPBeanUtile.getDefQuPuFileList();
-                getImageFileList(false, defQuPuFileList);
+                if (defQuPuFileList != null && defQuPuFileList.size() > 0) {
+                    getImageFileList(false, defQuPuFileList);
+                }
                 searchYuePuAdapter.getFilter().filter(txt);
                 break;
         }

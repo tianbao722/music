@@ -4,18 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DBDBDB"
     android:orientation="vertical"
     tools:context=".ui.activity.search.SearchMusicActivity">
-    <!--歌曲的展示列表-->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/music_search_view"
+
+    <LinearLayout
         android:layout_width="match_parent"
+        android:paddingBottom="@dimen/dp_10"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_10"
-        android:focusedByDefault="false"
-        app:iconifiedByDefault="false"
-        app:queryHint="@string/search_tips"
-        tools:targetApi="o" />
+        android:background="#ffffff">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/fanhui" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/music_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:focusedByDefault="false"
+            app:iconifiedByDefault="false"
+            app:queryHint="@string/search_tips"
+            tools:targetApi="o" />
+    </LinearLayout>
+    <!--歌曲的展示列表-->
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/music_rec_search"
