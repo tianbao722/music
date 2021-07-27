@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.music.R;
@@ -16,6 +17,7 @@ public class XiaZaiYinYueActivity extends AppCompatActivity implements View.OnCl
 
     private TextView mTvMusic1;
     private TextView mTvMusic2;
+    private ImageView mIvBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +30,11 @@ public class XiaZaiYinYueActivity extends AppCompatActivity implements View.OnCl
     private void initView() {
         mTvMusic1 = findViewById(R.id.tv_download_music1);
         mTvMusic2 = findViewById(R.id.tv_download_music2);
+        mIvBack = findViewById(R.id.iv_back);
 
         mTvMusic1.setOnClickListener(this);
         mTvMusic2.setOnClickListener(this);
+        mIvBack.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +47,9 @@ public class XiaZaiYinYueActivity extends AppCompatActivity implements View.OnCl
             case R.id.tv_download_music2:
                 Intent intent1 = new Intent(XiaZaiYinYueActivity.this, DownLoadMusic2.class);
                 startActivity(intent1);
+                break;
+            case R.id.iv_back:
+                XiaZaiYinYueActivity.this.finish();
                 break;
         }
     }

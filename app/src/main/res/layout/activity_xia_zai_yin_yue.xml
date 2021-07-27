@@ -4,20 +4,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/dp_30"
     android:orientation="vertical"
     tools:context=".ui.activity.zhujiemian.XiaZaiYinYueActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/con"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:paddingTop="@dimen/dp_20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@mipmap/fanhui"
+            android:padding="@dimen/dp_10"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载音乐"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_15"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_download_music1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
         android:gravity="center"
-        android:textStyle="bold"
         android:padding="@dimen/dp_10"
         android:text="Vfine音乐"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_15" />
+        android:textSize="@dimen/sp_15"
+        android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
@@ -29,11 +61,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textStyle="bold"
         android:padding="@dimen/dp_10"
         android:text="5Sing原创音乐"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_15" />
+        android:textSize="@dimen/sp_15"
+        android:textStyle="bold" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"

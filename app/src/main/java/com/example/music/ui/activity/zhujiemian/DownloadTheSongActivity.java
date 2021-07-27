@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.music.R;
@@ -20,6 +21,7 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
     private TextView mTvSouPuWang;
     private TextView mTvSouQuWang;
     private TextView mTv17JiTaWang;
+    private ImageView mIvBack;
     private TextView mTvZhongGuoYuePuWang;
 
     @Override
@@ -42,10 +44,12 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
         mTvSouQuWang = findViewById(R.id.tv_souquwang);
         //17吉他网
         mTv17JiTaWang = findViewById(R.id.tv_17jitawang);
+        mIvBack = findViewById(R.id.iv_back);
         //中国乐谱网
         mTvZhongGuoYuePuWang = findViewById(R.id.tv_zhongguoyuepuwang);
         mTvNuRenyuepuwang.setOnClickListener(this);
         mTvSouPuWang.setOnClickListener(this);
+        mIvBack.setOnClickListener(this);
         mTvSouQuWang.setOnClickListener(this);
         mTv17JiTaWang.setOnClickListener(this);
         mTvZhongGuoYuePuWang.setOnClickListener(this);
@@ -78,6 +82,9 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
             case R.id.tv_zhongguoyuepuwang:
                 Intent intent5 = new Intent(DownloadTheSongActivity.this, ZhongGuoYuPuWangActivity.class);
                 startActivity(intent5);
+                break;
+            case R.id.iv_back:
+                DownloadTheSongActivity.this.finish();
                 break;
         }
     }

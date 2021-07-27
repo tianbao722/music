@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="导入乐谱"
             android:textColor="#000000"
-            android:textSize="@dimen/sp_20"
+            android:textSize="@dimen/sp_15"
             app:layout_constraintBottom_toBottomOf="@+id/iv_back"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -47,7 +47,7 @@
         android:layout_marginTop="@dimen/dp_10"
         android:text="请选择或新建分类"
         android:textColor="#707070"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/sp_10"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/con" />
 
@@ -97,7 +97,7 @@
         android:maxEms="18"
         android:text="注：可拍摄或从相册选择乐谱，支持导入多张乐谱，长按乐谱可以移动顺序。"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/sp_10"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rec_daoruqupu_img" />
@@ -114,7 +114,7 @@
         android:paddingBottom="@dimen/dp_10"
         android:text="确定"
         android:textColor="#ffffff"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_15"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_zhuyi" />

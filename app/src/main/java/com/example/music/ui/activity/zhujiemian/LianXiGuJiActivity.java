@@ -88,9 +88,9 @@ public class LianXiGuJiActivity extends AppCompatActivity implements View.OnClic
 
     private void initWlMusic() {
         wlMusic = WlMusic.getInstance();
-        wlMusic.setCallBackPcmData(false);//是否返回音频PCM数据
-        wlMusic.setShowPCMDB(false);//是否返回音频分贝大小
-        wlMusic.setPlayCircle(false);//循环播放
+        wlMusic.setCallBackPcmData(true);//是否返回音频PCM数据
+        wlMusic.setShowPCMDB(true);//是否返回音频分贝大小
+        wlMusic.setPlayCircle(true);//循环播放
         wlMusic.setVolume(100);//声音大小100%
         wlMusic.setPlaySpeed(1.0f);//播放速度正常
         wlMusic.setPlayPitch(1.0f);//播放音调正常
