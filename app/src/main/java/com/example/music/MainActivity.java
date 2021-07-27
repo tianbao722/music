@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     alertDialog.dismiss();
                 } else {
                     Toast.makeText(mContext, "请输入设备激活码", Toast.LENGTH_SHORT).show();
-                 }
+                }
             }
         });
     }
