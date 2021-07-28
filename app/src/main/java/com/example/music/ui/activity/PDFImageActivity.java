@@ -1,11 +1,13 @@
 package com.example.music.ui.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -81,6 +84,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         initView();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         mIvBack = findViewById(R.id.pdf_iv_back);
         mPdfTvTitle = findViewById(R.id.pdf__tv_title);
@@ -90,7 +94,21 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mConBottom = findViewById(R.id.con_bottom);
         mPdfTvPop = findViewById(R.id.pdf_tv_pop);
         mPdf = findViewById(R.id.pdf);
-
+        mPdf.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (mConTop.getVisibility() == View.GONE) {
+                        mConTop.setVisibility(View.VISIBLE);
+                        mConBottom.setVisibility(View.VISIBLE);
+                    } else {
+                        mConTop.setVisibility(View.GONE);
+                        mConBottom.setVisibility(View.GONE);
+                    }
+                }
+                return false;
+            }
+        });
         Intent intent = getIntent();
         title = intent.getStringExtra("name");
         String file = intent.getStringExtra("file");
@@ -101,14 +119,12 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         } else {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
         }
-
         mIvBack.setOnClickListener(this);
         mPdfTvDi.setOnClickListener(this);
         mPdfTvBanZou.setOnClickListener(this);
         if (file != null) {
             display(file);
         }
-
         initMusic();
     }
 
@@ -185,22 +201,28 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                 if (list != null && list.size() > 0) {
                     setAlerD();
                 } else {
+                    if (list1 != null && list1.size() > 0) {
+                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                        String json1 = new Gson().toJson(banZouListBean1);
+                        PreferenceUtil.getInstance().saveString(title, json1);
+                        setAlerD();
+                    }
+                }
+            } else {
+                if (list1 != null && list1.size() > 0) {
                     BanZouListBean banZouListBean1 = new BanZouListBean(list1);
                     String json1 = new Gson().toJson(banZouListBean1);
                     PreferenceUtil.getInstance().saveString(title, json1);
                     setAlerD();
                 }
-            } else {
+            }
+        } else {
+            if (list1 != null && list1.size() > 0) {
                 BanZouListBean banZouListBean1 = new BanZouListBean(list1);
                 String json1 = new Gson().toJson(banZouListBean1);
                 PreferenceUtil.getInstance().saveString(title, json1);
                 setAlerD();
             }
-        } else {
-            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-            String json1 = new Gson().toJson(banZouListBean1);
-            PreferenceUtil.getInstance().saveString(title, json1);
-            setAlerD();
         }
     }
 
@@ -213,6 +235,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         alertDialog.setCanceledOnTouchOutside(true);
         TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
+        TextView mTvNull = inflate.findViewById(R.id.tv_null);
         RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
         String json = PreferenceUtil.getInstance().getString(title, null);
         BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
@@ -222,9 +245,11 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             list1 = new ArrayList<>();
         }
         if (list1 != null && list1.size() > 0) {
-            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+            mRecGuanLian.setVisibility(View.VISIBLE);
+            mTvNull.setVisibility(View.GONE);
         } else {
-            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.touming));
+            mRecGuanLian.setVisibility(View.GONE);
+            mTvNull.setVisibility(View.VISIBLE);
         }
         mRecGuanLian.setLayoutManager(new LinearLayoutManager(mContext));
         banZouAdapter = new BanZouAdapter(mContext, list1);
@@ -266,8 +291,17 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                 Intent intent = new Intent(mContext, BanZouActivity.class);
                 intent.putExtra("title", title);
                 startActivityForResult(intent, 1);
+                alertDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            setAlerD();
+        }
     }
 
     private SeekBar mTvSeekBar;

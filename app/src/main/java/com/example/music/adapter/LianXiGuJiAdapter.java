@@ -1,9 +1,12 @@
 package com.example.music.adapter;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 public class LianXiGuJiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<LianXiGuJiBean> list;
     private Context mContext;
+    private ObjectAnimator mAnimator;
 
     public LianXiGuJiAdapter(ArrayList<LianXiGuJiBean> list, Context mContext) {
         this.list = list;
@@ -43,6 +47,19 @@ public class LianXiGuJiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int itemViewType = holder.getItemViewType();
+        ViewHolder viewHolder = (ViewHolder) holder;
+//        if (list.get(position).isSelected()) {
+//            if (mAnimator != null) {
+//                mAnimator.pause();
+//                mAnimator = null;
+//            }
+//            mAnimator = ObjectAnimator.ofFloat(viewHolder.mIvImage, "rotation", 0.0f, 360.0f);
+//            mAnimator.setDuration(3000);//设定转一圈的时间
+//            mAnimator.setRepeatCount(Animation.INFINITE);//设定无限循环
+//            mAnimator.setRepeatMode(ObjectAnimator.RESTART);// 循环模式
+//            mAnimator.setInterpolator(new LinearInterpolator());// 匀速
+//            mAnimator.start();//动画开始
+//        }
         if (itemViewType == 2) {
             ViewHolderTwo viewHolderTwo = (ViewHolderTwo) holder;
             viewHolderTwo.itemView.setOnClickListener(new View.OnClickListener() {
@@ -52,7 +69,6 @@ public class LianXiGuJiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             });
         } else {
-            ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.mTvName.setText(list.get(position).getName());
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

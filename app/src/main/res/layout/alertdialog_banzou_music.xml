@@ -36,11 +36,12 @@
             <TextView
                 android:id="@+id/banzou_tv_beisu"
                 android:layout_width="wrap_content"
+                android:padding="@dimen/dp_10"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/dp_20"
                 android:text="倍速"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/dp_15"
+                android:textSize="@dimen/dp_10"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -52,33 +53,34 @@
                 <!--上一曲-->
                 <ImageView
                     android:id="@+id/banzou_btn_previous"
-                    android:layout_width="@dimen/dp_40"
-                    android:layout_height="@dimen/dp_40"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
                     android:background="@mipmap/icon_previous" />
                 <!--播放或暂停-->
                 <ImageView
                     android:id="@+id/banzou_btn_play_or_pause"
-                    android:layout_width="@dimen/dp_44"
-                    android:layout_height="@dimen/dp_44"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
                     android:layout_marginLeft="@dimen/dp_20"
                     android:layout_marginRight="@dimen/dp_20"
                     android:background="@mipmap/icon_pause" />
                 <!--下一曲-->
                 <ImageView
                     android:id="@+id/banzou_btn_next"
-                    android:layout_width="@dimen/dp_40"
-                    android:layout_height="@dimen/dp_40"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
                     android:background="@mipmap/icon_next" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/banzou_tv_yindiao"
                 android:layout_width="wrap_content"
+                android:padding="@dimen/dp_10"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_10"
                 android:text="音调"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/sp_15"
+                android:textSize="@dimen/sp_10"
                 android:textStyle="bold" />
         </LinearLayout>
 

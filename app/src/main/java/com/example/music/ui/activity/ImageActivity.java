@@ -270,6 +270,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         alertDialog.setCanceledOnTouchOutside(true);
         TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
+        TextView mTvNull = inflate.findViewById(R.id.tv_null);
         RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
         String json = PreferenceUtil.getInstance().getString(title, null);
         BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
@@ -279,9 +280,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             list1 = new ArrayList<>();
         }
         if (list1 != null && list1.size() > 0) {
-            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+            mRecGuanLian.setVisibility(View.VISIBLE);
+            mTvNull.setVisibility(View.GONE);
         } else {
-            mRecGuanLian.setBackgroundColor(mContext.getResources().getColor(R.color.touming));
+            mRecGuanLian.setVisibility(View.GONE);
+            mTvNull.setVisibility(View.VISIBLE);
         }
         mRecGuanLian.setLayoutManager(new LinearLayoutManager(mContext));
         banZouAdapter = new BanZouAdapter(mContext, list1);
@@ -323,6 +326,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 Intent intent = new Intent(mContext, BanZouActivity.class);
                 intent.putExtra("title", title);
                 startActivityForResult(intent, 1);
+                alertDialog.dismiss();
             }
         });
     }
@@ -355,11 +359,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == 2) {
             if (banZouAdapter != null) {
-                list1.clear();
-                String json = PreferenceUtil.getInstance().getString(title, null);
-                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-                list1 = banZouListBean.getList();
-                banZouAdapter.setData(list1);
+                setAlerD();
             }
         }
     }

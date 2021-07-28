@@ -3,4 +3,4 @@
     android:id="@android:id/icon"
     android:layout_width="@dimen/dp_60"
     android:layout_height="@dimen/dp_60"
-    android:src="@mipmap/banzou_yinyue" />
+    android:src="@mipmap/xfc" />

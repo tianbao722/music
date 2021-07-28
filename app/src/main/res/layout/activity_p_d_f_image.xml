@@ -37,6 +37,9 @@
             android:id="@+id/pdf__tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxWidth="@dimen/dp_150"
+            android:singleLine="true"
             android:text="我命由我不由天"
             android:textColor="@color/heise"
             android:textSize="@dimen/sp_15"
@@ -76,6 +79,7 @@
 
             <TextView
                 android:id="@+id/pdf_tv_di"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/dp_10"

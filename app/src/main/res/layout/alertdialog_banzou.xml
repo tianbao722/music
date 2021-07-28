@@ -32,16 +32,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.music.zview.MaxHeightRecyclerView
         android:id="@+id/rec_guanlian"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_120"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginRight="@dimen/dp_20"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:maxHeightt="@dimen/dp_150" />
 
     <TextView
         android:id="@+id/tv_guanlian"

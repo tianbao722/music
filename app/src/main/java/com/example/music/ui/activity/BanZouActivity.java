@@ -75,15 +75,7 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         mIVBack.setOnClickListener(this);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
-        ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
-        list = new ArrayList<>();
-        if (allMusic != null && allMusic.size() > 0) {
-            for (MusicBean bean : allMusic) {
-                if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                    list.add(bean);
-                }
-            }
-        }
+        list = SPBeanUtile.getAllMusic();
         if (list != null && list.size() > 0) {
             mRecBanZouMusicRecSearch.setBackgroundColor(getResources().getColor(R.color.white));
         } else {

@@ -96,7 +96,8 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     String totalTime = WlTimeUtil.secdsToDateFormat(timeBean.getTotalSecs(), timeBean.getTotalSecs());
                     tvPlayTime.setText(playTime);
                     tvTotalTime.setText(totalTime);
-                    mTvMusicName.setText(mList.get(mCurrentPosition).getName());
+                    if (mList != null && mList.size() > 0)
+                        mTvMusicName.setText(mList.get(mCurrentPosition).getName());
                     if (playTime.equals(totalTime)) {
                         changeMusic(++mCurrentPosition);
                     }
