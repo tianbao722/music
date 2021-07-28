@@ -13,7 +13,7 @@
         android:padding="@dimen/dp_10"
         android:text="保存到相册"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_12"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/tv_daoruqupu"
@@ -23,6 +23,6 @@
         android:padding="@dimen/dp_10"
         android:text="导入到曲谱"
         android:textColor="#000000"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_12"
         android:textStyle="bold" />
 </LinearLayout>

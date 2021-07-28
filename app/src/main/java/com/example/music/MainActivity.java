@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_daoruyuepu://导入曲谱
                 Intent intent4 = new Intent(MainActivity.this, DaoRuQuPuActivity.class);
+                intent4.putExtra("type", "1");
                 startActivity(intent4);
                 break;
             case R.id.ll_mianfeijiaoxue://免费教学

@@ -145,22 +145,28 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 if (list != null && list.size() > 0) {
                     setAlerD();
                 } else {
+                    if (list1 != null && list1.size() > 0) {
+                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                        String json1 = new Gson().toJson(banZouListBean1);
+                        PreferenceUtil.getInstance().saveString(title, json1);
+                        setAlerD();
+                    }
+                }
+            } else {
+                if (list1 != null && list1.size() > 0) {
                     BanZouListBean banZouListBean1 = new BanZouListBean(list1);
                     String json1 = new Gson().toJson(banZouListBean1);
                     PreferenceUtil.getInstance().saveString(title, json1);
                     setAlerD();
                 }
-            } else {
+            }
+        } else {
+            if (list1 != null && list1.size() > 0) {
                 BanZouListBean banZouListBean1 = new BanZouListBean(list1);
                 String json1 = new Gson().toJson(banZouListBean1);
                 PreferenceUtil.getInstance().saveString(title, json1);
                 setAlerD();
             }
-        } else {
-            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-            String json1 = new Gson().toJson(banZouListBean1);
-            PreferenceUtil.getInstance().saveString(title, json1);
-            setAlerD();
         }
 
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();

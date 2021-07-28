@@ -82,7 +82,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             if (files != null && files.size() > 0) {
                 for (int j = 0; j < files.size(); j++) {
                     String name = files.get(j).getName();
-                    List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
+                    List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
                     ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
                     list.add(imageYuePuImageBean);
                 }

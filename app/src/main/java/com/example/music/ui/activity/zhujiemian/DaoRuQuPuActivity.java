@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
@@ -45,6 +46,7 @@ import com.example.music.utils.DownLoadUtile;
 import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
+import com.example.music.zview.MaxHeightRecyclerView;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -55,7 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClickListener {
-    private RecyclerView mRecDaoRuQuPu;
+    private MaxHeightRecyclerView mRecDaoRuQuPu;
     private RecyclerView mRecDaoRuQuPuImg;
     private EditText mEdDaoruqupu;
     private TextView mTvEnterDaoRuQuPu;
@@ -74,6 +76,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private boolean isNameEqual = false;
     private int time = 3000;
     private Intent intent;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         imagelist = new ArrayList<>();
         Titlelist = new ArrayList<>();
         intent = getIntent();
+        type = intent.getStringExtra("type");
         String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
         if (!TextUtils.isEmpty(json)) {
             UrlImageListBean urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
@@ -129,9 +133,9 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPu.setAdapter(daoRuQuPuAdaper);
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
         HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
-        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 50);//右间距
+        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 30);//右间距
         mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
-        mRecDaoRuQuPuImg.setLayoutManager(new GridLayoutManager(mContext, 4));
+        mRecDaoRuQuPuImg.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());
         mItemTouchHelper.attachToRecyclerView(mRecDaoRuQuPuImg);
@@ -204,6 +208,11 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 TextView mTvXiangJi = inflate.findViewById(R.id.tv_xiangji);
                 TextView mTvXiangCe = inflate.findViewById(R.id.tv_xiangce);
                 TextView mTvUrlImage = inflate.findViewById(R.id.tv_urlimage);
+                if (type.equals("1")) {
+                    mTvUrlImage.setVisibility(View.GONE);
+                } else {
+                    mTvUrlImage.setVisibility(View.VISIBLE);
+                }
                 //相机的点击监听
                 mTvXiangJi.setOnClickListener(new View.OnClickListener() {
                     @Override

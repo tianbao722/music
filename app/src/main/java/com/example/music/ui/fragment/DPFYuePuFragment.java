@@ -142,7 +142,7 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 tuPianYuePuAdapter.notifyDataSetChanged();
                 imageFileList.clear();
                 imageFileList = getImageFileList();
-                recImageYuePuAdapter.notifyDataSetChanged();
+                recImageYuePuAdapter.setData(getImageFileList());
             }
         });
     }

@@ -189,8 +189,8 @@ public class SPBeanUtile {
     public static ArrayList<MusicBean> getAllMusic() {
         ArrayList<MusicBean> musicBeans = new ArrayList<>();
         ArrayList<BenDiYuePuBean> mList = SPBeanUtile.getWoDeYinYueFileList();
+        String name = null;
         if (mList != null && mList.size() > 0) {
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             for (int i = 0; i < mList.size(); i++) {
                 String title = mList.get(i).getTitle();
                 String path = MyApplication.getWoDeYinYueFile().getPath();
@@ -198,13 +198,14 @@ public class SPBeanUtile {
                 List<File> files = FileUtils.listFilesInDir(currentPath);
                 for (int j = 0; j < files.size(); j++) {
                     String path1 = files.get(j).getPath();
-                    mmr.setDataSource(path1);
                     String fileName = FileUtils.getFileName(files.get(j));
-                    String name = fileName.substring(0, fileName.length() - 4);
-                    String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                    if (fileName.length() >= 4) {
+                        name = fileName.substring(0, fileName.length() - 4);
+                    } else {
+                        name = fileName;
+                    }
                     String size = FileUtils.getSize(files.get(j));
-                    long time1 = Long.parseLong(time);
-                    MusicBean musicBean = new MusicBean(name, time1, size, path1);
+                    MusicBean musicBean = new MusicBean(name, 0, size, path1);
                     musicBeans.add(musicBean);
                 }
             }

@@ -51,12 +51,12 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
         dpfYuePuFragment = new DPFYuePuFragment();
         titles = new ArrayList<>();
         titles.add("图片乐谱");
-        titles.add("DPF乐谱");
+        titles.add("PDF乐谱");
         fragments = new ArrayList<>();
         fragments.add(tuPianYuePuFragment);
         fragments.add(dpfYuePuFragment);
         mTabQuPu.addTab(mTabQuPu.newTab().setText("图片乐谱"));
-        mTabQuPu.addTab(mTabQuPu.newTab().setText("DPF乐谱"));
+        mTabQuPu.addTab(mTabQuPu.newTab().setText("PDF乐谱"));
         BenDiYuePuPagerAdapter benDiYuePuPagerAdapter = new BenDiYuePuPagerAdapter(getSupportFragmentManager(), titles, fragments);
         mVp.setAdapter(benDiYuePuPagerAdapter);
         mTabQuPu.setupWithViewPager(mVp);
