@@ -383,7 +383,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                                 if (alertDialog != null && alertDialog.isShowing()) {
                                     alertDialog.dismiss();
                                 }
-                                showAler();
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.dismiss();
+                                } else {
+                                    showAler();
+                                }
                                 mTvTitle.setText(list1.get(mCurrentPosition).getName());
                                 mTvSeekBar.setMax(mediaPlayer.getDuration());
                                 mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));

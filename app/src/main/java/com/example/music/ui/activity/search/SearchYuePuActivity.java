@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,9 +15,13 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.FileUtils;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.SearchDPFAdapter;
 import com.example.music.adapter.SearchYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
+import com.example.music.bean.PDFImageBean;
+import com.example.music.ui.activity.ImageActivity;
+import com.example.music.ui.activity.PDFImageActivity;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
 
@@ -31,9 +36,10 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
     private TextView mTvSearchTuPianYuePu;
     private TextView mTvSearchDefYuePu;
     private SearchYuePuAdapter searchYuePuAdapter;
-    private ArrayList<ImageYuePuImageBean> list;
+    private SearchDPFAdapter searchPDFAdapter;
+    private ArrayList<ImageYuePuImageBean> list;//图片
+    private ArrayList<PDFImageBean> PDFlist;//图片
     private Context mContext;
-    private boolean isSelect = true;
     private String txt;
 
     @Override
@@ -41,7 +47,6 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_yue_pu);
         StatusBarUtil.transparencyBar(this);
-
         mContext = this;
         initView();
     }
@@ -55,27 +60,67 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mIvBack.setOnClickListener(this);
         mTvSearchDefYuePu.setOnClickListener(this);
         mTvSearchTuPianYuePu.setOnClickListener(this);
+        initTuPianAdapter();
+        initListener();
+    }
+
+    private void initTuPianAdapter() {
         ArrayList<BenDiYuePuBean> tuPianQuPuFileList = SPBeanUtile.getTuPianQuPuFileList();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
         if (tuPianQuPuFileList != null && tuPianQuPuFileList.size() > 0) {
             benDiYuePuBeans.addAll(tuPianQuPuFileList);
         }
         list = new ArrayList<>();
-        getImageFileList(true, benDiYuePuBeans);
+        getImageFileList(benDiYuePuBeans);
         mREcSearchYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
         searchYuePuAdapter = new SearchYuePuAdapter(mContext, list);
         mREcSearchYuePu.setAdapter(searchYuePuAdapter);
-        initListener();
+        //适配器点击监听
+        searchYuePuAdapter.setOnItemClickListener(new SearchYuePuAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                String name = list.get(position).getName();
+                List<File> list2 = list.get(position).getList();
+                ArrayList<String> image = new ArrayList<>();
+                for (int i = 0; i < list2.size(); i++) {
+                    String path = list2.get(i).getPath();
+                    image.add(path);
+                }
+                Intent intent = new Intent(mContext, ImageActivity.class);
+                intent.putStringArrayListExtra("list", image);
+                intent.putExtra("title", name);
+                startActivity(intent);
+            }
+        });
     }
 
-    private void getImageFileList(boolean isTuPianOrDef, ArrayList<BenDiYuePuBean> benDiYuePuBeans) {
-        list.clear();
-        String path;
-        if (isTuPianOrDef) {
-            path = MyApplication.getTuPianYuePuFile().getPath();
-        } else {
-            path = MyApplication.getDefYuePuFile().getPath();
+    private void initPDFAdapter() {
+        ArrayList<BenDiYuePuBean> tuPianQuPuFileList = SPBeanUtile.getDefQuPuFileList();
+        ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
+        if (tuPianQuPuFileList != null && tuPianQuPuFileList.size() > 0) {
+            benDiYuePuBeans.addAll(tuPianQuPuFileList);
         }
+        PDFlist = new ArrayList<>();
+        getPDFFileList(benDiYuePuBeans);
+        mREcSearchYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
+        searchPDFAdapter = new SearchDPFAdapter(mContext, PDFlist);
+        mREcSearchYuePu.setAdapter(searchPDFAdapter);
+        searchPDFAdapter.setOnItemClickListener(new SearchDPFAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                PDFImageBean pdfImageBean = PDFlist.get(position);
+                Intent intent = new Intent(mContext, PDFImageActivity.class);
+                intent.putExtra("name", pdfImageBean.getName());
+                intent.putExtra("file", pdfImageBean.getFile().getPath());
+                startActivity(intent);
+            }
+        });
+    }
+
+    //获取所有图片
+    private void getImageFileList(ArrayList<BenDiYuePuBean> benDiYuePuBeans) {
+        list.clear();
+        String path = MyApplication.getTuPianYuePuFile().getPath();
         for (int i = 0; i < benDiYuePuBeans.size(); i++) {
             String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
             List<File> files = FileUtils.listFilesInDir(currentPath);
@@ -85,6 +130,23 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                     List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
                     ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
                     list.add(imageYuePuImageBean);
+                }
+            }
+        }
+    }
+
+    //获取所有PDF
+    private void getPDFFileList(ArrayList<BenDiYuePuBean> benDiYuePuBeans) {
+        String path = MyApplication.getDefYuePuFile().getPath();
+        for (int i = 0; i < benDiYuePuBeans.size(); i++) {
+            String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
+            List<File> files = FileUtils.listFilesInDir(currentPath);
+            if (files != null && files.size() > 0) {
+                for (int j = 0; j < files.size(); j++) {
+                    String name = files.get(j).getName();
+                    String size = FileUtils.getSize(files.get(j));
+                    PDFImageBean pdfImageBean = new PDFImageBean(name, files.get(j), size);
+                    PDFlist.add(pdfImageBean);
                 }
             }
         }
@@ -116,21 +178,16 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 SearchYuePuActivity.this.finish();
                 break;
             case R.id.tv_search_tupianyuepu://图片乐谱
+                initTuPianAdapter();
                 mTvSearchTuPianYuePu.setTextColor(getResources().getColor(R.color.black));
                 mTvSearchDefYuePu.setTextColor(getResources().getColor(R.color.hui));
-                ArrayList<BenDiYuePuBean> tuPianQuPuFileList = SPBeanUtile.getTuPianQuPuFileList();
-                if (tuPianQuPuFileList != null && tuPianQuPuFileList.size() > 0)
-                    getImageFileList(true, tuPianQuPuFileList);
                 searchYuePuAdapter.getFilter().filter(txt);
                 break;
             case R.id.tv_search_defyuepu://Def乐谱
+                initPDFAdapter();
                 mTvSearchTuPianYuePu.setTextColor(getResources().getColor(R.color.hui));
                 mTvSearchDefYuePu.setTextColor(getResources().getColor(R.color.black));
-                ArrayList<BenDiYuePuBean> defQuPuFileList = SPBeanUtile.getDefQuPuFileList();
-                if (defQuPuFileList != null && defQuPuFileList.size() > 0) {
-                    getImageFileList(false, defQuPuFileList);
-                }
-                searchYuePuAdapter.getFilter().filter(txt);
+                searchPDFAdapter.getFilter().filter(txt);
                 break;
         }
     }

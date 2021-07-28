@@ -94,19 +94,16 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mConBottom = findViewById(R.id.con_bottom);
         mPdfTvPop = findViewById(R.id.pdf_tv_pop);
         mPdf = findViewById(R.id.pdf);
-        mPdf.setOnTouchListener(new View.OnTouchListener() {
+        mPdf.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (mConTop.getVisibility() == View.GONE) {
-                        mConTop.setVisibility(View.VISIBLE);
-                        mConBottom.setVisibility(View.VISIBLE);
-                    } else {
-                        mConTop.setVisibility(View.GONE);
-                        mConBottom.setVisibility(View.GONE);
-                    }
+            public void onClick(View v) {
+                if (mConTop.getVisibility() == View.GONE) {
+                    mConTop.setVisibility(View.VISIBLE);
+                    mConBottom.setVisibility(View.VISIBLE);
+                } else {
+                    mConTop.setVisibility(View.GONE);
+                    mConBottom.setVisibility(View.GONE);
                 }
-                return false;
             }
         });
         Intent intent = getIntent();
@@ -329,7 +326,11 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                                 if (alertDialog != null && alertDialog.isShowing()) {
                                     alertDialog.dismiss();
                                 }
-                                showAler();
+                                if (alertDialog != null && alertDialog.isShowing()) {
+                                    alertDialog.dismiss();
+                                } else {
+                                    showAler();
+                                }
                                 mTvTitle.setText(list1.get(mCurrentPosition).getName());
                                 mTvSeekBar.setMax(mediaPlayer.getDuration());
                                 mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
