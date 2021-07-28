@@ -45,7 +45,7 @@ public class SearchYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(position);
+                onItemClickListener.onItemClick(position,list.get(position));
             }
         });
     }
@@ -102,11 +102,11 @@ public class SearchYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private onItemClickListener onItemClickListener;
 
-    public void setOnItemClickListener(SearchYuePuAdapter.onItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(onItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position,ImageYuePuImageBean imageYuePuImageBean);
     }
 }

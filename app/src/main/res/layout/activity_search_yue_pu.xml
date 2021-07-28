@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_20"
             android:padding="@dimen/dp_10"
-            android:text="DEF乐谱"
+            android:text="PDF乐谱"
             android:textColor="#8A8A8A"
             android:textSize="@dimen/sp_15" />
 

@@ -51,7 +51,7 @@ public class SearchDPFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(position);
+                onItemClickListener.onItemClick(position,list.get(position));
             }
         });
     }
@@ -102,7 +102,7 @@ public class SearchDPFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position,PDFImageBean pdfImageBean);
     }
 
 }

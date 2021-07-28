@@ -39,6 +39,7 @@ import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.SpeedDialog;
 import com.example.music.utils.SpringDraggable;
 import com.example.music.utils.XToast;
+import com.example.music.zview.NewPDFView;
 import com.google.gson.Gson;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
@@ -61,10 +62,11 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     private TextView mPdfTvPop;
     private TextView mPdfTvBanZou;
     private ConstraintLayout mConTop;
+    private ConstraintLayout mPdfConsl;
     private ConstraintLayout mConBottom;
     private int defaultNightMode;
     private Context mContext;
-    private PDFView mPdf;
+    private NewPDFView mPdf;
     private ArrayList<BanZouBean> list1;//伴奏
     private String title;
     private BanZouAdapter banZouAdapter;
@@ -90,19 +92,22 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mPdfTvTitle = findViewById(R.id.pdf__tv_title);
         mPdfTvDi = findViewById(R.id.pdf_tv_di);
         mPdfTvBanZou = findViewById(R.id.pdf_tv_banzou);
+        mPdfConsl = findViewById(R.id.pdf_consl);
         mConTop = findViewById(R.id.con_top);
         mConBottom = findViewById(R.id.con_bottom);
         mPdfTvPop = findViewById(R.id.pdf_tv_pop);
         mPdf = findViewById(R.id.pdf);
-        mPdf.setOnClickListener(new View.OnClickListener() {
+        mPdf.setOnDisTouchListener(new NewPDFView.onDisTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (mConTop.getVisibility() == View.GONE) {
-                    mConTop.setVisibility(View.VISIBLE);
-                    mConBottom.setVisibility(View.VISIBLE);
-                } else {
-                    mConTop.setVisibility(View.GONE);
-                    mConBottom.setVisibility(View.GONE);
+            public void onDisTouch(MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    if (mConTop.getVisibility() == View.GONE) {
+                        mConTop.setVisibility(View.VISIBLE);
+                        mConBottom.setVisibility(View.VISIBLE);
+                    } else {
+                        mConTop.setVisibility(View.GONE);
+                        mConBottom.setVisibility(View.GONE);
+                    }
                 }
             }
         });

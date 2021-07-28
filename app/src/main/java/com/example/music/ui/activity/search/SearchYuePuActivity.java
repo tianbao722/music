@@ -78,9 +78,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         //适配器点击监听
         searchYuePuAdapter.setOnItemClickListener(new SearchYuePuAdapter.onItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                String name = list.get(position).getName();
-                List<File> list2 = list.get(position).getList();
+            public void onItemClick(int position, ImageYuePuImageBean imageYuePuImageBean) {
+                String name = imageYuePuImageBean.getName();
+                List<File> list2 = imageYuePuImageBean.getList();
                 ArrayList<String> image = new ArrayList<>();
                 for (int i = 0; i < list2.size(); i++) {
                     String path = list2.get(i).getPath();
@@ -107,8 +107,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mREcSearchYuePu.setAdapter(searchPDFAdapter);
         searchPDFAdapter.setOnItemClickListener(new SearchDPFAdapter.onItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                PDFImageBean pdfImageBean = PDFlist.get(position);
+            public void onItemClick(int position, PDFImageBean pdfImageBean) {
                 Intent intent = new Intent(mContext, PDFImageActivity.class);
                 intent.putExtra("name", pdfImageBean.getName());
                 intent.putExtra("file", pdfImageBean.getFile().getPath());
@@ -166,6 +165,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             public boolean onQueryTextChange(String newText) {
                 txt = newText;
                 searchYuePuAdapter.getFilter().filter(newText);
+                if (searchPDFAdapter != null) {
+                    searchPDFAdapter.getFilter().filter(newText);
+                }
                 return false;
             }
         });

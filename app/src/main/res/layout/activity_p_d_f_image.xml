@@ -6,11 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.PDFImageActivity">
 
-
-    <com.joanzapata.pdfview.PDFView
-        android:id="@+id/pdf"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pdf_consl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <com.example.music.zview.NewPDFView
+            android:id="@+id/pdf"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/con_top"
@@ -79,14 +84,14 @@
 
             <TextView
                 android:id="@+id/pdf_tv_di"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/dp_10"
                 android:padding="@dimen/dp_15"
                 android:text="白底"
                 android:textColor="@color/baise"
-                android:textSize="@dimen/sp_15" />
+                android:textSize="@dimen/sp_15"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/pdf_tv_banzou"
