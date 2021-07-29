@@ -48,6 +48,7 @@ import com.github.dfqin.grantor.PermissionsUtil;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout mTvXiaZai;
@@ -62,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLMianFeiJiaoXue;
     private LinearLayout mLLLianXiGuJi;
     private LinearLayout mTvSystemSetting;
-    private String system;
     private Context mContext;
 
     @Override
@@ -117,9 +117,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i("TAG", "permissionDenied: " + "权限请求失败");
             }
         }, strings);
-        system = getSystem();
-        PreferenceUtil.getInstance().saveString("systemId", system);
 //        showAlert();
+    }
+
+    private String getMyUUID() {
+        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(this.TELEPHONY_SERVICE);
+        final String tmDevice, tmSerial, tmPhone, androidId;
+        tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();
+        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        String uniqueId = deviceUuid.toString();
+        Log.d("uuid", "uuid=" + uniqueId);
+        return uniqueId;
     }
 
     private void showAlert() {
@@ -144,33 +154,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-    }
-
-    private String getSystem() {
-        String macAddress = null;
-        StringBuffer buf = new StringBuffer();
-        NetworkInterface networkInterface = null;
-        try {
-            networkInterface = NetworkInterface.getByName("eth1");
-            if (networkInterface == null) {
-                networkInterface = NetworkInterface.getByName("wlan0");
-            }
-            if (networkInterface == null) {
-                return "02:00:00:00:00:02";
-            }
-            byte[] addr = networkInterface.getHardwareAddress();
-            for (byte b : addr) {
-                buf.append(String.format("%02X:", b));
-            }
-            if (buf.length() > 0) {
-                buf.deleteCharAt(buf.length() - 1);
-            }
-            macAddress = buf.toString();
-        } catch (SocketException e) {
-            e.printStackTrace();
-            return "02:00:00:00:00:02";
-        }
-        return macAddress;
     }
 
     @Override
@@ -244,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             Log.e("包名", info.activityInfo.loadLabel(packageManager) + " 包名 "
-                    + info.activityInfo.applicationInfo.packageName + " 类名 " + info.activityInfo.name);
+                    + info.activityInfo.applicationInfo.packageName + " 类名 " + info.activityInfo.name
+            + "图标"+info.activityInfo.applicationInfo.icon);
         }
         return BaoMing;
     }
