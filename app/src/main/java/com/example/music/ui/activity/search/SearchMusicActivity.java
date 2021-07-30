@@ -8,16 +8,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.MusicAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
+import com.example.music.ui.activity.BanZouActivity;
 import com.example.music.utils.SPBeanUtile;
 
 import java.io.File;
@@ -31,7 +34,8 @@ public class SearchMusicActivity extends AppCompatActivity {
     private Context mContext;
     private MusicAdapter musicAdapter;
     private ImageView mIvBack;
-    private ArrayList<MusicBean> allMusic;
+    private ArrayList<MusicBean> list;
+    private ImageView mIvLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +48,9 @@ public class SearchMusicActivity extends AppCompatActivity {
     private void initView() {
         mMusicSearchView = findViewById(R.id.music_search_view);
         mMusicRecSearch = findViewById(R.id.music_rec_search);
+        mIvLoading = findViewById(R.id.iv_loading);
         mIvBack = findViewById(R.id.iv_back);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         mIvBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,13 +58,12 @@ public class SearchMusicActivity extends AppCompatActivity {
             }
         });
         setSearchView();
-        allMusic = SPBeanUtile.getAllMusic();
-        if (allMusic == null) {
-            allMusic = new ArrayList<>();
-        }
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("s");
+        list = new ArrayList<>();
         Intent intent = getIntent();
         mMusicRecSearch.setLayoutManager(new GridLayoutManager(mContext, 2));
-        musicAdapter = new MusicAdapter(allMusic, mContext);
+        musicAdapter = new MusicAdapter(list, mContext);
         mMusicRecSearch.setAdapter(musicAdapter);
         musicAdapter.setOnItemClickListener(new MusicAdapter.onItemClickListener() {
             @Override
@@ -92,4 +97,43 @@ public class SearchMusicActivity extends AppCompatActivity {
             }
         });
     }
+
+    class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
+
+        @Override
+        protected void onPreExecute() {
+            //这里是开始线程之前执行的,是在UI线程
+            mIvLoading.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<MusicBean> doInBackground(String... params) {
+            //这是在后台子线程中执行的
+            ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
+            return allMusic;
+        }
+
+        @Override
+        protected void onCancelled() {
+            //当任务被取消时回调
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            //更新进度
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
+            super.onPostExecute(musicBeans);
+            //当任务执行完成是调用,在UI线程
+            mIvLoading.setVisibility(View.GONE);
+            list = musicBeans;
+            musicAdapter.setData(list);
+        }
+    }
+
 }

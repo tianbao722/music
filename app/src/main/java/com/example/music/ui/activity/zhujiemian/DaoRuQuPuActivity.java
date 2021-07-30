@@ -153,7 +153,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 if (files != null && files.size() > 0) {
                     for (int j = 0; j < files.size(); j++) {
                         String name = files.get(j).getName();
-                        List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
+                        List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
                         ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
                         Titlelist.add(imageYuePuImageBean);
                     }
@@ -281,7 +281,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                                 }
                                 BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                 list.add(0, benDiYuePuBean);
-                                daoRuQuPuAdaper.notifyDataSetChanged();
+                                daoRuQuPuAdaper.setData(list);
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }
@@ -297,7 +297,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                         if (tuPiQuPuFile) {
                             BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                             list.add(0, benDiYuePuBean);
-                            daoRuQuPuAdaper.notifyDataSetChanged();
+                            daoRuQuPuAdaper.setData(list);
                             if (alertDialog != null) {
                                 alertDialog.dismiss();
                             }

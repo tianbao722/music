@@ -45,9 +45,9 @@
             android:id="@+id/music_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:maxWidth="@dimen/dp_150"
             android:ellipsize="end"
+            android:maxWidth="@dimen/dp_150"
+            android:singleLine="true"
             android:textColor="@color/heise"
             android:textSize="@dimen/sp_15"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -86,14 +86,14 @@
 
             <TextView
                 android:id="@+id/tv_di"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/dp_10"
                 android:padding="@dimen/dp_15"
                 android:text="白底"
                 android:textColor="@color/baise"
-                android:textSize="@dimen/sp_15" />
+                android:textSize="@dimen/sp_15"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_banzou"
@@ -107,4 +107,13 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

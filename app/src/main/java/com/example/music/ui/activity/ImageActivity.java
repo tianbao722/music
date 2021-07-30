@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.example.music.R;
 import com.example.music.adapter.BanZouAdapter;
 import com.example.music.adapter.ImageMagnifyAdapter;
@@ -102,6 +104,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTvTotalTime;
     private TextView mTvPlayTime;
     private AlertDialog alertDialog;
+    private ImageView mIvLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +122,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConBottom = findViewById(R.id.con_bottom);
         mConLayout = findViewById(R.id.con_layout);
         mTvDi = findViewById(R.id.tv_di);
+        mIvLoading = findViewById(R.id.iv_loading);
         mIvBack = findViewById(R.id.iv_back1);
         mMusicTvTitle = findViewById(R.id.music_tv_title);
         mTvBanZou = findViewById(R.id.tv_banzou);
@@ -126,49 +130,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mTvDi.setOnClickListener(this);
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
-        ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("s");
+        list = new ArrayList<>();
         list1 = new ArrayList<>();
-        if (allMusic != null && allMusic.size() > 0) {
-            for (MusicBean bean : allMusic) {
-                if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                    list1.add(new BanZouBean(bean.getName(), bean.getPath()));
-                }
-            }
-        }
-        String json = PreferenceUtil.getInstance().getString(title, null);
-        if (!TextUtils.isEmpty(json)) {
-            BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-            if (banZouListBean != null) {
-                ArrayList<BanZouBean> list = banZouListBean.getList();
-                if (list != null && list.size() > 0) {
-                    setAlerD();
-                } else {
-                    if (list1 != null && list1.size() > 0) {
-                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                        String json1 = new Gson().toJson(banZouListBean1);
-                        PreferenceUtil.getInstance().saveString(title, json1);
-                        setAlerD();
-                    }
-                }
-            } else {
-                if (list1 != null && list1.size() > 0) {
-                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                    String json1 = new Gson().toJson(banZouListBean1);
-                    PreferenceUtil.getInstance().saveString(title, json1);
-                    setAlerD();
-                }
-            }
-        } else {
-            if (list1 != null && list1.size() > 0) {
-                BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                String json1 = new Gson().toJson(banZouListBean1);
-                PreferenceUtil.getInstance().saveString(title, json1);
-                setAlerD();
-            }
-        }
-
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
@@ -655,5 +623,79 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onCompletion(MediaPlayer mp) {
         changeMusic(mCurrentPosition);
+    }
+
+    class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
+
+        @Override
+        protected void onPreExecute() {
+            //这里是开始线程之前执行的,是在UI线程
+            mIvLoading.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<MusicBean> doInBackground(String... params) {
+            //这是在后台子线程中执行的
+            ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
+            if (allMusic != null && allMusic.size() > 0) {
+                for (MusicBean bean : allMusic) {
+                    if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                        list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                    }
+                }
+            }
+            return allMusic;
+        }
+
+        @Override
+        protected void onCancelled() {
+            //当任务被取消时回调
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            //更新进度
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
+            super.onPostExecute(musicBeans);
+            //当任务执行完成是调用,在UI线程
+            mIvLoading.setVisibility(View.GONE);
+            String json = PreferenceUtil.getInstance().getString(title, null);
+            if (!TextUtils.isEmpty(json)) {
+                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
+                if (banZouListBean != null) {
+                    ArrayList<BanZouBean> list = banZouListBean.getList();
+                    if (list != null && list.size() > 0) {
+                        setAlerD();
+                    } else {
+                        if (list1 != null && list1.size() > 0) {
+                            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                            String json1 = new Gson().toJson(banZouListBean1);
+                            PreferenceUtil.getInstance().saveString(title, json1);
+                            setAlerD();
+                        }
+                    }
+                } else {
+                    if (list1 != null && list1.size() > 0) {
+                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                        String json1 = new Gson().toJson(banZouListBean1);
+                        PreferenceUtil.getInstance().saveString(title, json1);
+                        setAlerD();
+                    }
+                }
+            } else {
+                if (list1 != null && list1.size() > 0) {
+                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                    String json1 = new Gson().toJson(banZouListBean1);
+                    PreferenceUtil.getInstance().saveString(title, json1);
+                    setAlerD();
+                }
+            }
+        }
     }
 }

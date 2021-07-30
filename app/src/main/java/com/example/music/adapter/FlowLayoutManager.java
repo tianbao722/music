@@ -226,13 +226,14 @@ public class FlowLayoutManager extends RecyclerView.LayoutManager {
             View view = item.view;
             int position = getPosition(view);
             //如果该item的位置不在该行中间位置的话，进行重新放置
-            if (allItemFrames.get(position).top < row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2) {
-                Rect frame = allItemFrames.get(position);
+            Rect rect = allItemFrames.get(position);
+            if (rect != null && rect.top < row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2) {
+                Rect frame = rect;
                 if (frame == null) {
                     frame = new Rect();
                 }
-                frame.set(allItemFrames.get(position).left, (int) (row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2),
-                        allItemFrames.get(position).right, (int) (row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2 + getDecoratedMeasuredHeight(view)));
+                frame.set(rect.left, (int) (row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2),
+                        rect.right, (int) (row.cuTop + (row.maxHeight - views.get(i).useHeight) / 2 + getDecoratedMeasuredHeight(view)));
                 allItemFrames.put(position, frame);
                 item.setRect(frame);
                 views.set(i, item);
