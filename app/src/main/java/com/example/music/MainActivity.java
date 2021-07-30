@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -27,26 +25,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.ui.activity.zhujiemian.BenDiQuPuActivity;
-import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.DaoRuQuPuActivity;
 import com.example.music.ui.activity.zhujiemian.DownloadTheSongActivity;
 import com.example.music.ui.activity.zhujiemian.DongTaiPuActivity;
 import com.example.music.ui.activity.zhujiemian.LianXiGuJiActivity;
 import com.example.music.ui.activity.zhujiemian.MianFeiJiaoXueActivity;
-import com.example.music.ui.activity.zhujiemian.ShiYongShuoMingActivity;
+import com.example.music.ui.activity.zhujiemian.CaoZuoShuoMingActivity;
 import com.example.music.ui.activity.zhujiemian.WoDeYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.XiaZaiYinYueActivity;
 import com.example.music.ui.activity.zhujiemian.ZengZhiFuWuActivity;
-import com.example.music.utils.PreferenceUtil;
-import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
 
@@ -201,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent8);
                 break;
             case R.id.tv_caozuoshuoming://操作说明
-                Intent intent10 = new Intent(MainActivity.this, ShiYongShuoMingActivity.class);
+                Intent intent10 = new Intent(MainActivity.this, CaoZuoShuoMingActivity.class);
                 startActivity(intent10);
                 break;
             case R.id.ll_zengzhifuwu://增值服务

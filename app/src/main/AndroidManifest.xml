@@ -8,9 +8,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <!--访问WIFI的权限-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> <!-- 访问WIFI的权限 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -20,13 +20,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Music">
-        <activity android:name=".ui.activity.zhujiemian.WoDeYinYueActivity"></activity>
+        <activity android:name=".ui.activity.zhujiemian.JiePaiQiActivity"></activity>
+        <activity android:name=".ui.activity.zhujiemian.WoDeYinYueActivity" />
         <activity
             android:name=".ui.activity.VideoPlayActivity"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.activity.search.SearchVideoActivity" />
         <activity android:name=".ui.activity.zhujiemian.ZengZhiFuWuActivity" />
-        <activity android:name=".ui.activity.zhujiemian.ShiYongShuoMingActivity" />
+        <activity android:name=".ui.activity.zhujiemian.CaoZuoShuoMingActivity" />
         <activity android:name=".ui.activity.zhujiemian.MianFeiJiaoXueActivity" />
         <activity android:name=".ui.activity.downloadmusic.DownLoadMusic1" />
         <activity android:name=".ui.activity.PDFImageActivity" />
