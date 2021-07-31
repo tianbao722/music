@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,6 +21,7 @@ import com.example.music.R;
 import com.example.music.adapter.MusicAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
+import com.example.music.sqlitleutile.DatabaseHelper;
 import com.example.music.ui.activity.BanZouActivity;
 import com.example.music.utils.SPBeanUtile;
 
@@ -28,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchMusicActivity extends AppCompatActivity {
-
     private SearchView mMusicSearchView;
     private RecyclerView mMusicRecSearch;
     private Context mContext;
@@ -36,12 +37,15 @@ public class SearchMusicActivity extends AppCompatActivity {
     private ImageView mIvBack;
     private ArrayList<MusicBean> list;
     private ImageView mIvLoading;
+    private DatabaseHelper myDb;
+    private String searchText = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_music);
         mContext = this;
+        myDb = new DatabaseHelper(this);
         initView();
     }
 
@@ -75,6 +79,9 @@ public class SearchMusicActivity extends AppCompatActivity {
                 intent.putExtra("name", musicBean.getName());
                 intent.putExtra("title", title);
                 setResult(2, intent);
+                if (!TextUtils.isEmpty(searchText)) {
+                    boolean b = myDb.insertData(searchText);
+                }
                 SearchMusicActivity.this.finish();
             }
         });
@@ -86,12 +93,15 @@ public class SearchMusicActivity extends AppCompatActivity {
             // 当点击搜索按钮时触发该方法
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchText = query;
+                musicAdapter.getFilter().filter(query);
                 return false;
             }
 
             // 当搜索内容改变时触发该方法
             @Override
             public boolean onQueryTextChange(String newText) {
+                searchText = newText;
                 musicAdapter.getFilter().filter(newText);
                 return false;
             }

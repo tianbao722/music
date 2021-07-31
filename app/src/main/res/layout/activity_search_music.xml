@@ -37,7 +37,6 @@
     </LinearLayout>
     <!--歌曲的展示列表-->
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/music_rec_search"
         android:layout_width="match_parent"

@@ -76,6 +76,7 @@ public class SearchVideoActivity extends AppCompatActivity implements View.OnCli
             // 当点击搜索按钮时触发该方法
             @Override
             public boolean onQueryTextSubmit(String query) {
+                dongTaiVideoAdapter.getFilter().filter(query);
                 return false;
             }
 

@@ -254,6 +254,11 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             // 当点击搜索按钮时触发该方法
             @Override
             public boolean onQueryTextSubmit(String query) {
+                txt = query;
+                searchYuePuAdapter.getFilter().filter(query);
+                if (searchPDFAdapter != null) {
+                    searchPDFAdapter.getFilter().filter(query);
+                }
                 return false;
             }
 
