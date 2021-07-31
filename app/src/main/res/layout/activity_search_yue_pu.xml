@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,11 +9,15 @@
     tools:context=".ui.activity.search.SearchYuePuActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_yuepu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/dp_5"
+        android:background="#ffffff"
         android:paddingTop="@dimen/dp_5"
-        android:background="#ffffff">
+        android:paddingBottom="@dimen/dp_5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_back"
@@ -40,11 +44,15 @@
 
 
     <LinearLayout
+        android:id="@+id/ll_search_yuepu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_yuepu">
 
         <TextView
             android:id="@+id/tv_search_tupianyuepu"
@@ -69,10 +77,32 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_zong"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/ll_search_yuepu"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_height="wrap_content"
+        android:text="图片乐谱总数：0" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_search_yuepu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_20"
-        android:layout_marginTop="@dimen/dp_20" />
-</LinearLayout>
+        android:layout_marginTop="@dimen/dp_20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_search_yuepu" />
+
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

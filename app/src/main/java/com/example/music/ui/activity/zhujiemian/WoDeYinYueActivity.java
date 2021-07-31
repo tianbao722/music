@@ -1,5 +1,6 @@
 package com.example.music.ui.activity.zhujiemian;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -457,6 +458,40 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         speedDialog.show();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case 2:
+                String name = data.getStringExtra("name");
+                String title = data.getStringExtra("title");
+                for (int i = 0; i < strings.size(); i++) {
+                    BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                    String title1 = benDiYuePuBean.getTitle();
+                    if (title1.equals(title)) {
+                        mPosition = i;//选中文件夹的下标
+                        benDiYuePuBean.setSelected(true);
+                    } else {
+                        benDiYuePuBean.setSelected(false);
+                    }
+                }
+                tuPianYuePuAdapter.notifyDataSetChanged();
+                mList.clear();
+                mList = getImageFileList();
+                musicAdapter.setData(mList);
+                for (int i = 0; i < mList.size(); i++) {
+                    MusicBean musicBean = mList.get(i);
+                    String name1 = musicBean.getName();
+                    if (name1.equals(name)) {
+                        mCurrentPosition = i;//歌曲的下标
+                        break;
+                    }
+                }
+                changeMusic(mCurrentPosition);
+                break;
+        }
+    }
+
     //播放模式
     private void showBoFangMoShi() {
         if (mTvBoFangMoShi.getText().equals("列表循环")) {
@@ -527,6 +562,7 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         }
         this.mCurrentPosition = mCurrentPosition;
         wlMusic.playNext(mList.get(mCurrentPosition).getPath());
+        isPause = 2;
         if (wlMusic.isPlaying()) {
             btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
         } else {

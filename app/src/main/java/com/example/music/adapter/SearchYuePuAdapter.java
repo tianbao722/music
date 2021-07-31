@@ -45,7 +45,7 @@ public class SearchYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(position,list.get(position));
+                onItemClickListener.onItemClick(position, list.get(position));
             }
         });
     }
@@ -89,6 +89,14 @@ public class SearchYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return position;
     }
 
+    public void setData(ArrayList<ImageYuePuImageBean> data) {
+        list.clear();
+        beans.clear();
+        list = data;
+        beans = data;
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView mTvTitle;
         TextView mTvPage;
@@ -107,6 +115,6 @@ public class SearchYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position,ImageYuePuImageBean imageYuePuImageBean);
+        void onItemClick(int position, ImageYuePuImageBean imageYuePuImageBean);
     }
 }
