@@ -415,7 +415,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_xinzeng:
+            case R.id.tv_xinzeng://新增
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
@@ -452,7 +452,10 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                         }
                                         BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                         strings.add(0, benDiYuePuBean);
-                                        tuPianYuePuAdapter.notifyDataSetChanged();
+                                        tuPianYuePuAdapter.setData(strings);
+                                        mPosition = 0;
+                                        MyAsyncTask myAsyncTask = new MyAsyncTask();
+                                        myAsyncTask.execute("s");
                                         if (alertDialog != null) {
                                             alertDialog.dismiss();
                                         }
@@ -470,6 +473,9 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                     BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                     strings.add(0, benDiYuePuBean);
                                     tuPianYuePuAdapter.notifyDataSetChanged();
+                                    mPosition = 0;
+                                    MyAsyncTask myAsyncTask = new MyAsyncTask();
+                                    myAsyncTask.execute("s");
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }

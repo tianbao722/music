@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.music.R;
 import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.MusicBean;
 
 import java.util.ArrayList;
 
@@ -66,6 +67,11 @@ public class TuPianYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public void setData(ArrayList<BenDiYuePuBean> strings) {
+        list = strings;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

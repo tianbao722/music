@@ -175,7 +175,7 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 String title = imageFileList.get(position).getName();
-                String file = MyApplication.getDefYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title;
+                String file = MyApplication.getDefYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title + ".pdf";
                 boolean delete = FileUtils.delete(file);
                 if (delete) {
                     imageFileList.remove(position);
@@ -229,12 +229,14 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                         }
                         if (classify) {
                             String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName() + ".pdf";
-                            boolean rename = FileUtils.rename(path, text);
+                            boolean rename = FileUtils.rename(path, text + ".pdf");
                             if (rename) {
                                 PDFImageBean imageYuePuImageBean = imageFileList.get(position);
+                                File file = new File(MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + text + ".pdf");
                                 imageYuePuImageBean.setName(text);
+                                imageYuePuImageBean.setFile(file);
                                 imageFileList.set(position, imageYuePuImageBean);
-                                recImageYuePuAdapter.notifyDataSetChanged();
+                                recImageYuePuAdapter.setData(imageFileList);
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }
@@ -246,13 +248,13 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                             Toast.makeText(mContext, "该名称已经存在", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName();
-                        boolean rename = FileUtils.rename(path, text);
+                        String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName() + ".pdf";
+                        boolean rename = FileUtils.rename(path, text + ".pdf");
                         if (rename) {
                             PDFImageBean imageYuePuImageBean = imageFileList.get(position);
                             imageYuePuImageBean.setName(text);
                             imageFileList.set(position, imageYuePuImageBean);
-                            recImageYuePuAdapter.notifyDataSetChanged();
+                            recImageYuePuAdapter.setData(imageFileList);
                             if (alertDialog != null) {
                                 alertDialog.dismiss();
                             }
@@ -393,7 +395,7 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.edf_tv_xinzeng:
+            case R.id.edf_tv_xinzeng://新增
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
@@ -430,7 +432,11 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                                         }
                                         BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                         strings.add(0, benDiYuePuBean);
-                                        tuPianYuePuAdapter.notifyDataSetChanged();
+                                        tuPianYuePuAdapter.setData(strings);
+                                        mPosition = 0;
+                                        imageFileList.clear();
+                                        imageFileList = getImageFileList();
+                                        recImageYuePuAdapter.setData(getImageFileList());
                                         if (alertDialog != null) {
                                             alertDialog.dismiss();
                                         }
@@ -446,7 +452,11 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                                 if (tuPiQuPuFile) {
                                     BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
                                     strings.add(0, benDiYuePuBean);
-                                    tuPianYuePuAdapter.notifyDataSetChanged();
+                                    tuPianYuePuAdapter.setData(strings);
+                                    mPosition = 0;
+                                    imageFileList.clear();
+                                    imageFileList = getImageFileList();
+                                    recImageYuePuAdapter.setData(getImageFileList());
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }

@@ -139,6 +139,8 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+
+
     private void initPDFAdapter() {
         mREcSearchYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
         searchPDFAdapter = new SearchDPFAdapter(mContext, PDFlist);

@@ -48,6 +48,13 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 onItemClickListener.onItemClick(position, list.get(position));
             }
         });
+        viewHolcer.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItemLongClickListener.onItemLongClick(position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -115,5 +122,15 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         list = data;
         beans = data;
         notifyDataSetChanged();
+    }
+
+    private onItemLongClickListener onItemLongClickListener;
+
+    public void setOnItemLongClickListener(MusicAdapter.onItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public interface onItemLongClickListener {
+        void onItemLongClick(int position);
     }
 }

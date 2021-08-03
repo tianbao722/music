@@ -100,7 +100,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mPdf.setOnDisTouchListener(new NewPDFView.onDisTouchListener() {
             @Override
             public void onDisTouch(MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (mConTop.getVisibility() == View.GONE) {
                         mConTop.setVisibility(View.VISIBLE);
                         mConBottom.setVisibility(View.VISIBLE);

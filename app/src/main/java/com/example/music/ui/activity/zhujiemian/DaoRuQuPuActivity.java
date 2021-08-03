@@ -3,6 +3,7 @@ package com.example.music.ui.activity.zhujiemian;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -135,13 +137,13 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         mRecDaoRuQuPu.setLayoutManager(flowLayoutManager);
         mRecDaoRuQuPu.setAdapter(daoRuQuPuAdaper);
         imageDaoRuQuPuAdapter = new ImageDaoRuQuPuAdapter(imagelist, mContext);
-        HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
-        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 30);//右间距
-        mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
+//        HashMap<String, Integer> stringIntegerHashMap = new HashMap<>();
+//        stringIntegerHashMap.put(RecyclerViewSpacesItemDecoration.RIGHT_DECORATION, 30);//右间距
+//        mRecDaoRuQuPuImg.addItemDecoration(new RecyclerViewSpacesItemDecoration(stringIntegerHashMap));
         mRecDaoRuQuPuImg.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
         mRecDaoRuQuPuImg.setAdapter(imageDaoRuQuPuAdapter);
-        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());
-        mItemTouchHelper.attachToRecyclerView(mRecDaoRuQuPuImg);
+//        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelper());
+//        mItemTouchHelper.attachToRecyclerView(mRecDaoRuQuPuImg);
     }
 
     private void getImageFileList() {
@@ -398,17 +400,58 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                     Uri uri = data.getData();
                     if (imagelist != null && imageDaoRuQuPuAdapter != null) {
                         String path = getPath(mContext, uri);
-                        Bitmap bitmap = openImage(path);
-                        Bitmap bitmap1 = rotateBitmap(bitmap, 270);
-                        imagelist.add(new ImageDaoRuQuPuBean(null, bitmap1, null));
-                        imageDaoRuQuPuAdapter.notifyDataSetChanged();
-                        if (alertDialog != null) {
-                            alertDialog.dismiss();
+                        File file = new File(path);
+                        if (file.exists()) {
+                            int exifOrientation = getExifOrientation(path);
+                            Bitmap bitmap = null;
+                            if (exifOrientation == 0) {
+                                bitmap = openImage(path);
+                            } else {
+                                bitmap = rotateBitmap(bitmap, 270);
+                            }
+                            if (bitmap != null) {
+                                imagelist.add(new ImageDaoRuQuPuBean(null, bitmap, null));
+                            }
+                            imageDaoRuQuPuAdapter.notifyDataSetChanged();
+                            if (alertDialog != null) {
+                                alertDialog.dismiss();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "文件不存在", Toast.LENGTH_SHORT).show();
                         }
+
                     }
                 }
                 break;
         }
+    }
+
+    //获取图片的选择度数
+    public static int getExifOrientation(String filepath) {
+        int degree = 0;
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(filepath);
+        } catch (IOException ex) {
+            Log.d("异常", "获取图片的旋转度数" + ex);
+        }
+        if (exif != null) {
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+            if (orientation != -1) {
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        degree = 90;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        degree = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        degree = 270;
+                        break;
+                }
+            }
+        }
+        return degree;
     }
 
     private int dp2px(float value) {

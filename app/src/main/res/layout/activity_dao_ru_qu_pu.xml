@@ -97,7 +97,7 @@
         android:layout_marginTop="@dimen/dp_5"
         android:layout_marginRight="@dimen/dp_20"
         android:maxEms="18"
-        android:text="注：可拍摄或从相册选择乐谱，支持导入多张乐谱，长按乐谱可以移动顺序。"
+        android:text="注：可拍摄或从相册选择乐谱，支持导入多张乐谱。"
         android:textColor="#000000"
         android:textSize="@dimen/sp_10"
         app:layout_constraintLeft_toLeftOf="parent"
