@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,6 +54,13 @@ public class TuPianYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 onItemClickListener.onItemClick(position);
             }
         });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItmeLongClickListner.onItemLongClick(position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -73,5 +81,15 @@ public class TuPianYuePuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface onItemClickListener {
         void onItemClick(int position);
+    }
+
+    public onItmeLongClickListner onItmeLongClickListner;
+
+    public void setOnItmeLongClickListner(TuPianYuePuAdapter.onItmeLongClickListner onItmeLongClickListner) {
+        this.onItmeLongClickListner = onItmeLongClickListner;
+    }
+
+    public interface onItmeLongClickListner {
+        void onItemLongClick(int position);
     }
 }

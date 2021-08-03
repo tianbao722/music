@@ -115,6 +115,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         title = intent.getStringExtra("name");
         String file = intent.getStringExtra("file");
         mPdfTvTitle.setText(title);
+        title = title.replaceAll("[0-9]", "");
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));

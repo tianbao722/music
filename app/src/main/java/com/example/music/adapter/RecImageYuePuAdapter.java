@@ -42,6 +42,13 @@ public class RecImageYuePuAdapter extends RecyclerView.Adapter<RecyclerView.View
                 onItemClickListener.onItmeClick(position);
             }
         });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItemLongClickListener.onItemLongClick(position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -78,5 +85,15 @@ public class RecImageYuePuAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public interface onItemClickListener {
         void onItmeClick(int position);
+    }
+
+    private onItemLongClickListener onItemLongClickListener;
+
+    public void setOnItemLongClickListener(RecImageYuePuAdapter.onItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public interface onItemLongClickListener {
+        void onItemLongClick(int position);
     }
 }

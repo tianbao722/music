@@ -133,6 +133,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
+        mMusicTvTitle.setText(title);
+        title = title.replaceAll("[0-9]", "");
         MyAsyncTask myAsyncTask = new MyAsyncTask();
         myAsyncTask.execute("s");
         list = new ArrayList<>();
@@ -143,7 +145,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         } else {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui));
         }
-        mMusicTvTitle.setText(title);
         int postion1 = intent.getIntExtra("position", 0);
         this.list = intent.getStringArrayListExtra("list");
         ImageMagnifyAdapter imgVpAda = new ImageMagnifyAdapter(this, this.list);
