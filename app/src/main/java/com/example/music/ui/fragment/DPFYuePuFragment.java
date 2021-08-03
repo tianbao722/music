@@ -90,6 +90,12 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
             }
         });
+        recImageYuePuAdapter.setOnItemLongClickListener(new PDFImageAdapter.onItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position) {
+                showAlertLongImage(position);
+            }
+        });
     }
 
     private ArrayList<PDFImageBean> getImageFileList() {
@@ -143,6 +149,243 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 imageFileList.clear();
                 imageFileList = getImageFileList();
                 recImageYuePuAdapter.setData(getImageFileList());
+            }
+        });
+        tuPianYuePuAdapter.setOnItmeLongClickListner(new TuPianYuePuAdapter.onItmeLongClickListner() {
+            @Override
+            public void onItemLongClick(int position) {
+                showAlertLong(position);
+            }
+        });
+    }
+
+    //右边图片的删除和重命名
+    private void showAlertLongImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_updata, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        //删除
+        mTvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = imageFileList.get(position).getName();
+                String file = MyApplication.getDefYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title;
+                boolean delete = FileUtils.delete(file);
+                if (delete) {
+                    imageFileList.remove(position);
+                    tuPianYuePuAdapter.notifyDataSetChanged();
+                    Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
+                }
+                alertDialog.dismiss();
+            }
+        });
+        //重命名
+        mTvChongMingMing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertChongMingMingImage(position);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    //右边文件夹名字的重命名
+    private void showAlertChongMingMingImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+        EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+        String title = imageFileList.get(position).getName();
+        mEdBenDiQuPu.setText(title);
+        //确定
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdBenDiQuPu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    if (imageFileList.size() != 0) {
+                        for (int i = 0; i < imageFileList.size(); i++) {
+                            String title = imageFileList.get(i).getName();
+                            if (title.equals(text)) {
+                                classify = false;
+                                break;
+                            } else {
+                                classify = true;
+                            }
+                        }
+                        if (classify) {
+                            String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName() + ".pdf";
+                            boolean rename = FileUtils.rename(path, text);
+                            if (rename) {
+                                PDFImageBean imageYuePuImageBean = imageFileList.get(position);
+                                imageYuePuImageBean.setName(text);
+                                imageFileList.set(position, imageYuePuImageBean);
+                                recImageYuePuAdapter.notifyDataSetChanged();
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "该名称已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName();
+                        boolean rename = FileUtils.rename(path, text);
+                        if (rename) {
+                            PDFImageBean imageYuePuImageBean = imageFileList.get(position);
+                            imageYuePuImageBean.setName(text);
+                            imageFileList.set(position, imageYuePuImageBean);
+                            recImageYuePuAdapter.notifyDataSetChanged();
+                            if (alertDialog != null) {
+                                alertDialog.dismiss();
+                            }
+                            Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入名称", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //取消
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    //左边title的删除的重命名
+    private void showAlertLong(int mPosition) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_updata, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        //删除
+        mTvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = strings.get(mPosition).getTitle();
+                String file = MyApplication.getDefYuePuFile() + "/" + title;
+                boolean delete = FileUtils.delete(file);
+                if (delete) {
+                    strings.remove(mPosition);
+                    tuPianYuePuAdapter.notifyDataSetChanged();
+                    Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
+                }
+                alertDialog.dismiss();
+            }
+        });
+        //重命名
+        mTvChongMingMing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertChongMingMing(mPosition);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    //左边文件夹名字的重命名
+    private void showAlertChongMingMing(int mPosition) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+        EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+        String title = strings.get(mPosition).getTitle();
+        mEdBenDiQuPu.setText(title);
+        //确定
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdBenDiQuPu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    if (strings.size() != 0) {
+                        for (int i = 0; i < strings.size(); i++) {
+                            String title = strings.get(i).getTitle();
+                            if (title.equals(text)) {
+                                classify = false;
+                                break;
+                            } else {
+                                classify = true;
+                            }
+                        }
+                        if (classify) {
+                            String path = MyApplication.getDefYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle();
+                            boolean rename = FileUtils.rename(path, text);
+                            if (rename) {
+                                strings.set(mPosition, new BenDiYuePuBean(text, true));
+                                tuPianYuePuAdapter.notifyDataSetChanged();
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        boolean rename = FileUtils.rename(MyApplication.getDefYuePuFile().getPath() + strings.get(mPosition).getTitle(), text);
+                        if (rename) {
+                            strings.set(mPosition, new BenDiYuePuBean(text, true));
+                            tuPianYuePuAdapter.notifyDataSetChanged();
+                            if (alertDialog != null) {
+                                alertDialog.dismiss();
+                            }
+                            Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //取消
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
             }
         });
     }

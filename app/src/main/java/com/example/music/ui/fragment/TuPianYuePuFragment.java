@@ -378,7 +378,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                                 Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "该名称已经存在", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         String path = MyApplication.getTuPianYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName();
