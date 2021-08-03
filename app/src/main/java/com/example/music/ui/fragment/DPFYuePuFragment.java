@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.blankj.utilcode.util.FileUtils;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.FileMoveAdapter;
 import com.example.music.adapter.PDFImageAdapter;
 import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
@@ -169,7 +170,17 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
         alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         alertDialog.setCanceledOnTouchOutside(true);
         TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvMoveFile = inflate.findViewById(R.id.tv_move_file);
         TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        //移动文件
+        mTvMoveFile.setVisibility(View.VISIBLE);
+        mTvMoveFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertMoveFile(position);
+                alertDialog.dismiss();
+            }
+        });
         //删除
         mTvDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +189,9 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 String file = MyApplication.getDefYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title + ".pdf";
                 boolean delete = FileUtils.delete(file);
                 if (delete) {
-                    imageFileList.remove(position);
-                    tuPianYuePuAdapter.notifyDataSetChanged();
+                    imageFileList.clear();
+                    imageFileList = getImageFileList();
+                    recImageYuePuAdapter.setData(getImageFileList());
                     Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
@@ -193,6 +205,82 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 showAlertChongMingMingImage(position);
                 alertDialog.dismiss();
+            }
+        });
+    }
+
+    //移动文件的弹窗
+    private int selectMovePosition;
+
+    private void showAlertMoveFile(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_move_file, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        RecyclerView mRecMove = inflate.findViewById(R.id.rec_move_file);
+        TextView mTvCanCel = inflate.findViewById(R.id.tv_cencel1);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter1);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+        mRecMove.setLayoutManager(linearLayoutManager);
+        if (strings == null) {
+            strings = new ArrayList<>();
+        }
+        FileMoveAdapter fileMoveAdapter = new FileMoveAdapter(mContext, strings);
+        mRecMove.setAdapter(fileMoveAdapter);
+        fileMoveAdapter.notifyDataSetChanged();
+        fileMoveAdapter.setOnItemClickListener(new FileMoveAdapter.onItemClickListener() {
+            public void onItemClick(int position) {
+                selectMovePosition = position;
+                for (int i = 0; i < strings.size(); i++) {
+                    BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                    benDiYuePuBean.setSelected(false);
+                    strings.set(i, benDiYuePuBean);
+                }
+                BenDiYuePuBean benDiYuePuBean = strings.get(position);
+                benDiYuePuBean.setSelected(true);
+                strings.set(position, benDiYuePuBean);
+                fileMoveAdapter.setData(strings);
+            }
+        });
+        mTvCanCel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = imageFileList.get(position).getName();
+                //原路径
+                String file = MyApplication.getDefYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title + ".pdf";
+                String title1 = strings.get(selectMovePosition).getTitle();
+                //新路径
+                String path = MyApplication.getDefYuePuFile().getPath() + "/" + title1 + "/" + title + ".pdf";
+                boolean move = FileUtils.move(file, path);
+                if (move) {
+                    mPosition = selectMovePosition;
+                    for (int i = 0; i < strings.size(); i++) {
+                        BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                        benDiYuePuBean.setSelected(false);
+                        strings.set(i, benDiYuePuBean);
+                    }
+                    BenDiYuePuBean benDiYuePuBean = strings.get(mPosition);
+                    benDiYuePuBean.setSelected(true);
+                    strings.set(mPosition, benDiYuePuBean);
+                    mDefRecDefYuePuTitle.scrollToPosition(mPosition);
+                    tuPianYuePuAdapter.setData(strings);
+                    imageFileList.clear();
+                    imageFileList = getImageFileList();
+                    recImageYuePuAdapter.setData(getImageFileList());
+                    alertDialog.dismiss();
+                    Toast.makeText(mContext, "移动成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "移动失败", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

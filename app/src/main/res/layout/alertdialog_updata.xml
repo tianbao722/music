@@ -18,8 +18,8 @@
     <View
 
         android:layout_width="match_parent"
-        android:background="#D3D3D3"
-        android:layout_height="@dimen/dp_1" />
+        android:layout_height="@dimen/dp_1"
+        android:background="#D3D3D3" />
 
     <TextView
         android:id="@+id/tv_chongmingming"
@@ -28,6 +28,22 @@
         android:gravity="center"
         android:padding="@dimen/dp_10"
         android:text="重命名"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_10" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="#D3D3D3" />
+
+    <TextView
+        android:id="@+id/tv_move_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        android:text="移动文件"
         android:textColor="#000000"
         android:textSize="@dimen/sp_10" />
 
