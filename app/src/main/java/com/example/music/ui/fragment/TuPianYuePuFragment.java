@@ -453,10 +453,8 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                             String path = MyApplication.getTuPianYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + imageFileList.get(position).getName();
                             boolean rename = FileUtils.rename(path, text);
                             if (rename) {
-                                ImageYuePuImageBean imageYuePuImageBean = imageFileList.get(position);
-                                imageYuePuImageBean.setName(text);
-                                imageFileList.set(position, imageYuePuImageBean);
-                                recImageYuePuAdapter.notifyDataSetChanged();
+                                MyAsyncTask myAsyncTask = new MyAsyncTask();
+                                myAsyncTask.execute("s");
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }

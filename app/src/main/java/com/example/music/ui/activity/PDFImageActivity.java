@@ -179,6 +179,15 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
             recreate();
         }
+        if (xToast != null && xToast.isShow()) {
+            xToast.cancel();
+            xToast = null;
+        }
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer = null;
+        }
     }
 
     @Override
