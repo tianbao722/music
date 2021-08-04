@@ -5,14 +5,18 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ImageUtils;
@@ -49,7 +53,6 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
     private ArrayList<PDFImageBean> PDFlist;//图片
     private Context mContext;
     private String txt;
-    private ImageView mIvLoading;
     private boolean isPDFYuePu = true;
     private boolean isTouch = false;
 
@@ -69,8 +72,6 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mTvSearchDefYuePu = findViewById(R.id.tv_search_defyuepu);
         mTvZong = findViewById(R.id.tv_zong);
         mIvBack = findViewById(R.id.iv_back);
-        mIvLoading = findViewById(R.id.iv_loading);
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         mIvBack.setOnClickListener(this);
         mTvSearchDefYuePu.setOnClickListener(this);
         mTvSearchTuPianYuePu.setOnClickListener(this);
@@ -103,7 +104,11 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             }
         });
         if (isSearch) {
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
             ThreadUtils.Task task = new ThreadUtils.Task<ArrayList<ImageYuePuImageBean>>() {
                 @Override
                 public ArrayList<ImageYuePuImageBean> doInBackground() throws Throwable {
@@ -115,7 +120,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onSuccess(ArrayList<ImageYuePuImageBean> imageYuePuImageBeans) {
                     //当任务执行完成是调用,在UI线程
-                    mIvLoading.setVisibility(View.GONE);
+                    if (alertDialog != null && alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                     mTvZong.setText("图片乐谱总数：" + imageYuePuImageBeans.size());
                     list.clear();
                     list = imageYuePuImageBeans;
@@ -134,12 +141,24 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 }
             };
             ThreadUtils.executeBySingle(task);
-        }else {
+        } else {
             mTvZong.setText("图片乐谱总数：" + list.size());
         }
     }
 
-
+    //加载中loading动画
+    private AlertDialog alertDialog;
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
 
     private void initPDFAdapter() {
         mREcSearchYuePu.setLayoutManager(new GridLayoutManager(mContext, 2));
@@ -157,7 +176,11 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         });
         if (isPDFYuePu) {
             isPDFYuePu = false;
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
             ThreadUtils.Task task = new ThreadUtils.Task<ArrayList<PDFImageBean>>() {
                 @Override
                 public ArrayList<PDFImageBean> doInBackground() throws Throwable {
@@ -169,7 +192,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onSuccess(ArrayList<PDFImageBean> imageYuePuImageBeans) {
                     //当任务执行完成是调用,在UI线程
-                    mIvLoading.setVisibility(View.GONE);
+                    if (alertDialog != null && alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                     mTvZong.setText("PDF乐谱总数：" + imageYuePuImageBeans.size());
                     PDFlist.clear();
                     PDFlist = imageYuePuImageBeans;
@@ -188,7 +213,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 }
             };
             ThreadUtils.executeBySingle(task);
-        }else {
+        } else {
             mTvZong.setText("PDF乐谱总数：" + PDFlist.size());
         }
     }
@@ -207,16 +232,16 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                     if (dir) {
                         String name = files.get(j).getName();
                         List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
-                        int size = 0;
-                        ArrayList<File> files2 = new ArrayList<>();
-                        for (int n = 0; n < files1.size(); n++) {
-                            boolean image = ImageUtils.isImage(files1.get(n));
-                            if (image) {
-                                size += 1;
-                                files2.add(files1.get(n));
-                            }
-                        }
-                        ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files2, size);
+//                        int size = 0;
+//                        ArrayList<File> files2 = new ArrayList<>();
+//                        for (int n = 0; n < files1.size(); n++) {
+//                            boolean image = ImageUtils.isImage(files1.get(n));
+//                            if (image) {
+//                        size += 1;
+//                        files2.add(files1.get(n));
+//                            }
+//                        }
+                        ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
                         list.add(imageYuePuImageBean);
                     }
                 }

@@ -1,6 +1,7 @@
 package com.example.music.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,7 @@ public class DaoRuQuPuAdaper extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.mTitle.setText(list.get(position).getTitle());
             if (list.get(position).isSelected()) {
-                viewHolder.mTitle.setTextColor(mContext.getResources().getColor(R.color.select));
+                viewHolder.mTitle.setTextColor(mContext.getResources().getColor(R.color.red));
             } else {
                 viewHolder.mTitle.setTextColor(mContext.getResources().getColor(R.color.black));
             }

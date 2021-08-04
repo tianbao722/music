@@ -41,14 +41,11 @@ import com.example.music.R;
 import com.example.music.adapter.DaoRuQuPuAdaper;
 import com.example.music.adapter.FlowLayoutManager;
 import com.example.music.adapter.ImageDaoRuQuPuAdapter;
-import com.example.music.adapter.RecyclerViewSpacesItemDecoration;
 import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageDaoRuQuPuBean;
 import com.example.music.bean.ImageYuePuImageBean;
-import com.example.music.bean.MusicBean;
 import com.example.music.bean.UrlImageListBean;
-import com.example.music.ui.activity.BanZouActivity;
 import com.example.music.utils.DownLoadUtile;
 import com.example.music.utils.PreferenceUtil;
 import com.example.music.utils.SPBeanUtile;
@@ -57,17 +54,12 @@ import com.example.music.zview.MaxHeightRecyclerView;
 import com.google.gson.Gson;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClickListener {
@@ -83,7 +75,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<ImageDaoRuQuPuBean> imagelist;
     private ImageDaoRuQuPuAdapter imageDaoRuQuPuAdapter;
     private AlertDialog alertDialog;
-    private ImageView mIvLoading;
     private int position;//当前选中的文件夹的下标
     private boolean isDown = true;
     private ArrayList<ImageYuePuImageBean> Titlelist;
@@ -119,7 +110,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         }
         mRecDaoRuQuPu = findViewById(R.id.rec_daoruqupu);
         mEdDaoruqupu = findViewById(R.id.ed_daoruqupu);
-        mIvLoading = findViewById(R.id.iv_loading);
         mivBack = findViewById(R.id.iv_back);
         mRecDaoRuQuPuImg = findViewById(R.id.rec_daoruqupu_img);
         mTvEnterDaoRuQuPu = findViewById(R.id.tv_enter_daoruyuepu);
@@ -129,8 +119,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         if (list == null) {
             list = new ArrayList<BenDiYuePuBean>();
         }
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
-        mIvLoading.setVisibility(View.GONE);
         daoRuQuPuAdaper = new DaoRuQuPuAdaper(mContext, list);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         mRecDaoRuQuPu.addItemDecoration(new SpaceItemDecoration(dp2px(5)));
@@ -327,6 +315,21 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    //加载中loading动画
+    private AlertDialog alertDialogLoading;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialogLoading = builder.create();
+        alertDialogLoading.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialogLoading.setContentView(inflate);
+        alertDialogLoading.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialogLoading.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -349,7 +352,11 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                         }
                     }
                     if (!isNameEqual) {
-                        mIvLoading.setVisibility(View.VISIBLE);
+                        if (alertDialogLoading != null && !alertDialogLoading.isShowing()) {
+                            alertDialogLoading.show();
+                        } else {
+                            showAleartDialogLoading();
+                        }
                         isDown = false;
                         MyAsyncTask myAsyncTask = new MyAsyncTask();
                         myAsyncTask.execute(text);
@@ -623,7 +630,11 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         @Override
         protected void onPreExecute() {
             //这里是开始线程之前执行的,是在UI线程
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialogLoading != null && !alertDialogLoading.isShowing()) {
+                alertDialogLoading.show();
+            } else {
+                showAleartDialogLoading();
+            }
             super.onPreExecute();
         }
 
@@ -650,7 +661,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
             //当任务执行完成是调用,在UI线程
-            mIvLoading.setVisibility(View.GONE);
             if (b) {
                 PreferenceUtil.getInstance().remove(Constants.webImage);
                 Toast.makeText(mContext, "导入成功", Toast.LENGTH_SHORT).show();
@@ -665,7 +675,9 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                 FileUtils.delete(path);
                 Toast.makeText(mContext, "导入失败,请检查网络", Toast.LENGTH_SHORT).show();
             }
-            mIvLoading.setVisibility(View.GONE);
+            if (alertDialogLoading != null && alertDialogLoading.isShowing()) {
+                alertDialogLoading.dismiss();
+            }
             isDown = true;
         }
     }

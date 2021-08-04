@@ -104,7 +104,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTvTotalTime;
     private TextView mTvPlayTime;
     private AlertDialog alertDialog;
-    private ImageView mIvLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +121,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mConBottom = findViewById(R.id.con_bottom);
         mConLayout = findViewById(R.id.con_layout);
         mTvDi = findViewById(R.id.tv_di);
-        mIvLoading = findViewById(R.id.iv_loading);
         mIvBack = findViewById(R.id.iv_back1);
         mMusicTvTitle = findViewById(R.id.music_tv_title);
         mTvBanZou = findViewById(R.id.tv_banzou);
@@ -130,7 +128,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mTvDi.setOnClickListener(this);
         mTvBanZou.setOnClickListener(this);
         mConLayout.setOnClickListener(this);
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         mMusicTvTitle.setText(title);
@@ -626,12 +623,31 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         changeMusic(mCurrentPosition);
     }
 
+    //加载中loading动画
+    private AlertDialog alertDialogLoading;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialogLoading = builder.create();
+        alertDialogLoading.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialogLoading.setContentView(inflate);
+        alertDialogLoading.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialogLoading.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
     class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
 
         @Override
         protected void onPreExecute() {
             //这里是开始线程之前执行的,是在UI线程
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialogLoading != null && !alertDialogLoading.isShowing()) {
+                alertDialogLoading.show();
+            } else {
+                showAleartDialogLoading();
+            }
             super.onPreExecute();
         }
 
@@ -665,7 +681,9 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
             super.onPostExecute(musicBeans);
             //当任务执行完成是调用,在UI线程
-            mIvLoading.setVisibility(View.GONE);
+            if (alertDialogLoading != null && alertDialogLoading.isShowing()) {
+                alertDialogLoading.dismiss();
+            }
             String json = PreferenceUtil.getInstance().getString(title, null);
             if (!TextUtils.isEmpty(json)) {
                 BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);

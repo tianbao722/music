@@ -25,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
@@ -34,17 +33,12 @@ import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
-import com.example.music.bean.MusicBean;
-import com.example.music.ui.activity.BanZouActivity;
 import com.example.music.ui.activity.ImageActivity;
 import com.example.music.utils.SPBeanUtile;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import kotlin.text.Regex;
 
 public class TuPianYuePuFragment extends Fragment implements View.OnClickListener {
     private Context mContext;
@@ -57,7 +51,6 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
     private int mPosition;//当前选择的Title的下标
     private ArrayList<ImageYuePuImageBean> imageFileList;
     private RecImageYuePuAdapter recImageYuePuAdapter;
-    private ImageView mIvLoading;
     private int selectMovePosition;
 
     @Override
@@ -74,9 +67,7 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         mRecTuPianYuePu = inflate.findViewById(R.id.rec_tupianyuepy);
         mRecImageYuePu = inflate.findViewById(R.id.rec_image_yuepu);
         mTvXinZheng = inflate.findViewById(R.id.tv_xinzeng);
-        mIvLoading = inflate.findViewById(R.id.iv_loading);
         mTvXinZheng.setOnClickListener(this);
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         //初始化图片乐谱左边title
         initRecTuPianYuePu();
         //初始化图片乐谱右边图片
@@ -131,16 +122,16 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
                 if (dir) {
                     String name = files.get(i).getName();
                     List<File> files1 = FileUtils.listFilesInDir(files.get(i).getPath());
-                    int size = 0;
-                    ArrayList<File> files2 = new ArrayList<>();
-                    for (int j = 0; j < files1.size(); j++) {
-                        boolean image = ImageUtils.isImage(files1.get(j));
-                        if (image) {
-                            size += 1;
-                            files2.add(files1.get(j));
-                        }
-                    }
-                    ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files2, size);
+//                    int size = 0;
+//                    ArrayList<File> files2 = new ArrayList<>();
+//                    for (int j = 0; j < files1.size(); j++) {
+//                        boolean image = ImageUtils.isImage(files1.get(j));
+//                        if (image) {
+//                            size += 1;
+//                            files2.add(files1.get(j));
+//                        }
+//                    }
+                    ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
                     imageYuePuImageBeans.add(imageYuePuImageBean);
                 }
             }
@@ -587,12 +578,31 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    //加载中loading动画
+    private AlertDialog alertDialog;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
     class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<ImageYuePuImageBean>> {
 
         @Override
         protected void onPreExecute() {
             //这里是开始线程之前执行的,是在UI线程
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
             super.onPreExecute();
         }
 
@@ -619,7 +629,9 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
         protected void onPostExecute(ArrayList<ImageYuePuImageBean> imageYuePuImageBeans) {
             super.onPostExecute(imageYuePuImageBeans);
             //当任务执行完成是调用,在UI线程
-            mIvLoading.setVisibility(View.GONE);
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
             imageFileList.clear();
             imageFileList = imageYuePuImageBeans;
             recImageYuePuAdapter.setData(imageYuePuImageBeans);

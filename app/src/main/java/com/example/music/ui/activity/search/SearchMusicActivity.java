@@ -5,29 +5,26 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.MusicAdapter;
-import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
 import com.example.music.sqlitleutile.DatabaseHelper;
-import com.example.music.ui.activity.BanZouActivity;
 import com.example.music.utils.SPBeanUtile;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchMusicActivity extends AppCompatActivity {
     private SearchView mMusicSearchView;
@@ -36,7 +33,6 @@ public class SearchMusicActivity extends AppCompatActivity {
     private MusicAdapter musicAdapter;
     private ImageView mIvBack;
     private ArrayList<MusicBean> list;
-    private ImageView mIvLoading;
     private DatabaseHelper myDb;
     private String searchText = null;
 
@@ -52,9 +48,7 @@ public class SearchMusicActivity extends AppCompatActivity {
     private void initView() {
         mMusicSearchView = findViewById(R.id.music_search_view);
         mMusicRecSearch = findViewById(R.id.music_rec_search);
-        mIvLoading = findViewById(R.id.iv_loading);
         mIvBack = findViewById(R.id.iv_back);
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         mIvBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,12 +102,31 @@ public class SearchMusicActivity extends AppCompatActivity {
         });
     }
 
+    //加载中loading动画
+    private AlertDialog alertDialog;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
     class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
 
         @Override
         protected void onPreExecute() {
             //这里是开始线程之前执行的,是在UI线程
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
             super.onPreExecute();
         }
 
@@ -140,7 +153,9 @@ public class SearchMusicActivity extends AppCompatActivity {
         protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
             super.onPostExecute(musicBeans);
             //当任务执行完成是调用,在UI线程
-            mIvLoading.setVisibility(View.GONE);
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
             list = musicBeans;
             musicAdapter.setData(list);
         }

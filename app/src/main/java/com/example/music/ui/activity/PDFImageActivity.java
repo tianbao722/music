@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.music.R;
 import com.example.music.adapter.BanZouAdapter;
 import com.example.music.bean.BanZouBean;
@@ -116,6 +118,8 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         String file = intent.getStringExtra("file");
         mPdfTvTitle.setText(title);
         title = title.replaceAll("[0-9]", "");
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("s");
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             mIvBack.setImageDrawable(getResources().getDrawable(R.mipmap.fanhui1));
@@ -661,4 +665,98 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     public void onCompletion(MediaPlayer mp) {
         changeMusic(mCurrentPosition);
     }
+    //加载中loading动画
+    private AlertDialog alertDialogLoading;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialogLoading = builder.create();
+        alertDialogLoading.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialogLoading.setContentView(inflate);
+        alertDialogLoading.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialogLoading.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+    class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
+
+        @Override
+        protected void onPreExecute() {
+            //这里是开始线程之前执行的,是在UI线程
+            if (alertDialogLoading != null && !alertDialogLoading.isShowing()) {
+                alertDialogLoading.show();
+            } else {
+                showAleartDialogLoading();
+            }
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<MusicBean> doInBackground(String... params) {
+            //这是在后台子线程中执行的
+            ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
+            if (allMusic != null && allMusic.size() > 0) {
+                for (MusicBean bean : allMusic) {
+                    if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                        list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                    }
+                }
+            }
+            return allMusic;
+        }
+
+        @Override
+        protected void onCancelled() {
+            //当任务被取消时回调
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            //更新进度
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
+            super.onPostExecute(musicBeans);
+            //当任务执行完成是调用,在UI线程
+            if (alertDialogLoading != null && alertDialogLoading.isShowing()) {
+                alertDialogLoading.dismiss();
+            }
+            String json = PreferenceUtil.getInstance().getString(title, null);
+            if (!TextUtils.isEmpty(json)) {
+                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
+                if (banZouListBean != null) {
+                    ArrayList<BanZouBean> list = banZouListBean.getList();
+                    if (list != null && list.size() > 0) {
+                        setAlerD();
+                    } else {
+                        if (list1 != null && list1.size() > 0) {
+                            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                            String json1 = new Gson().toJson(banZouListBean1);
+                            PreferenceUtil.getInstance().saveString(title, json1);
+                            setAlerD();
+                        }
+                    }
+                } else {
+                    if (list1 != null && list1.size() > 0) {
+                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                        String json1 = new Gson().toJson(banZouListBean1);
+                        PreferenceUtil.getInstance().saveString(title, json1);
+                        setAlerD();
+                    }
+                }
+            } else {
+                if (list1 != null && list1.size() > 0) {
+                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
+                    String json1 = new Gson().toJson(banZouListBean1);
+                    PreferenceUtil.getInstance().saveString(title, json1);
+                    setAlerD();
+                }
+            }
+        }
+    }
+
 }

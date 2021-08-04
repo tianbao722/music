@@ -46,7 +46,6 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
     private SearchView mBanZouMusiSearchView;
     private ImageView mIVBack;
     private TextView mTvNullMusic;
-    private ImageView mIvLoading;
     private ArrayList<MusicBean> list;
     private Context mContext;
     private MusicAdapter musicAdapter;
@@ -84,9 +83,7 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         mRecBanZouMusicRecSearch = findViewById(R.id.banzou_music_rec_search);
         mBanZouMusiSearchView = findViewById(R.id.banzou_music_search_view);
         mTvNullMusic = findViewById(R.id.tv_null_music);
-        mIvLoading = findViewById(R.id.iv_loading);
         mIVBack = findViewById(R.id.baozou_iv_back);
-        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
         mIVBack.setOnClickListener(this);
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
@@ -152,12 +149,31 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    //加载中loading动画
+    private AlertDialog alertDialog;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
     class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
 
         @Override
         protected void onPreExecute() {
             //这里是开始线程之前执行的,是在UI线程
-            mIvLoading.setVisibility(View.VISIBLE);
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
             super.onPreExecute();
         }
 
@@ -184,7 +200,9 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
         protected void onPostExecute(ArrayList<MusicBean> musicBeans) {
             super.onPostExecute(musicBeans);
             //当任务执行完成是调用,在UI线程
-            mIvLoading.setVisibility(View.GONE);
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
             list = musicBeans;
             musicAdapter.setData(list);
             if (list != null && list.size() > 0) {
