@@ -276,7 +276,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                                     list.set(i, benDiYuePuBean);
                                 }
                                 BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                                list.add(0, benDiYuePuBean);
+                                list.add(benDiYuePuBean);
                                 daoRuQuPuAdaper.setData(list);
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
@@ -292,7 +292,7 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                         boolean tuPiQuPuFile = SPBeanUtile.createTuPiQuPuFile(text);
                         if (tuPiQuPuFile) {
                             BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                            list.add(0, benDiYuePuBean);
+                            list.add( benDiYuePuBean);
                             daoRuQuPuAdaper.setData(list);
                             if (alertDialog != null) {
                                 alertDialog.dismiss();

@@ -102,8 +102,8 @@ public class DaoRuQuPuAdaper extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void setData(ArrayList<BenDiYuePuBean> list) {
-        this.list = list;
+    public void setData(ArrayList<BenDiYuePuBean> data) {
+        this.list = data;
         notifyDataSetChanged();
     }
 
