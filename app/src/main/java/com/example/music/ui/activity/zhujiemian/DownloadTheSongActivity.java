@@ -73,8 +73,8 @@ public class DownloadTheSongActivity extends AppCompatActivity implements View.O
 //                startActivity(intent2);
                 break;
             case R.id.tv_souquwang:
-                Intent intent3 = new Intent(DownloadTheSongActivity.this, YuePuActiviy4.class);
-                startActivity(intent3);
+//                Intent intent3 = new Intent(DownloadTheSongActivity.this, YuePuActiviy4.class);
+//                startActivity(intent3);
                 break;
             case R.id.tv_17jitawang:
 //                Intent intent4 = new Intent(DownloadTheSongActivity.this, I7JiTaWangActivity.class);

@@ -151,6 +151,7 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity implements View.
                 String json1 = new Gson().toJson(urlImageListBean);
                 PreferenceUtil.getInstance().saveString(Constants.webImage, json1);
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                
                 startActivityForResult(intent, 1);
                 alertDialog.dismiss();
             }
@@ -172,6 +173,7 @@ public class ZhongGuoQuPuWangActivity extends AppCompatActivity implements View.
         switch (v.getId()) {
             case R.id.tv_cancel1:
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                
                 startActivityForResult(intent, 1);
                 break;
         }

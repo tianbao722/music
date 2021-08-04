@@ -76,6 +76,7 @@ public class NiuRenYuePuWangActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                
                 startActivityForResult(intent, 1);
             }
         });
@@ -174,6 +175,7 @@ public class NiuRenYuePuWangActivity extends AppCompatActivity {
                 String json1 = new Gson().toJson(urlImageListBean);
                 PreferenceUtil.getInstance().saveString(Constants.webImage, json1);
                 Intent intent = new Intent(mContext, DaoRuQuPuActivity.class);
+                
                 startActivityForResult(intent, 1);
                 alertDialog.dismiss();
             }

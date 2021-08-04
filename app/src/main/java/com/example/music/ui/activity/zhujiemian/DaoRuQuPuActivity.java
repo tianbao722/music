@@ -98,6 +98,9 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
         Titlelist = new ArrayList<>();
         intent = getIntent();
         type = intent.getStringExtra("type");
+        if (TextUtils.isEmpty(type)) {
+            type = "2";
+        }
         String json = PreferenceUtil.getInstance().getString(Constants.webImage, null);
         if (!TextUtils.isEmpty(json)) {
             UrlImageListBean urlImageListBean = new Gson().fromJson(json, UrlImageListBean.class);
@@ -352,11 +355,6 @@ public class DaoRuQuPuActivity extends AppCompatActivity implements View.OnClick
                         }
                     }
                     if (!isNameEqual) {
-                        if (alertDialogLoading != null && !alertDialogLoading.isShowing()) {
-                            alertDialogLoading.show();
-                        } else {
-                            showAleartDialogLoading();
-                        }
                         isDown = false;
                         MyAsyncTask myAsyncTask = new MyAsyncTask();
                         myAsyncTask.execute(text);

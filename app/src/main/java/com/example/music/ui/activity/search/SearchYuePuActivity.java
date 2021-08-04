@@ -223,15 +223,16 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         ArrayList<ImageYuePuImageBean> list = new ArrayList<>();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = SPBeanUtile.getTuPianQuPuFileList();
         String path = MyApplication.getTuPianYuePuFile().getPath();
-        for (int i = 0; i < benDiYuePuBeans.size(); i++) {
-            String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
-            List<File> files = FileUtils.listFilesInDir(currentPath);
-            if (files != null && files.size() > 0) {
-                for (int j = 0; j < files.size(); j++) {
-                    boolean dir = FileUtils.isDir(files.get(j));
-                    if (dir) {
-                        String name = files.get(j).getName();
-                        List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
+        if (benDiYuePuBeans != null && benDiYuePuBeans.size() >0){
+            for (int i = 0; i < benDiYuePuBeans.size(); i++) {
+                String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
+                List<File> files = FileUtils.listFilesInDir(currentPath);
+                if (files != null && files.size() > 0) {
+                    for (int j = 0; j < files.size(); j++) {
+                        boolean dir = FileUtils.isDir(files.get(j));
+                        if (dir) {
+                            String name = files.get(j).getName();
+                            List<File> files1 = FileUtils.listFilesInDir(files.get(j).getPath());
 //                        int size = 0;
 //                        ArrayList<File> files2 = new ArrayList<>();
 //                        for (int n = 0; n < files1.size(); n++) {
@@ -241,8 +242,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
 //                        files2.add(files1.get(n));
 //                            }
 //                        }
-                        ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
-                        list.add(imageYuePuImageBean);
+                            ImageYuePuImageBean imageYuePuImageBean = new ImageYuePuImageBean(name, files1, files1.size());
+                            list.add(imageYuePuImageBean);
+                        }
                     }
                 }
             }
@@ -255,20 +257,22 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         ArrayList<PDFImageBean> pdfImageBeans = new ArrayList<>();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = SPBeanUtile.getDefQuPuFileList();
         String path = MyApplication.getDefYuePuFile().getPath();
-        for (int i = 0; i < benDiYuePuBeans.size(); i++) {
-            String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
-            List<File> files = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return (pathname.getPath().endsWith(".pdf"));
-                }
-            });
-            if (files != null && files.size() > 0) {
-                for (int j = 0; j < files.size(); j++) {
-                    String name = files.get(j).getName();
-                    String size = FileUtils.getSize(files.get(j));
-                    PDFImageBean pdfImageBean = new PDFImageBean(name, files.get(j), size);
-                    pdfImageBeans.add(pdfImageBean);
+        if (benDiYuePuBeans != null && benDiYuePuBeans.size() >0){
+            for (int i = 0; i < benDiYuePuBeans.size(); i++) {
+                String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
+                List<File> files = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        return (pathname.getPath().endsWith(".pdf"));
+                    }
+                });
+                if (files != null && files.size() > 0) {
+                    for (int j = 0; j < files.size(); j++) {
+                        String name = files.get(j).getName();
+                        String size = FileUtils.getSize(files.get(j));
+                        PDFImageBean pdfImageBean = new PDFImageBean(name, files.get(j), size);
+                        pdfImageBeans.add(pdfImageBean);
+                    }
                 }
             }
         }
