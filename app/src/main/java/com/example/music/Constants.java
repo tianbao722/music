@@ -9,4 +9,5 @@ public class Constants {
     public static String LIANXIGUJI = "jzxl";
     public static String BaoMing = "文件";
     public static String BaoMing1 = "资源";
+    public static String JIEPAI = "调节器和节拍器";
 }

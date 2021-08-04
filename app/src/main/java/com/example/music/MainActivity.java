@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLMianFeiJiaoXue;
     private LinearLayout mLLLianXiGuJi;
     private LinearLayout mTvSystemSetting;
+    private LinearLayout mLLDongtaiPu;
     private Context mContext;
 
     @Override
@@ -75,13 +76,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLLDaoRuYuePu = findViewById(R.id.ll_daoruyuepu);
         mLLWenJianGuanLi = findViewById(R.id.ll_wenjianguanli);
         mTvShiYongShuoMing = findViewById(R.id.tv_caozuoshuoming);
-        mLLJiePaiQi = findViewById(R.id.ll_dongtaipu);
+        mLLDongtaiPu = findViewById(R.id.ll_dongtaipu);
         mLLMianFeiJiaoXue = findViewById(R.id.ll_mianfeijiaoxue);
         mLLLianXiGuJi = findViewById(R.id.ll_lianxiguji);
         mTvSystemSetting = findViewById(R.id.tv_systemsetting);
         mLLZengZhiFuWu = findViewById(R.id.ll_zengzhifuwu);
+        mLLJiePaiQi = findViewById(R.id.ll_jiepaiqi);
         mTvXiaZai.setOnClickListener(this);
         mTvBenDiYinYue.setOnClickListener(this);
+        mLLDongtaiPu.setOnClickListener(this);
         mLLBenDiQuPu.setOnClickListener(this);
         mTvShiYongShuoMing.setOnClickListener(this);
         mLLZengZhiFuWu.setOnClickListener(this);
@@ -110,18 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }, strings);
 //        showAlert();
-    }
-
-    private String getMyUUID() {
-        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(this.TELEPHONY_SERVICE);
-        final String tmDevice, tmSerial, tmPhone, androidId;
-        tmDevice = "" + tm.getDeviceId();
-        tmSerial = "" + tm.getSimSerialNumber();
-        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        String uniqueId = deviceUuid.toString();
-        Log.d("uuid", "uuid=" + uniqueId);
-        return uniqueId;
     }
 
     private void showAlert() {
@@ -200,6 +191,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
                 startActivity(intent11);
                 break;
+            case R.id.ll_jiepaiqi://节拍校音
+                String jiePaiPackage = getJiePaiPackage();
+                openAppWithPackageName("com.soundcorset.client.android");
+                break;
         }
     }
 
@@ -220,7 +215,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.e("包名", info.activityInfo.loadLabel(packageManager) + " 包名 "
                     + info.activityInfo.applicationInfo.packageName + " 类名 " + info.activityInfo.name
-            + "图标"+info.activityInfo.applicationInfo.icon);
+                    + "图标" + info.activityInfo.applicationInfo.icon);
+        }
+        return BaoMing;
+    }
+
+    //获取文件管理或资源管理的包名
+    public String getJiePaiPackage() {
+        String BaoMing = null;
+        final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        final PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
+        for (int i = 0; i < apps.size(); i++) {
+            ResolveInfo info = apps.get(i);
+            CharSequence charSequence = info.activityInfo.loadLabel(packageManager);
+            String name1 = String.valueOf(charSequence);
+            if (name1.contains(Constants.JIEPAI)) {
+                BaoMing = info.activityInfo.applicationInfo.packageName;
+                break;
+            }
+            Log.e("包名", info.activityInfo.loadLabel(packageManager) + " 包名 "
+                    + info.activityInfo.applicationInfo.packageName + " 类名 " + info.activityInfo.name
+                    + "图标" + info.activityInfo.applicationInfo.icon);
         }
         return BaoMing;
     }
