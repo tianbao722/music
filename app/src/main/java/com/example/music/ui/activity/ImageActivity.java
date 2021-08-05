@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.R;
 import com.example.music.adapter.BanZouAdapter;
@@ -75,7 +76,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private ArrayList<String> list;//图片
     private int defaultNightMode;
     private Context mContext;
-    private ArrayList<BanZouBean> list1;//伴奏
+    private ArrayList<BanZouBean> list1 = new ArrayList<>();//伴奏
     private String title;
     private BanZouAdapter banZouAdapter;
     private XXPermissions with;
@@ -254,13 +255,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
         TextView mTvNull = inflate.findViewById(R.id.tv_null);
         RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
-        String json = PreferenceUtil.getInstance().getString(title, null);
-        BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-        if (banZouListBean != null) {
-            list1 = banZouListBean.getList();
-        } else {
-            list1 = new ArrayList<>();
-        }
         if (list1 != null && list1.size() > 0) {
             mRecGuanLian.setVisibility(View.VISIBLE);
             mTvNull.setVisibility(View.GONE);
@@ -785,8 +779,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
             if (allMusic != null && allMusic.size() > 0) {
                 for (MusicBean bean : allMusic) {
-                    if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                        list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                    if (list1 != null){
+                        if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                            list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                        }
                     }
                 }
             }
@@ -812,36 +808,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             if (alertDialogLoading != null && alertDialogLoading.isShowing()) {
                 alertDialogLoading.dismiss();
             }
-            String json = PreferenceUtil.getInstance().getString(title, null);
-            if (!TextUtils.isEmpty(json)) {
-                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-                if (banZouListBean != null) {
-                    ArrayList<BanZouBean> list = banZouListBean.getList();
-                    if (list != null && list.size() > 0) {
-                        setAlerD();
-                    } else {
-                        if (list1 != null && list1.size() > 0) {
-                            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                            String json1 = new Gson().toJson(banZouListBean1);
-                            PreferenceUtil.getInstance().saveString(title, json1);
-                            setAlerD();
-                        }
-                    }
-                } else {
-                    if (list1 != null && list1.size() > 0) {
-                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                        String json1 = new Gson().toJson(banZouListBean1);
-                        PreferenceUtil.getInstance().saveString(title, json1);
-                        setAlerD();
+            if (list1 != null && list1.size() > 0) {
+                for (int i = 0; i < list1.size(); i++) {
+                    if (list1.get(i) == null) {
+                        list1.remove(i);
                     }
                 }
-            } else {
-                if (list1 != null && list1.size() > 0) {
-                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                    String json1 = new Gson().toJson(banZouListBean1);
-                    PreferenceUtil.getInstance().saveString(title, json1);
-                    setAlerD();
-                }
+                setAlerD();
             }
         }
     }

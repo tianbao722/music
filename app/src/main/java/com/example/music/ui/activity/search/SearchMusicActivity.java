@@ -79,6 +79,12 @@ public class SearchMusicActivity extends AppCompatActivity {
                 SearchMusicActivity.this.finish();
             }
         });
+        musicAdapter.setOnItemLongClickListener(new MusicAdapter.onItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position) {
+
+            }
+        });
     }
 
     public void setSearchView() {

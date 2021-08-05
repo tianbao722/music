@@ -41,7 +41,12 @@ public class BanZouAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.mName.setText(list.get(position).getName());
+        BanZouBean banZouBean = list.get(position);
+        if (banZouBean != null) {
+            viewHolder.mName.setText(banZouBean.getName());
+        } else {
+            return;
+        }
         //点击条目进行播放
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

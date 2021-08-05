@@ -117,8 +117,6 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public void setData(ArrayList<MusicBean> data) {
-        list.clear();
-        beans.clear();
         list = data;
         beans = data;
         notifyDataSetChanged();

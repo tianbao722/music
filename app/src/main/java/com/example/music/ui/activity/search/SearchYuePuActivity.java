@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -148,6 +149,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
 
     //加载中loading动画
     private AlertDialog alertDialog;
+
     private void showAleartDialogLoading() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         alertDialog = builder.create();
@@ -200,6 +202,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                     PDFlist = imageYuePuImageBeans;
                     if (searchPDFAdapter != null)
                         searchPDFAdapter.setData(imageYuePuImageBeans);
+                    if (!TextUtils.isEmpty(txt)) {
+                        searchPDFAdapter.getFilter().filter(txt);
+                    }
                 }
 
                 @Override
@@ -223,7 +228,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         ArrayList<ImageYuePuImageBean> list = new ArrayList<>();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = SPBeanUtile.getTuPianQuPuFileList();
         String path = MyApplication.getTuPianYuePuFile().getPath();
-        if (benDiYuePuBeans != null && benDiYuePuBeans.size() >0){
+        if (benDiYuePuBeans != null && benDiYuePuBeans.size() > 0) {
             for (int i = 0; i < benDiYuePuBeans.size(); i++) {
                 String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
                 List<File> files = FileUtils.listFilesInDir(currentPath);
@@ -257,7 +262,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         ArrayList<PDFImageBean> pdfImageBeans = new ArrayList<>();
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = SPBeanUtile.getDefQuPuFileList();
         String path = MyApplication.getDefYuePuFile().getPath();
-        if (benDiYuePuBeans != null && benDiYuePuBeans.size() >0){
+        if (benDiYuePuBeans != null && benDiYuePuBeans.size() > 0) {
             for (int i = 0; i < benDiYuePuBeans.size(); i++) {
                 String currentPath = path + "/" + benDiYuePuBeans.get(i).getTitle();
                 List<File> files = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {

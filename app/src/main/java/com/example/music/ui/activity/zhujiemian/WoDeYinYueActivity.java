@@ -482,13 +482,14 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String s = mTvYinDiaoZhi.getText().toString();
                 if (wlMusic != null) {
-                    setJiaYinSu(mTvYinDiaoZhi,s);
+                    setJiaYinSu(mTvYinDiaoZhi, s);
                 } else {
                     Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
     //减音速
     private void setJianYinSu(TextView yinsuzhi, String s) {
         float YinSu = Float.parseFloat(s);
@@ -626,6 +627,8 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     }
                 }
                 changeMusic(mCurrentPosition);
+                mYinYueRecTitle.scrollToPosition(mPosition);
+                mYinYue_Rec_image.scrollToPosition(mCurrentPosition);
                 break;
         }
     }

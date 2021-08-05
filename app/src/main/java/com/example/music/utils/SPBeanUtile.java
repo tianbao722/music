@@ -171,12 +171,15 @@ public class SPBeanUtile {
             List<File> files = FileUtils.listFilesInDir(tuPianYuePuFile);
             if (files != null && files.size() > 0) {
                 for (int i = 0; i < files.size(); i++) {
-                    if (i == 0) {
-                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
-                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, true));
-                    } else {
-                        String fileNameNoExtension = FileUtils.getFileNameNoExtension(files.get(i));
-                        benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, false));
+                    boolean dir = FileUtils.isDir(files.get(i));
+                    if (dir) {
+                        if (i == 0) {
+                            String fileNameNoExtension = FileUtils.getFileName(files.get(i));
+                            benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, true));
+                        } else {
+                            String fileNameNoExtension = FileUtils.getFileName(files.get(i));
+                            benDiYuePuBeans.add(new BenDiYuePuBean(fileNameNoExtension, false));
+                        }
                     }
                 }
                 return benDiYuePuBeans;

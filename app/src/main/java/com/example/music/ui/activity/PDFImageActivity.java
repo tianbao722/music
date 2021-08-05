@@ -31,6 +31,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.R;
 import com.example.music.adapter.BanZouAdapter;
@@ -76,7 +77,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     private int defaultNightMode;
     private Context mContext;
     private NewPDFView mPdf;
-    private ArrayList<BanZouBean> list1;//伴奏
+    private ArrayList<BanZouBean> list1 = new ArrayList<>();//伴奏
     private String title;
     private BanZouAdapter banZouAdapter;
     // 记录当前播放歌曲的位置
@@ -84,7 +85,6 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     private XToast xToast;
     private XXPermissions with;
     private AlertDialog alertDialog;
-    private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
     private int isPause = 0;//0:表示没有播放音乐，从0开始播放， 1：表示暂停 继续播放
 
     @Override
@@ -156,7 +156,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         title = intent.getStringExtra("name");
         String file = intent.getStringExtra("file");
         mPdfTvTitle.setText(title);
-        title = title.replaceAll("[0-9]", "");
+        title = title.replaceAll("[0-9,.]", "");
         MyAsyncTask myAsyncTask = new MyAsyncTask();
         myAsyncTask.execute("s");
         defaultNightMode = AppCompatDelegate.getDefaultNightMode();
@@ -171,7 +171,6 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         if (file != null) {
             display(file);
         }
-        initMusic();
     }
 
     private void display(String assetFileName) {
@@ -237,49 +236,6 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mPdfTvPop.setText(page + "/" + pageCount);
     }
 
-    public void initMusic() {
-        ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
-        list1 = new ArrayList<>();
-        if (allMusic != null && allMusic.size() > 0) {
-            for (MusicBean bean : allMusic) {
-                if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                    list1.add(new BanZouBean(bean.getName(), bean.getPath()));
-                }
-            }
-        }
-        String json = PreferenceUtil.getInstance().getString(title, null);
-        if (!TextUtils.isEmpty(json)) {
-            BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-            if (banZouListBean != null) {
-                ArrayList<BanZouBean> list = banZouListBean.getList();
-                if (list != null && list.size() > 0) {
-                    setAlerD();
-                } else {
-                    if (list1 != null && list1.size() > 0) {
-                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                        String json1 = new Gson().toJson(banZouListBean1);
-                        PreferenceUtil.getInstance().saveString(title, json1);
-                        setAlerD();
-                    }
-                }
-            } else {
-                if (list1 != null && list1.size() > 0) {
-                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                    String json1 = new Gson().toJson(banZouListBean1);
-                    PreferenceUtil.getInstance().saveString(title, json1);
-                    setAlerD();
-                }
-            }
-        } else {
-            if (list1 != null && list1.size() > 0) {
-                BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                String json1 = new Gson().toJson(banZouListBean1);
-                PreferenceUtil.getInstance().saveString(title, json1);
-                setAlerD();
-            }
-        }
-    }
-
     private void setAlerD() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         AlertDialog alertDialog = builder.create();
@@ -291,13 +247,6 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         TextView mTvGuanLian = inflate.findViewById(R.id.tv_guanlian);
         TextView mTvNull = inflate.findViewById(R.id.tv_null);
         RecyclerView mRecGuanLian = inflate.findViewById(R.id.rec_guanlian);
-        String json = PreferenceUtil.getInstance().getString(title, null);
-        BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-        if (banZouListBean != null) {
-            list1 = banZouListBean.getList();
-        } else {
-            list1 = new ArrayList<>();
-        }
         if (list1 != null && list1.size() > 0) {
             mRecGuanLian.setVisibility(View.VISIBLE);
             mTvNull.setVisibility(View.GONE);
@@ -332,9 +281,6 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onItemDelete(int position) {
                 list1.remove(position);
-                BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                String json1 = new Gson().toJson(banZouListBean1);
-                PreferenceUtil.getInstance().saveString(title, json1);
                 banZouAdapter.notifyDataSetChanged();
             }
         });
@@ -829,8 +775,10 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
             if (allMusic != null && allMusic.size() > 0) {
                 for (MusicBean bean : allMusic) {
-                    if (bean.getName().contains(title) || bean.getName().contains(title)) {
-                        list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                    if (bean != null && list1 != null) {
+                        if (bean.getName().contains(title) || bean.getName().contains(title)) {
+                            list1.add(new BanZouBean(bean.getName(), bean.getPath()));
+                        }
                     }
                 }
             }
@@ -856,36 +804,13 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
             if (alertDialogLoading != null && alertDialogLoading.isShowing()) {
                 alertDialogLoading.dismiss();
             }
-            String json = PreferenceUtil.getInstance().getString(title, null);
-            if (!TextUtils.isEmpty(json)) {
-                BanZouListBean banZouListBean = new Gson().fromJson(json, BanZouListBean.class);
-                if (banZouListBean != null) {
-                    ArrayList<BanZouBean> list = banZouListBean.getList();
-                    if (list != null && list.size() > 0) {
-                        setAlerD();
-                    } else {
-                        if (list1 != null && list1.size() > 0) {
-                            BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                            String json1 = new Gson().toJson(banZouListBean1);
-                            PreferenceUtil.getInstance().saveString(title, json1);
-                            setAlerD();
-                        }
-                    }
-                } else {
-                    if (list1 != null && list1.size() > 0) {
-                        BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                        String json1 = new Gson().toJson(banZouListBean1);
-                        PreferenceUtil.getInstance().saveString(title, json1);
-                        setAlerD();
+            if (list1 != null && list1.size() > 0) {
+                for (int i = 0; i < list1.size(); i++) {
+                    if (list1.get(i) == null) {
+                        list1.remove(i);
                     }
                 }
-            } else {
-                if (list1 != null && list1.size() > 0) {
-                    BanZouListBean banZouListBean1 = new BanZouListBean(list1);
-                    String json1 = new Gson().toJson(banZouListBean1);
-                    PreferenceUtil.getInstance().saveString(title, json1);
-                    setAlerD();
-                }
+                setAlerD();
             }
         }
     }
