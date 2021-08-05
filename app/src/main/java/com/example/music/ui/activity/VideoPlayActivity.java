@@ -473,22 +473,150 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
-     * 显示速度弹窗
+     * 音速
      */
-    private SpeedDialog speedDialog;
-
     private void showSpeedPop() {
-        if (speedDialog == null) {
-            speedDialog = new SpeedDialog(this, R.style.my_dialog);
-            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
-                @Override
-                public void OnChange(float speed) {
-                    if (wlMedia != null)
-                        wlMedia.setSpeed(speed);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_yinsu, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.setCanceledOnTouchOutside(true);//点击弹窗外可关闭弹窗
+        //找控件ID
+        TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyinsu);
+        TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yinsuzhi);
+        TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayinsu);
+        //减音速
+        mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                if (wlMedia != null) {
+                    setJianYinSu(mTvYinDiaoZhi, s);
+                } else {
+                    Toast.makeText(mContext, "请先选择播放", Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
+        });
+        //加音速
+        mTvJiaYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                if (wlMedia != null) {
+                    setJiaYinSu(mTvYinDiaoZhi, s);
+                } else {
+                    Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    //减音速
+    private void setJianYinSu(TextView yinsuzhi, String s) {
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 2.0f) {
+            yinsuzhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            yinsuzhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            yinsuzhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            yinsuzhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            yinsuzhi.setText("1.5");
+            setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
+            yinsuzhi.setText("1.4");
+            setYinSu(1.4f);
+        } else if (YinSu == 1.4f) {
+            yinsuzhi.setText("1.3");
+            setYinSu(1.3f);
+        } else if (YinSu == 1.3f) {
+            yinsuzhi.setText("1.2");
+            setYinSu(1.2f);
+        } else if (YinSu == 1.2f) {
+            yinsuzhi.setText("1.1");
+            setYinSu(1.1f);
+        } else if (YinSu == 1.1f) {
+            yinsuzhi.setText("1.0");
+            setYinSu(1.0f);
+        } else if (YinSu == 1.0f) {
+            yinsuzhi.setText("0.9");
+            setYinSu(0.9f);
+        } else if (YinSu == 0.9f) {
+            yinsuzhi.setText("0.8");
+            setYinSu(0.8f);
+        } else if (YinSu == 0.8f) {
+            yinsuzhi.setText("0.7");
+            setYinSu(0.7f);
+        } else if (YinSu == 0.7f) {
+            yinsuzhi.setText("0.6");
+            setYinSu(0.6f);
+        } else if (YinSu == 0.6f) {
+            yinsuzhi.setText("0.5");
+            setYinSu(0.5f);
         }
-        speedDialog.show();
+    }
+
+    //加音速
+    private void setJiaYinSu(TextView yinsuzhi, String s) {
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 0.5f) {
+            yinsuzhi.setText("0.6");
+            setYinSu(0.6f);
+        } else if (YinSu == 0.6f) {
+            yinsuzhi.setText("0.7");
+            setYinSu(0.7f);
+        } else if (YinSu == 0.7f) {
+            yinsuzhi.setText("0.8");
+            setYinSu(0.8f);
+        } else if (YinSu == 0.8f) {
+            yinsuzhi.setText("0.9");
+            setYinSu(0.9f);
+        } else if (YinSu == 0.9f) {
+            yinsuzhi.setText("1.0");
+            setYinSu(1.0f);
+        } else if (YinSu == 1.0f) {
+            yinsuzhi.setText("1.1");
+            setYinSu(1.1f);
+        } else if (YinSu == 1.1f) {
+            yinsuzhi.setText("1.2");
+            setYinSu(1.2f);
+        } else if (YinSu == 1.2f) {
+            yinsuzhi.setText("1.3");
+            setYinSu(1.3f);
+        } else if (YinSu == 1.3f) {
+            yinsuzhi.setText("1.4");
+            setYinSu(1.4f);
+        } else if (YinSu == 1.4f) {
+            yinsuzhi.setText("1.5");
+            setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
+            yinsuzhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            yinsuzhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            yinsuzhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            yinsuzhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            yinsuzhi.setText("2.0");
+            setYinSu(2.0f);
+        }
+    }
+
+    //设置音速
+    public void setYinSu(float speed) {
+        wlMedia.setSpeed(speed);
     }
 
     @Override
