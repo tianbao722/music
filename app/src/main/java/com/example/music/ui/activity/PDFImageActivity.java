@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.music.R;
@@ -48,6 +49,12 @@ import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.joanzapata.pdfview.PDFView;
 import com.joanzapata.pdfview.listener.OnPageChangeListener;
+import com.ywl5320.bean.TimeBean;
+import com.ywl5320.libenum.SampleRateEnum;
+import com.ywl5320.libmusic.WlMusic;
+import com.ywl5320.listener.OnInfoListener;
+import com.ywl5320.listener.OnPreparedListener;
+import com.ywl5320.util.WlTimeUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,10 +82,10 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     // 记录当前播放歌曲的位置
     public int mCurrentPosition;
     private XToast xToast;
-    private MediaPlayer mediaPlayer;//音频播放器
     private XXPermissions with;
     private AlertDialog alertDialog;
     private static final int INTERNAL_TIME = 100;// 音乐进度间隔时间
+    private int isPause = 0;//0:表示没有播放音乐，从0开始播放， 1：表示暂停 继续播放
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,38 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_p_d_f_image);
         mContext = this;
         initView();
+        initWlMusic();
+    }
+
+    private WlMusic wlMusic;
+
+    private void initWlMusic() {
+        wlMusic = WlMusic.getInstance();
+        wlMusic.setCallBackPcmData(true);//是否返回音频PCM数据
+        wlMusic.setShowPCMDB(true);//是否返回音频分贝大小
+        wlMusic.setPlayCircle(false);//循环播放
+        wlMusic.setVolume(100);//声音大小100%
+        wlMusic.setPlaySpeed(1.0f);//播放速度正常
+        wlMusic.setPlayPitch(1.0f);//播放音调正常
+        wlMusic.setConvertSampleRate(SampleRateEnum.RATE_44100);//设定恒定采样率（null为取消）
+
+        //可以播放的回调
+        wlMusic.setOnPreparedListener(new OnPreparedListener() {
+            @Override
+            public void onPrepared() {
+                wlMusic.start();
+            }
+        });
+        //更新进度
+        wlMusic.setOnInfoListener(new OnInfoListener() {
+            @Override
+            public void onInfo(TimeBean timeBean) {
+                Message message = Message.obtain();
+                message.obj = timeBean;
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        });
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -181,16 +220,15 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             //夜间 切换 日间
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);//日间
-            recreate();
+            recreate();//重启当前activity
         }
         if (xToast != null && xToast.isShow()) {
             xToast.cancel();
             xToast = null;
         }
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-            mediaPlayer = null;
+        if (wlMusic != null && wlMusic.isPlaying()) {
+            wlMusic.stop();
+            wlMusic = null;
         }
     }
 
@@ -350,10 +388,11 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                                 } else {
                                     showAler();
                                 }
-                                mTvTitle.setText(list1.get(mCurrentPosition).getName());
-                                mTvSeekBar.setMax(mediaPlayer.getDuration());
-                                mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
-                                mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                                if (isPause == 1) {
+                                    mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                                } else {
+                                    mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                                }
                             }
                         });
                 xToast.show();
@@ -371,29 +410,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    //滑动条监听
-    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        // 当手停止拖拽进度条时执行该方法
-        // 获取拖拽进度
-        // 将进度对应设置给MediaPlayer
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            int progress = seekBar.getProgress();
-            if (mediaPlayer != null) {
-                mediaPlayer.seekTo(progress);
-            }
-        }
-    };
+    private int position = 0;
 
     private void showAler() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -412,7 +429,23 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mTvPlayTime = inflate.findViewById(R.id.banzou_tv_play_time);
         mTvTotalTime = inflate.findViewById(R.id.banzou_tv_total_time);
         mTvSeekBar = inflate.findViewById(R.id.banzou_time_seekBar);
-        mTvSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);//滑动条监听
+        //滑动监听
+        mTvSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                position = wlMusic.getDuration() * progress / 100;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                wlMusic.seek(position, false, false);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                wlMusic.seek(position, true, true);
+            }
+        });
         //倍速
         mTvBeiSu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -438,17 +471,21 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         mIvPlayOrPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-// 首次点击播放按钮，默认播放第0首，下标从0开始
-                if (mediaPlayer == null) {
-                    changeMusic(0);
-                } else {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
-                    } else {
-                        mediaPlayer.start();
-                        mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
-                    }
+                // 首次点击播放按钮，默认播放第0首，下标从0开始
+                if (wlMusic != null && wlMusic.isPlaying() && isPause == 2) {
+                    isPause = 1;
+                    wlMusic.pause();//暂停
+                    mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                } else if (isPause == 0 && wlMusic != null && !wlMusic.isPlaying() && list1 != null && list1.size() > 0) {
+                    mCurrentPosition = 0;
+                    wlMusic.setSource(list1.get(0).getPath());
+                    wlMusic.prePared();
+                    isPause = 2;
+                    mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
+                } else if (wlMusic != null && wlMusic.isPlaying() && isPause == 1) {
+                    isPause = 2;
+                    wlMusic.resume();
+                    mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
                 }
             }
         });
@@ -464,6 +501,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
 
     private int yindiao;
 
+    //音调加减
     private void showYinDiao() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog alertDialog = builder.create();
@@ -486,29 +524,28 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     yindiao -= 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMusic != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.00f);
+                                setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(params, 1.25f);
+                                setYinDaio(1.25f);
                                 break;
                             case -2:
-                                setYinDaio(params, 1.50f);
+                                setYinDaio(1.50f);
                                 break;
                             case -3:
-                                setYinDaio(params, 1.75f);
+                                setYinDaio(1.75f);
                                 break;
                             case -4:
-                                setYinDaio(params, 2.00f);
+                                setYinDaio(2.00f);
                                 break;
                             case -5:
-                                setYinDaio(params, 2.25f);
+                                setYinDaio(2.25f);
                                 break;
                             case -6:
-                                setYinDaio(params, 2.50f);
+                                setYinDaio(2.50f);
                                 break;
                         }
                     }
@@ -524,29 +561,28 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
                 if (yindiao < 6) {
                     yindiao += 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
-                    if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
+                    if (wlMusic != null) {
                         switch (yindiao) {
                             case 0:
-                                setYinDaio(params, 1.0f);
+                                setYinDaio(1.0f);
                                 break;
                             case 1:
-                                setYinDaio(params, 0.884f);
+                                setYinDaio(0.884f);
                                 break;
                             case 2:
-                                setYinDaio(params, 0.768f);
+                                setYinDaio(0.768f);
                                 break;
                             case 3:
-                                setYinDaio(params, 0.652f);
+                                setYinDaio(0.652f);
                                 break;
                             case 4:
-                                setYinDaio(params, 0.536f);
+                                setYinDaio(0.536f);
                                 break;
                             case 5:
-                                setYinDaio(params, 0.420f);
+                                setYinDaio(0.420f);
                                 break;
                             case 6:
-                                setYinDaio(params, 0.304f);
+                                setYinDaio(0.304f);
                                 break;
                         }
                     }
@@ -557,114 +593,208 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    private void setYinDaio(PlaybackParams params, float v2) {
-        params.setPitch(v2);//音调
-        mediaPlayer.setPlaybackParams(params);
+    //设置音调
+    private void setYinDaio(float v2) {
+        wlMusic.setPlayPitch(v2);
     }
 
     //切歌
     private void changeMusic(int position) {
-        Log.e("BenDiYinYueActivity", "position:" + position);
-        if (position < 0) {
-            mCurrentPosition = position = list1.size() - 1;
-            Log.e("BenDiYinYueActivity", "mList.size:" + list1.size());
-        } else if (position > list1.size() - 1) {//如果当前播放的是最后一首歌，则把下标改成0
-            mCurrentPosition = position = 0;
+        if (wlMusic == null) return;
+        if (mCurrentPosition > list1.size() - 1) {
+            mCurrentPosition = 0;
+        } else if (mCurrentPosition < 0) {
+            mCurrentPosition = list1.size() - 1;
         }
-        Log.e("BenDiYinYueActivity", "position:" + position);
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setOnCompletionListener(this);//监听音乐播放完毕事件，自动下一曲
-        }
-
-        try {
-            // 切歌之前先重置，释放掉之前的资源
-            mediaPlayer.reset();
-            // 设置播放源
-            Log.d("Music", list1.get(position).getPath());
-            mediaPlayer.setDataSource(list1.get(position).getPath());
-            mTvTitle.setText(list1.get(position).getName());
-//            Glide.with(this).load(mList.get(position).album_art).into(songImage);
-            // 开始播放前的准备工作，加载多媒体资源，获取相关信息
-            mediaPlayer.prepare();
-            // 开始播放
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 切歌时重置进度条并展示歌曲时长
-        mTvSeekBar.setProgress(0);
-        mTvSeekBar.setMax(mediaPlayer.getDuration());
-        mTvTotalTime.setText(parseTime(mediaPlayer.getDuration()));
-        updateProgress();
-        if (mediaPlayer.isPlaying()) {
-            mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
-        } else {
+        this.mCurrentPosition = mCurrentPosition;
+        wlMusic.playNext(list1.get(mCurrentPosition).getPath());
+        isPause = 2;
+        if (wlMusic.isPlaying()) {
             mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+        } else {
+            mIvPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_play));
         }
     }
 
-    private Handler mHandler = new Handler(new Handler.Callback() {
-
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
         @Override
-        public boolean handleMessage(Message message) {
-            // 展示给进度条和当前时间
-            if (mediaPlayer != null) {
-//                PlaybackParams params = mediaPlayer.getPlaybackParams();
-//                float pitch = params.getPitch();//音调
-//                float speed = params.getSpeed();//音速
-//                Log.i("音调", "音调: -----"+pitch);
-//                Log.i("音速", "音速: -----"+speed);
-                int progress = mediaPlayer.getCurrentPosition();
-                mTvSeekBar.setProgress(progress);
-                mTvPlayTime.setText(parseTime(progress));
-                // 继续定时发送数据
-                updateProgress();
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    TimeBean timeBean = (TimeBean) msg.obj;
+                    mTvSeekBar.setProgress(timeBean.getCurrSecs() * 100 / timeBean.getTotalSecs());
+                    String playTime = WlTimeUtil.secdsToDateFormat(timeBean.getCurrSecs(), timeBean.getTotalSecs());
+                    String totalTime = WlTimeUtil.secdsToDateFormat(timeBean.getTotalSecs(), timeBean.getTotalSecs());
+                    mTvPlayTime.setText(playTime);
+                    mTvTotalTime.setText(totalTime);
+                    mTvTitle.setText(list1.get(mCurrentPosition).getName());
+                    break;
+                default:
+                    break;
             }
-            return true;
         }
-    });
-
-    private void updateProgress() {
-        // 使用Handler每间隔1s发送一次空消息，通知进度条更新
-        Message msg = Message.obtain();// 获取一个现成的消息
-        // 使用MediaPlayer获取当前播放时间除以总时间的进度
-        int progress = mediaPlayer.getCurrentPosition();
-        msg.arg1 = progress;
-        mHandler.sendMessageDelayed(msg, INTERNAL_TIME);
-    }
+    };
 
     /**
      * 显示速度弹窗
      */
     private SpeedDialog speedDialog;
 
+
+    /**
+     * 音速
+     */
     private void showSpeedPop() {
-        if (speedDialog == null) {
-            speedDialog = new SpeedDialog(this, R.style.my_dialog);
-            speedDialog.setOnChangeListener(new SpeedDialog.OnTimerListener() {
-                @Override
-                public void OnChange(float speed) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        try {
-                            PlaybackParams params = mediaPlayer.getPlaybackParams();
-                            params.setSpeed(speed);//音速
-                            mediaPlayer.setPlaybackParams(params);
-                        } catch (Exception e) {
-                            Log.e("Exception", "setPlaySpeed: ", e);
-                        }
-                    }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(this).inflate(R.layout.popupwindow_yinsu, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.setCanceledOnTouchOutside(true);//点击弹窗外可关闭弹窗
+        //找控件ID
+        TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyinsu);
+        TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yinsuzhi);
+        TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayinsu);
+        //减音速
+        mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                if (wlMusic != null) {
+                    setJianYinSu(mTvYinDiaoZhi, s);
+                } else {
+                    Toast.makeText(mContext, "请先选择播放", Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
+        });
+        //加音速
+        mTvJiaYinDiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = mTvYinDiaoZhi.getText().toString();
+                if (wlMusic != null) {
+                    setJiaYinSu(mTvYinDiaoZhi, s);
+                } else {
+                    Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    //减音速
+    private void setJianYinSu(TextView yinsuzhi, String s) {
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 2.0f) {
+            yinsuzhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            yinsuzhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            yinsuzhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            yinsuzhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            yinsuzhi.setText("1.5");
+            setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
+            yinsuzhi.setText("1.4");
+            setYinSu(1.4f);
+        } else if (YinSu == 1.4f) {
+            yinsuzhi.setText("1.3");
+            setYinSu(1.3f);
+        } else if (YinSu == 1.3f) {
+            yinsuzhi.setText("1.2");
+            setYinSu(1.2f);
+        } else if (YinSu == 1.2f) {
+            yinsuzhi.setText("1.1");
+            setYinSu(1.1f);
+        } else if (YinSu == 1.1f) {
+            yinsuzhi.setText("1.0");
+            setYinSu(1.0f);
+        } else if (YinSu == 1.0f) {
+            yinsuzhi.setText("0.9");
+            setYinSu(0.9f);
+        } else if (YinSu == 0.9f) {
+            yinsuzhi.setText("0.8");
+            setYinSu(0.8f);
+        } else if (YinSu == 0.8f) {
+            yinsuzhi.setText("0.7");
+            setYinSu(0.7f);
+        } else if (YinSu == 0.7f) {
+            yinsuzhi.setText("0.6");
+            setYinSu(0.6f);
+        } else if (YinSu == 0.6f) {
+            yinsuzhi.setText("0.5");
+            setYinSu(0.5f);
         }
-        speedDialog.show();
+    }
+
+    //加音速
+    private void setJiaYinSu(TextView yinsuzhi, String s) {
+        float YinSu = Float.parseFloat(s);
+        if (YinSu == 0.5f) {
+            yinsuzhi.setText("0.6");
+            setYinSu(0.6f);
+        } else if (YinSu == 0.6f) {
+            yinsuzhi.setText("0.7");
+            setYinSu(0.7f);
+        } else if (YinSu == 0.7f) {
+            yinsuzhi.setText("0.8");
+            setYinSu(0.8f);
+        } else if (YinSu == 0.8f) {
+            yinsuzhi.setText("0.9");
+            setYinSu(0.9f);
+        } else if (YinSu == 0.9f) {
+            yinsuzhi.setText("1.0");
+            setYinSu(1.0f);
+        } else if (YinSu == 1.0f) {
+            yinsuzhi.setText("1.1");
+            setYinSu(1.1f);
+        } else if (YinSu == 1.1f) {
+            yinsuzhi.setText("1.2");
+            setYinSu(1.2f);
+        } else if (YinSu == 1.2f) {
+            yinsuzhi.setText("1.3");
+            setYinSu(1.3f);
+        } else if (YinSu == 1.3f) {
+            yinsuzhi.setText("1.4");
+            setYinSu(1.4f);
+        } else if (YinSu == 1.4f) {
+            yinsuzhi.setText("1.5");
+            setYinSu(1.5f);
+        } else if (YinSu == 1.5f) {
+            yinsuzhi.setText("1.6");
+            setYinSu(1.6f);
+        } else if (YinSu == 1.6f) {
+            yinsuzhi.setText("1.7");
+            setYinSu(1.7f);
+        } else if (YinSu == 1.7f) {
+            yinsuzhi.setText("1.8");
+            setYinSu(1.8f);
+        } else if (YinSu == 1.8f) {
+            yinsuzhi.setText("1.9");
+            setYinSu(1.9f);
+        } else if (YinSu == 1.9f) {
+            yinsuzhi.setText("2.0");
+            setYinSu(2.0f);
+        }
+    }
+
+    //设置音速
+    public void setYinSu(float speed) {
+        wlMusic.setPlaySpeed(speed);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         changeMusic(mCurrentPosition);
     }
+
     //加载中loading动画
     private AlertDialog alertDialogLoading;
 
@@ -679,6 +809,7 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
         ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
         Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
     }
+
     class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
 
         @Override
