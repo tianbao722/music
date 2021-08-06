@@ -117,7 +117,11 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             String name = allData.getString(allData.getColumnIndex(DatabaseHelper.NAME));
             String id = allData.getString(allData.getColumnIndex(DatabaseHelper.ID));
             startManagingCursor(allData);  //查找后关闭游标
-            strings.add(new SearchLiShiBean(id, name));
+            if (TextUtils.isEmpty(name)) {
+                mydb.deleteData(DatabaseHelper.TABLE_NAME, id);
+            } else {
+                strings.add(new SearchLiShiBean(id, name));
+            }
         }
         initTuPianAdapter(true);
         initListener();
@@ -132,13 +136,15 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onItemClick(int position, ImageYuePuImageBean imageYuePuImageBean) {
                 boolean isinsert = false;
-                for (int i = 0; i < strings.size(); i++) {
-                    String name = strings.get(i).getName();
-                    if (name.equals(txt)) {
-                        isinsert = true;
-                        break;
-                    } else {
-                        isinsert = false;
+                if (strings != null && strings.size() > 0 && !TextUtils.isEmpty(txt)) {
+                    for (int i = 0; i < strings.size(); i++) {
+                        String name = strings.get(i).getName();
+                        if (name.equals(txt)) {
+                            isinsert = true;
+                            break;
+                        } else {
+                            isinsert = false;
+                        }
                     }
                 }
                 if (!isinsert) {
@@ -224,13 +230,15 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onItemClick(int position, PDFImageBean pdfImageBean) {
                 boolean isinsert = false;
-                for (int i = 0; i < strings.size(); i++) {
-                    String name = strings.get(i).getName();
-                    if (name.equals(txt)) {
-                        isinsert = true;
-                        break;
-                    } else {
-                        isinsert = false;
+                if (strings != null && strings.size() > 0 && !TextUtils.isEmpty(txt)) {
+                    for (int i = 0; i < strings.size(); i++) {
+                        String name = strings.get(i).getName();
+                        if (name.equals(txt)) {
+                            isinsert = true;
+                            break;
+                        } else {
+                            isinsert = false;
+                        }
                     }
                 }
                 if (!isinsert) {
@@ -519,6 +527,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
+
     private int dp2px(float value) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
     }

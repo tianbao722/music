@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DBDBDB"
-    android:orientation="vertical"
     tools:context=".ui.activity.search.SearchVideoActivity">
 
     <LinearLayout
+        android:id="@+id/ll_title_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/dp_10">
+        android:paddingTop="@dimen/dp_10"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/search_video_iv_back"
@@ -23,24 +26,39 @@
             android:padding="@dimen/dp_10"
             android:src="@mipmap/fanhui" />
         <!--歌曲的展示列表-->
-        <androidx.appcompat.widget.SearchView
+        <EditText
             android:id="@+id/video_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_10"
-            android:focusedByDefault="false"
-            app:iconifiedByDefault="false"
-            app:queryHint="@string/search_tips"
-            tools:targetApi="o" />
+            android:hint="请输入乐谱名称"
+            android:imeOptions="actionSearch"
+            android:singleLine="true" />
     </LinearLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/video_rec_search"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginRight="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_10" />
-</LinearLayout>
+        android:layout_marginBottom="@dimen/dp_10"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_title_video" />
+
+    <LinearLayout
+        android:id="@+id/ll_search_lishi_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_title_video">
+
+        <include layout="@layout/popupwindow_searchjilu" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
