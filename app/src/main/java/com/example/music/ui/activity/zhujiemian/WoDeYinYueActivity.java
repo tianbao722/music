@@ -101,8 +101,14 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     tvTotalTime.setText(totalTime);
                     if (mList != null && mList.size() > 0)
                         mTvMusicName.setText(mList.get(mCurrentPosition).getName());
-                    if (playTime.equals(totalTime)) {
+                    if (playTime.equals(totalTime) && mPattern == 0) {//列表循环
                         changeMusic(++mCurrentPosition);
+                    } else if (playTime.equals(totalTime) && mPattern == 2) {//单曲播放
+                        wlMusic.stop();
+                        btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                        isPause = 0;
+                    } else if (playTime.equals(totalTime) && mPattern == 1) {//单曲循环
+                        changeMusic(mCurrentPosition);
                     }
                     break;
                 default:

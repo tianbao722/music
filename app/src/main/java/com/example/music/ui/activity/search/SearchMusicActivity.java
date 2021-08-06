@@ -74,7 +74,7 @@ public class SearchMusicActivity extends AppCompatActivity {
                 intent.putExtra("title", title);
                 setResult(2, intent);
                 if (!TextUtils.isEmpty(searchText)) {
-                    boolean b = myDb.insertData(searchText);
+//                    boolean b = myDb.insertData(searchText);
                 }
                 SearchMusicActivity.this.finish();
             }

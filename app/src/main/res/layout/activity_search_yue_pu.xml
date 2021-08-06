@@ -29,17 +29,17 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.SearchView
+        <EditText
             android:id="@+id/yuepu_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_30"
-            android:focusedByDefault="false"
-            app:iconifiedByDefault="false"
+            android:layout_marginLeft="@dimen/dp_40"
+            android:layout_marginTop="@dimen/dp_10"
+            android:hint="@string/search_tips1"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:queryHint="@string/search_tips1"
-            tools:targetApi="o" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -80,11 +80,11 @@
     <TextView
         android:id="@+id/tv_zong"
         android:layout_width="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/ll_search_yuepu"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="@dimen/dp_20"
         android:layout_height="wrap_content"
-        android:text="图片乐谱总数：0" />
+        android:layout_marginLeft="@dimen/dp_20"
+        android:text="图片乐谱总数：0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_search_yuepu" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_search_yuepu"
@@ -96,5 +96,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_search_yuepu" />
 
+    <LinearLayout
+        android:id="@+id/ll_search_lishi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_yuepu">
+
+        <include layout="@layout/popupwindow_searchjilu" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

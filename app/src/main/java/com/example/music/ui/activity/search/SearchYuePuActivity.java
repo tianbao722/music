@@ -3,38 +3,58 @@ package com.example.music.ui.activity.search;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.FlowLayoutManager;
 import com.example.music.adapter.SearchDPFAdapter;
+import com.example.music.adapter.SearchJiLuAdapter;
 import com.example.music.adapter.SearchYuePuAdapter;
+import com.example.music.adapter.SpaceItemDecoration;
 import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.ImageYuePuImageBean;
 import com.example.music.bean.PDFImageBean;
+import com.example.music.bean.SearchLiShiBean;
+import com.example.music.sqlitleutile.DatabaseHelper;
 import com.example.music.ui.activity.ImageActivity;
 import com.example.music.ui.activity.PDFImageActivity;
-import com.example.music.ui.fragment.TuPianYuePuFragment;
 import com.example.music.utils.SPBeanUtile;
+import com.example.music.utils.SoftKeyBoardListener;
 import com.example.music.utils.StatusBarUtil;
+import com.example.music.zview.MaxHeightRecyclerView;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -42,7 +62,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchYuePuActivity extends AppCompatActivity implements View.OnClickListener {
-    private SearchView mYuePuSearchView;
+    private EditText mYuePuSearchView;
     private ImageView mIvBack;
     private RecyclerView mREcSearchYuePu;
     private TextView mTvSearchTuPianYuePu;
@@ -52,10 +72,17 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
     private SearchDPFAdapter searchPDFAdapter;
     private ArrayList<ImageYuePuImageBean> list;//图片
     private ArrayList<PDFImageBean> PDFlist;//图片
-    private Context mContext;
+    private Activity mContext;
     private String txt;
     private boolean isPDFYuePu = true;
     private boolean isTouch = false;
+    private ArrayList<SearchLiShiBean> strings;
+    private DatabaseHelper mydb;
+    private MaxHeightRecyclerView mRecSearchLiShi;
+    private TextView mTvQingKong;
+    private LinearLayout mLLSearchLiShi;
+    private SoftKeyBoardListener softKeyBoardListener;
+    //    private PopupWindow pw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +91,7 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         StatusBarUtil.transparencyBar(this);
         mContext = this;
         initView();
+        initSeawrchLiShi();
     }
 
     private void initView() {
@@ -71,6 +99,9 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mREcSearchYuePu = findViewById(R.id.rec_search_yuepu);
         mTvSearchTuPianYuePu = findViewById(R.id.tv_search_tupianyuepu);
         mTvSearchDefYuePu = findViewById(R.id.tv_search_defyuepu);
+        mRecSearchLiShi = findViewById(R.id.rec_search_jilu);
+        mTvQingKong = findViewById(R.id.tv_qingkong);
+        mLLSearchLiShi = findViewById(R.id.ll_search_lishi);
         mTvZong = findViewById(R.id.tv_zong);
         mIvBack = findViewById(R.id.iv_back);
         mIvBack.setOnClickListener(this);
@@ -78,6 +109,16 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         mTvSearchTuPianYuePu.setOnClickListener(this);
         list = new ArrayList<>();
         PDFlist = new ArrayList<>();
+        mydb = new DatabaseHelper(mContext);
+        Cursor allData = mydb.getAllData(DatabaseHelper.TABLE_NAME);
+        strings = new ArrayList<>();
+        while (allData.moveToNext()) {
+            //光标移动成功
+            String name = allData.getString(allData.getColumnIndex(DatabaseHelper.NAME));
+            String id = allData.getString(allData.getColumnIndex(DatabaseHelper.ID));
+            startManagingCursor(allData);  //查找后关闭游标
+            strings.add(new SearchLiShiBean(id, name));
+        }
         initTuPianAdapter(true);
         initListener();
     }
@@ -90,6 +131,19 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         searchYuePuAdapter.setOnItemClickListener(new SearchYuePuAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position, ImageYuePuImageBean imageYuePuImageBean) {
+                boolean isinsert = false;
+                for (int i = 0; i < strings.size(); i++) {
+                    String name = strings.get(i).getName();
+                    if (name.equals(txt)) {
+                        isinsert = true;
+                        break;
+                    } else {
+                        isinsert = false;
+                    }
+                }
+                if (!isinsert) {
+                    mydb.insertData(DatabaseHelper.TABLE_NAME, txt);
+                }
                 String name = imageYuePuImageBean.getName();
                 List<File> list2 = imageYuePuImageBean.getList();
                 ArrayList<String> image = new ArrayList<>();
@@ -169,6 +223,19 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
         searchPDFAdapter.setOnItemClickListener(new SearchDPFAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position, PDFImageBean pdfImageBean) {
+                boolean isinsert = false;
+                for (int i = 0; i < strings.size(); i++) {
+                    String name = strings.get(i).getName();
+                    if (name.equals(txt)) {
+                        isinsert = true;
+                        break;
+                    } else {
+                        isinsert = false;
+                    }
+                }
+                if (!isinsert) {
+                    mydb.insertData(DatabaseHelper.TABLE_NAME, txt);
+                }
                 Intent intent = new Intent(mContext, PDFImageActivity.class);
                 intent.putExtra("name", pdfImageBean.getName());
                 intent.putExtra("file", pdfImageBean.getFile().getPath());
@@ -285,30 +352,103 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void initListener() {
-        // 设置搜索文本监听
-        mYuePuSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // 当点击搜索按钮时触发该方法
+        mYuePuSearchView.addTextChangedListener(textWatcher);
+        mYuePuSearchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                txt = query;
-                searchYuePuAdapter.getFilter().filter(query);
-                if (searchPDFAdapter != null) {
-                    searchPDFAdapter.getFilter().filter(query);
-                }
-                return false;
-            }
-
-            // 当搜索内容改变时触发该方法
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                txt = newText;
-                searchYuePuAdapter.getFilter().filter(newText);
-                if (searchPDFAdapter != null) {
-                    searchPDFAdapter.getFilter().filter(newText);
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {//点击了软键盘上的搜索键
+                    //关闭软键盘
+                    hideInput();
+                    txt = mYuePuSearchView.getText().toString();
+                    searchYuePuAdapter.getFilter().filter(txt);
+                    if (searchPDFAdapter != null) {
+                        searchPDFAdapter.getFilter().filter(txt);
+                    }
+                    return true;
                 }
                 return false;
             }
         });
+        mYuePuSearchView.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // 获得焦点
+                    if (strings.size() > 0)
+                        mLLSearchLiShi.setVisibility(View.VISIBLE);
+                    //弹出软键盘
+                    showInput(mYuePuSearchView);
+                } else {
+                    // 失去焦点
+                    hideInput();
+                    if (mLLSearchLiShi.getVisibility() == View.VISIBLE)
+                        mLLSearchLiShi.setVisibility(View.GONE);
+                }
+            }
+        });
+        softKeyBoardListener = new SoftKeyBoardListener(mContext);
+        //软键盘状态监听
+        softKeyBoardListener.setListener(new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                //软键盘已经显示，做逻辑
+                mYuePuSearchView.setFocusable(true);
+                mYuePuSearchView.setFocusableInTouchMode(true);
+                mYuePuSearchView.requestFocus();
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                //软键盘已经隐藏,做逻辑
+                //清除焦点
+                mYuePuSearchView.clearFocus();
+            }
+        });
+    }
+
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            txt = mYuePuSearchView.getText().toString();
+            searchYuePuAdapter.getFilter().filter(txt);
+            if (searchPDFAdapter != null) {
+                searchPDFAdapter.getFilter().filter(txt);
+            }
+        }
+    };
+
+    /**
+     * 显示键盘
+     *
+     * @param et 输入焦点
+     */
+    public void showInput(final EditText et) {
+        et.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+
+    /**
+     * 隐藏键盘
+     */
+    protected void hideInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        View v = getWindow().peekDecorView();
+        if (null != v) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -330,5 +470,56 @@ public class SearchYuePuActivity extends AppCompatActivity implements View.OnCli
                 searchPDFAdapter.getFilter().filter(txt);
                 break;
         }
+    }
+
+    private void initSeawrchLiShi() {
+        if (strings.size() == 0) {
+            return;
+        }
+        FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
+        mRecSearchLiShi.addItemDecoration(new SpaceItemDecoration(dp2px(2)));
+        mRecSearchLiShi.setLayoutManager(flowLayoutManager);
+        SearchJiLuAdapter searchJiLuAdapter = new SearchJiLuAdapter(mContext, strings);
+        mRecSearchLiShi.setAdapter(searchJiLuAdapter);
+        searchJiLuAdapter.setOnItemClickListener(new SearchJiLuAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                if (strings != null && strings.size() > 0) {
+                    String name = strings.get(position).getName();
+                    txt = name;
+                    searchYuePuAdapter.getFilter().filter(name);
+                    if (searchPDFAdapter != null) {
+                        searchPDFAdapter.getFilter().filter(name);
+                    }
+                    mYuePuSearchView.setText(name);
+                    mYuePuSearchView.clearFocus();
+                }
+            }
+        });
+        searchJiLuAdapter.setOnItemLongClickListener(new SearchJiLuAdapter.onItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position) {
+                String id = strings.get(position).getId();
+                mydb.deleteData(DatabaseHelper.TABLE_NAME, id);
+                strings.remove(position);
+                searchJiLuAdapter.setData(strings);
+                if (strings.size() == 0) {
+                    mLLSearchLiShi.setVisibility(View.GONE);
+                }
+            }
+        });
+        mTvQingKong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < strings.size(); i++) {
+                    String id = strings.get(i).getId();
+                    mydb.deleteData(DatabaseHelper.TABLE_NAME, id);
+                }
+                mLLSearchLiShi.setVisibility(View.GONE);
+            }
+        });
+    }
+    private int dp2px(float value) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
     }
 }
