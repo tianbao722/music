@@ -209,10 +209,9 @@ public class PDFImageActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    protected void onDestroy() {
+        super.onDestroy();
         setFanhui();
-        PDFImageActivity.this.finish();
-        return super.onKeyDown(keyCode, event);
     }
 
     private void setFanhui() {

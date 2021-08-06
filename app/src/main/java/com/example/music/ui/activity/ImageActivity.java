@@ -308,9 +308,9 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    protected void onDestroy() {
+        super.onDestroy();
         setFanhui();
-        return super.onKeyDown(keyCode, event);
     }
 
     private void setFanhui() {
@@ -779,7 +779,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             ArrayList<MusicBean> allMusic = SPBeanUtile.getAllMusic();
             if (allMusic != null && allMusic.size() > 0) {
                 for (MusicBean bean : allMusic) {
-                    if (list1 != null){
+                    if (list1 != null) {
                         if (bean.getName().contains(title) || bean.getName().contains(title)) {
                             list1.add(new BanZouBean(bean.getName(), bean.getPath()));
                         }
