@@ -94,7 +94,7 @@ public class SearchVideoActivity extends AppCompatActivity implements View.OnCli
         mRecVideo.setAdapter(dongTaiVideoAdapter);
         dongTaiVideoAdapter.setOnItemClickListener(new DongTaiVideoAdapter.onItemClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onItemClick(MusicBean musicBean) {
                 boolean isinsert = false;
                 if (strings != null && strings.size() > 0 && !TextUtils.isEmpty(txt)) {
                     for (int i = 0; i < strings.size(); i++) {
@@ -111,7 +111,6 @@ public class SearchVideoActivity extends AppCompatActivity implements View.OnCli
                     mydb.insertData(DatabaseHelper.TABLE_NAME2, txt);
                 }
                 Intent intent = new Intent(SearchVideoActivity.this, VideoPlayActivity.class);
-                MusicBean musicBean = allVideoList.get(position);
                 intent.putExtra("name", musicBean.getName());
                 intent.putExtra("path", musicBean.getPath());
                 startActivity(intent);

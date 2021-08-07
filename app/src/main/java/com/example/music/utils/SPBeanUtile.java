@@ -22,6 +22,8 @@ import com.example.music.bean.MusicBean;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SPBeanUtile {
 
@@ -224,7 +226,6 @@ public class SPBeanUtile {
         ArrayList<MusicBean> musicBeans = new ArrayList<>();
         ArrayList<BenDiYuePuBean> mList = SPBeanUtile.getDongTaiYuePuFileList();
         if (mList != null && mList.size() > 0) {
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             for (int i = 0; i < mList.size(); i++) {
                 String title = mList.get(i).getTitle();
                 String path = MyApplication.getDongTaiYuePuFile().getPath();
@@ -232,14 +233,19 @@ public class SPBeanUtile {
                 List<File> files = FileUtils.listFilesInDir(currentPath);
                 for (int j = 0; j < files.size(); j++) {
                     String path1 = files.get(j).getPath();
-                    mmr.setDataSource(path1);
-                    String fileName = FileUtils.getFileName(files.get(j));
-                    String name = fileName.substring(0, fileName.length() - 4);
-                    String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    String size = FileUtils.getSize(files.get(j));
-                    long time1 = Long.parseLong(time);
-                    MusicBean musicBean = new MusicBean(name, time1, size, path1);
-                    musicBeans.add(musicBean);
+                    boolean fileExists = FileUtils.isFileExists(path1);
+                    if (fileExists) {
+                        String fileName = FileUtils.getFileName(files.get(j));
+                        String pattern = ".*._.*";
+                        Pattern r = Pattern.compile(pattern);
+                        Matcher m = r.matcher(fileName);
+                        if (!m.matches()) {
+                            String name = fileName.substring(0, fileName.length() - 4);
+                            String size = FileUtils.getSize(files.get(j));
+                            MusicBean musicBean = new MusicBean(name, 0, size, path1);
+                            musicBeans.add(musicBean);
+                        }
+                    }
                 }
             }
             return musicBeans;

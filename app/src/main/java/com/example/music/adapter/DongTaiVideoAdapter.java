@@ -42,10 +42,11 @@ public class DongTaiVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.mTvName.setText(list.get(position).getName());
         viewHolder.mTvSize.setText(list.get(position).getSize());
+        MusicBean musicBean = list.get(position);
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListener.onItemClick(position);
+                onItemClickListener.onItemClick(musicBean);
             }
         });
     }
@@ -107,6 +108,6 @@ public class DongTaiVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(MusicBean musicBean);
     }
 }

@@ -19,7 +19,7 @@
         android:id="@+id/dong_tv_video_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLength="7"
+        android:maxLength="13"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="视频名称"

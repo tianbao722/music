@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,17 +21,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.DongTaiVideoAdapter;
 import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
+import com.example.music.bean.ImageYuePuImageBean;
 import com.example.music.bean.MusicBean;
 import com.example.music.bean.MusicBean;
 import com.example.music.ui.activity.ImageActivity;
 import com.example.music.ui.activity.VideoPlayActivity;
 import com.example.music.ui.activity.search.SearchVideoActivity;
+import com.example.music.ui.fragment.TuPianYuePuFragment;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
 
@@ -38,6 +42,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DongTaiPuActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView mIvBack;
@@ -199,9 +205,8 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                 benDiYuePuBean.setSelected(true);
                 strings.set(position, benDiYuePuBean);
                 tuPianYuePuAdapter.notifyDataSetChanged();
-                videoList.clear();
-                videoList = getImageFileList();
-                dongTaiVideoAdapter.setData(getImageFileList());
+                MyAsyncTask myAsyncTask = new MyAsyncTask();
+                myAsyncTask.execute("s");
             }
         });
     }
@@ -214,30 +219,33 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
             return null;
         }
         String currentPath = path + "/" + strings.get(mPosition).getTitle();
-        List<File> files2 = FileUtils.listFilesInDirWithFilter(currentPath, new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return (pathname.getPath().endsWith(".mp4"));
+        List<File> files2 = FileUtils.listFilesInDir(currentPath);
+        if (files2 != null && files2.size() > 0) {
+            for (int i = 0; i < files2.size(); i++) {
+                String path1 = files2.get(i).getPath();
+                boolean fileExists = FileUtils.isFileExists(path1);
+                if (fileExists) {
+                    String fileName = FileUtils.getFileName(files2.get(i));
+                    String pattern = ".*._.*";
+                    Pattern r = Pattern.compile(pattern);
+                    Matcher m = r.matcher(fileName);
+                    boolean matches = m.matches();
+                    if (!matches){
+                        String name = fileName.substring(0, fileName.length() - 4);
+                        String size = FileUtils.getSize(files2.get(i));
+                        MusicBean musicBean = new MusicBean(name, 0, size, path1);
+                        musicBeans.add(musicBean);
+                    }
+                }
             }
-        });
-//        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        for (int i = 0; i < files2.size(); i++) {
-            String path1 = files2.get(i).getPath();
-//            mmr.setDataSource(path1);
-            String fileName = FileUtils.getFileName(files2.get(i));
-            String name = fileName.substring(0, fileName.length() - 4);
-//            String time = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            String size = FileUtils.getSize(files2.get(i));
-//            long time1 = Long.parseLong(time);
-            MusicBean musicBean = new MusicBean(name, 0, size, path1);
-            musicBeans.add(musicBean);
         }
         return musicBeans;
     }
 
     private void initRecImageYuePu() {
         mRecDongVideo.setLayoutManager(new LinearLayoutManager(mContext));
-        videoList = getImageFileList();
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("s");
         if (videoList == null) {
             videoList = new ArrayList<>();
         }
@@ -246,14 +254,73 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
         //条目点击事件
         dongTaiVideoAdapter.setOnItemClickListener(new DongTaiVideoAdapter.onItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                MusicBean musicBean = videoList.get(position);
+            public void onItemClick(MusicBean musicBean) {
                 Intent intent = new Intent(mContext, VideoPlayActivity.class);
                 intent.putExtra("name", musicBean.getName());
                 intent.putExtra("path", musicBean.getPath());
                 startActivity(intent);
             }
         });
+    }
+
+    //加载中loading动画
+    private AlertDialog alertDialog;
+
+    private void showAleartDialogLoading() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_loading, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        ImageView mIvLoading = inflate.findViewById(R.id.iv_loading);
+        Glide.with(mContext).load(R.mipmap.loading).into(mIvLoading);
+    }
+
+    class MyAsyncTask extends AsyncTask<String, Integer, ArrayList<MusicBean>> {
+
+        @Override
+        protected void onPreExecute() {
+            //这里是开始线程之前执行的,是在UI线程
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            } else {
+                showAleartDialogLoading();
+            }
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<MusicBean> doInBackground(String... params) {
+            //这是在后台子线程中执行的
+            ArrayList<MusicBean> imageFileList = getImageFileList();
+            return imageFileList;
+        }
+
+        @Override
+        protected void onCancelled() {
+            //当任务被取消时回调
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            //更新进度
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MusicBean> imageYuePuImageBeans) {
+            super.onPostExecute(imageYuePuImageBeans);
+            //当任务执行完成是调用,在UI线程
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
+            videoList.clear();
+            videoList = imageYuePuImageBeans;
+            dongTaiVideoAdapter.setData(videoList);
+        }
     }
 
 }
