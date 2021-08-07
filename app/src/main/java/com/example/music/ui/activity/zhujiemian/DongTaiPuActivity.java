@@ -1,5 +1,6 @@
 package com.example.music.ui.activity.zhujiemian;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
 import com.example.music.adapter.DongTaiVideoAdapter;
+import com.example.music.adapter.FileMoveAdapter;
 import com.example.music.adapter.RecImageYuePuAdapter;
 import com.example.music.adapter.TuPianYuePuAdapter;
 import com.example.music.bean.BenDiYuePuBean;
@@ -96,7 +98,7 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.dong_iv_shear://搜索
                 Intent intent = new Intent(DongTaiPuActivity.this, SearchVideoActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
             case R.id.dong_tv_xinzeng://新增
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -139,6 +141,8 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                                         if (alertDialog != null) {
                                             alertDialog.dismiss();
                                         }
+                                        MyAsyncTask myAsyncTask = new MyAsyncTask();
+                                        myAsyncTask.execute("s");
                                         Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
@@ -155,6 +159,8 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                                     if (alertDialog != null) {
                                         alertDialog.dismiss();
                                     }
+                                    MyAsyncTask myAsyncTask = new MyAsyncTask();
+                                    myAsyncTask.execute("s");
                                     Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(mContext, "添加失败", Toast.LENGTH_SHORT).show();
@@ -209,6 +215,12 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                 myAsyncTask.execute("s");
             }
         });
+        tuPianYuePuAdapter.setOnItmeLongClickListner(new TuPianYuePuAdapter.onItmeLongClickListner() {
+            @Override
+            public void onItemLongClick(int position) {
+                showAlertLong(position);
+            }
+        });
     }
 
     //获取选中title文件夹下的Video
@@ -230,7 +242,7 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                     Pattern r = Pattern.compile(pattern);
                     Matcher m = r.matcher(fileName);
                     boolean matches = m.matches();
-                    if (!matches){
+                    if (!matches) {
                         String name = fileName.substring(0, fileName.length() - 4);
                         String size = FileUtils.getSize(files2.get(i));
                         MusicBean musicBean = new MusicBean(name, 0, size, path1);
@@ -259,6 +271,13 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                 intent.putExtra("name", musicBean.getName());
                 intent.putExtra("path", musicBean.getPath());
                 startActivity(intent);
+            }
+        });
+        dongTaiVideoAdapter.setOnItemLongClickListener(new DongTaiVideoAdapter.onItemLongClickListener() {
+            @Override
+            public void onItemLongClick(ArrayList<MusicBean> list, int position) {
+                videoList = list;
+                showAlertLongImage(position);
             }
         });
     }
@@ -323,4 +342,335 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+
+    //右边音乐的删除和重命名
+    private void showAlertLongImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_updata, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        TextView mTvMoveFile = inflate.findViewById(R.id.tv_move_file);
+        //移动文件
+        mTvMoveFile.setVisibility(View.VISIBLE);
+        mTvMoveFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertMoveFile(position);
+                alertDialog.dismiss();
+            }
+        });
+        //删除
+        mTvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = videoList.get(position).getName();
+                String file = MyApplication.getDongTaiYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title + ".mp4";
+                boolean delete = FileUtils.delete(file);
+                if (delete) {
+                    videoList.clear();
+                    videoList = getImageFileList();
+                    dongTaiVideoAdapter.setData(getImageFileList());
+                    Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
+                }
+                alertDialog.dismiss();
+            }
+        });
+        //重命名
+        mTvChongMingMing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertChongMingMingImage(position);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    //移动文件的弹窗
+    private int selectMovePosition;
+
+    private void showAlertMoveFile(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_move_file, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        RecyclerView mRecMove = inflate.findViewById(R.id.rec_move_file);
+        TextView mTvCanCel = inflate.findViewById(R.id.tv_cencel1);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter1);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+        mRecMove.setLayoutManager(linearLayoutManager);
+        if (strings == null) {
+            strings = new ArrayList<>();
+        }
+        FileMoveAdapter fileMoveAdapter = new FileMoveAdapter(mContext, strings);
+        mRecMove.setAdapter(fileMoveAdapter);
+        fileMoveAdapter.notifyDataSetChanged();
+        fileMoveAdapter.setOnItemClickListener(new FileMoveAdapter.onItemClickListener() {
+            public void onItemClick(int position) {
+                selectMovePosition = position;
+                for (int i = 0; i < strings.size(); i++) {
+                    BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                    benDiYuePuBean.setSelected(false);
+                    strings.set(i, benDiYuePuBean);
+                }
+                BenDiYuePuBean benDiYuePuBean = strings.get(position);
+                benDiYuePuBean.setSelected(true);
+                strings.set(position, benDiYuePuBean);
+                fileMoveAdapter.setData(strings);
+            }
+        });
+        mTvCanCel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = videoList.get(position).getName();
+                //原路径
+                String file = MyApplication.getDongTaiYuePuFile() + "/" + strings.get(mPosition).getTitle() + "/" + title + ".mp4";
+                String title1 = strings.get(selectMovePosition).getTitle();
+                //新路径
+                String path = MyApplication.getDongTaiYuePuFile().getPath() + "/" + title1 + "/" + title + ".mp4";
+                boolean move = FileUtils.move(file, path);
+                if (move) {
+                    mPosition = selectMovePosition;
+                    for (int i = 0; i < strings.size(); i++) {
+                        BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                        benDiYuePuBean.setSelected(false);
+                        strings.set(i, benDiYuePuBean);
+                    }
+                    BenDiYuePuBean benDiYuePuBean = strings.get(mPosition);
+                    benDiYuePuBean.setSelected(true);
+                    strings.set(mPosition, benDiYuePuBean);
+                    mRecDongTitle.scrollToPosition(mPosition);
+                    tuPianYuePuAdapter.setData(strings);
+                    videoList.clear();
+                    videoList = getImageFileList();
+                    dongTaiVideoAdapter.setData(getImageFileList());
+                    alertDialog.dismiss();
+                    Toast.makeText(mContext, "移动成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "移动失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    //右边音乐名字的重命名
+    private void showAlertChongMingMingImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+        EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+        String title = videoList.get(position).getName();
+        mEdBenDiQuPu.setText(title);
+        //确定
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdBenDiQuPu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    if (videoList.size() != 0) {
+                        for (int i = 0; i < videoList.size(); i++) {
+                            String title = videoList.get(i).getName();
+                            if (title.equals(text)) {
+                                classify = false;
+                                break;
+                            } else {
+                                classify = true;
+                            }
+                        }
+                        if (classify) {
+                            String path = MyApplication.getDongTaiYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + videoList.get(position).getName() + ".mp4";
+                            boolean rename = FileUtils.rename(path, text + ".mp4");
+                            if (rename) {
+                                MusicBean imageYuePuImageBean = videoList.get(position);
+                                String file = MyApplication.getDongTaiYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle() + "/" + text + ".mp4";
+                                imageYuePuImageBean.setName(text);
+                                imageYuePuImageBean.setPath(file);
+                                videoList.set(position, imageYuePuImageBean);
+                                dongTaiVideoAdapter.setData(videoList);
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "该名称已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入名称", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //取消
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    //左边title的删除的重命名
+    private void showAlertLong(int mPosition) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_updata, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        //删除
+        mTvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = strings.get(mPosition).getTitle();
+                String file = MyApplication.getDongTaiYuePuFile() + "/" + title;
+                boolean delete = FileUtils.delete(file);
+                if (delete) {
+                    strings.remove(mPosition);
+                    tuPianYuePuAdapter.notifyDataSetChanged();
+                    DongTaiPuActivity.this.mPosition = 0;
+                    if (strings != null && strings.size() > 0) {
+                        for (int i = 0; i < strings.size(); i++) {
+                            BenDiYuePuBean benDiYuePuBean = strings.get(i);
+                            benDiYuePuBean.setSelected(false);
+                            strings.set(i, benDiYuePuBean);
+                        }
+                        BenDiYuePuBean benDiYuePuBean = strings.get(0);
+                        benDiYuePuBean.setSelected(true);
+                        strings.set(0, benDiYuePuBean);
+                        tuPianYuePuAdapter.notifyDataSetChanged();
+                        MyAsyncTask myAsyncTask = new MyAsyncTask();
+                        myAsyncTask.execute("s");
+                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        videoList.clear();
+                        dongTaiVideoAdapter.setData(videoList);
+                    }
+                } else {
+                    Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
+                }
+                alertDialog.dismiss();
+            }
+        });
+        //重命名
+        mTvChongMingMing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertChongMingMing(mPosition);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    //左边文件夹名字的重命名
+    private void showAlertChongMingMing(int mPosition) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+        EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+        String title = strings.get(mPosition).getTitle();
+        mEdBenDiQuPu.setText(title);
+        //确定
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdBenDiQuPu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    if (strings.size() != 0) {
+                        for (int i = 0; i < strings.size(); i++) {
+                            String title = strings.get(i).getTitle();
+                            if (title.equals(text)) {
+                                classify = false;
+                                break;
+                            } else {
+                                classify = true;
+                            }
+                        }
+                        if (classify) {
+                            String path = MyApplication.getDongTaiYuePuFile().getPath() + "/" + strings.get(mPosition).getTitle();
+                            boolean rename = FileUtils.rename(path, text);
+                            if (rename) {
+                                strings.set(mPosition, new BenDiYuePuBean(text, true));
+                                tuPianYuePuAdapter.notifyDataSetChanged();
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "分类已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        boolean rename = FileUtils.rename(MyApplication.getDongTaiYuePuFile().getPath() + strings.get(mPosition).getTitle(), text);
+                        if (rename) {
+                            strings.set(mPosition, new BenDiYuePuBean(text, true));
+                            tuPianYuePuAdapter.notifyDataSetChanged();
+                            if (alertDialog != null) {
+                                alertDialog.dismiss();
+                            }
+                            Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入分类名称", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //取消
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2){
+            MyAsyncTask myAsyncTask = new MyAsyncTask();
+            myAsyncTask.execute("s");
+        }
+    }
 }

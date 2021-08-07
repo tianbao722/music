@@ -49,6 +49,13 @@ public class DongTaiVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 onItemClickListener.onItemClick(musicBean);
             }
         });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItemLongClickListener.onItemLongClick(list, position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -109,5 +116,15 @@ public class DongTaiVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public interface onItemClickListener {
         void onItemClick(MusicBean musicBean);
+    }
+
+    private onItemLongClickListener onItemLongClickListener;
+
+    public void setOnItemLongClickListener(DongTaiVideoAdapter.onItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public interface onItemLongClickListener {
+        void onItemLongClick(ArrayList<MusicBean> list, int position);
     }
 }
