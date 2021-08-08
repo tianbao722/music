@@ -795,6 +795,10 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                 mYinYueRecTitle.scrollToPosition(mPosition);
                 mYinYue_Rec_image.scrollToPosition(mCurrentPosition);
                 break;
+            case 3:
+                mList = getImageFileList();
+                musicAdapter.setData(mList);
+                break;
         }
     }
 
@@ -1169,7 +1173,7 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         });
         musicAdapter.setOnItemLongClickListener(new MusicAdapter.onItemLongClickListener() {
             @Override
-            public void onItemLongClick(int position) {
+            public void onItemLongClick(ArrayList<MusicBean> data, int position) {
                 showAlertLongImage(position);
             }
         });

@@ -3,6 +3,7 @@ package com.example.music.ui.activity.search;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
@@ -26,14 +27,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.FileMoveAdapter;
 import com.example.music.adapter.FlowLayoutManager;
 import com.example.music.adapter.MusicAdapter;
 import com.example.music.adapter.SearchJiLuAdapter;
 import com.example.music.adapter.SpaceItemDecoration;
+import com.example.music.bean.BenDiYuePuBean;
 import com.example.music.bean.MusicBean;
 import com.example.music.bean.SearchLiShiBean;
 import com.example.music.sqlitleutile.DatabaseHelper;
@@ -58,6 +63,8 @@ public class SearchMusicActivity extends AppCompatActivity {
     private DatabaseHelper mydb;
     private ArrayList<SearchLiShiBean> strings;
     private SoftKeyBoardListener softKeyBoardListener;
+    private ArrayList<BenDiYuePuBean> titles;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,11 @@ public class SearchMusicActivity extends AppCompatActivity {
         mContext = this;
         myDb = new DatabaseHelper(this);
         initView();
+        titles = SPBeanUtile.getWoDeYinYueFileList();
+        if (titles == null) {
+            titles = new ArrayList<>();
+        }
+        intent = getIntent();
         initSeawrchLiShi();
     }
 
@@ -79,6 +91,7 @@ public class SearchMusicActivity extends AppCompatActivity {
         mIvBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(3, intent);
                 SearchMusicActivity.this.finish();
             }
         });
@@ -137,8 +150,9 @@ public class SearchMusicActivity extends AppCompatActivity {
         });
         musicAdapter.setOnItemLongClickListener(new MusicAdapter.onItemLongClickListener() {
             @Override
-            public void onItemLongClick(int position) {
-
+            public void onItemLongClick(ArrayList<MusicBean> data, int position) {
+                list = data;
+                showAlertLongImage(position);
             }
         });
     }
@@ -343,5 +357,197 @@ public class SearchMusicActivity extends AppCompatActivity {
         if (null != v) {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
+    }
+
+
+    //右边音乐的删除和重命名
+    private void showAlertLongImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_updata, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        TextView mTvDelete = inflate.findViewById(R.id.tv_delete);
+        TextView mTvChongMingMing = inflate.findViewById(R.id.tv_chongmingming);
+        TextView mTvMoveFile = inflate.findViewById(R.id.tv_move_file);
+        //移动文件
+        mTvMoveFile.setVisibility(View.VISIBLE);
+        mTvMoveFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertMoveFile(position);
+                alertDialog.dismiss();
+            }
+        });
+        //删除
+        mTvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String path = list.get(position).getPath();
+                boolean delete = FileUtils.delete(path);
+                if (delete) {
+                    list.remove(position);
+                    musicAdapter.setData(list);
+                    Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "删除失败", Toast.LENGTH_SHORT).show();
+                }
+                alertDialog.dismiss();
+            }
+        });
+        //重命名
+        mTvChongMingMing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertChongMingMingImage(position);
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    //移动文件的弹窗
+    private int selectMovePosition;
+
+    private void showAlertMoveFile(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_move_file, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(true);
+        RecyclerView mRecMove = inflate.findViewById(R.id.rec_move_file);
+        TextView mTvCanCel = inflate.findViewById(R.id.tv_cencel1);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter1);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+        mRecMove.setLayoutManager(linearLayoutManager);
+        if (titles == null) {
+            titles = new ArrayList<>();
+        }
+        FileMoveAdapter fileMoveAdapter = new FileMoveAdapter(mContext, titles);
+        mRecMove.setAdapter(fileMoveAdapter);
+        fileMoveAdapter.notifyDataSetChanged();
+        fileMoveAdapter.setOnItemClickListener(new FileMoveAdapter.onItemClickListener() {
+            public void onItemClick(int position) {
+                selectMovePosition = position;
+                for (int i = 0; i < titles.size(); i++) {
+                    BenDiYuePuBean benDiYuePuBean = titles.get(i);
+                    benDiYuePuBean.setSelected(false);
+                    titles.set(i, benDiYuePuBean);
+                }
+                BenDiYuePuBean benDiYuePuBean = titles.get(position);
+                benDiYuePuBean.setSelected(true);
+                titles.set(position, benDiYuePuBean);
+                fileMoveAdapter.setData(titles);
+            }
+        });
+        mTvCanCel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = list.get(position).getName();
+                //原路径
+                String path1 = list.get(position).getPath();
+                String title1 = titles.get(selectMovePosition).getTitle();
+                //新路径
+                String path = MyApplication.getWoDeYinYueFile().getPath() + "/" + title1 + "/" + title + ".mp3";
+                boolean move = FileUtils.move(path1, path);
+                if (move) {
+                    alertDialog.dismiss();
+                    Toast.makeText(mContext, "移动成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "移动失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    //右边音乐名字的重命名
+    private boolean classify = false;
+
+    private void showAlertChongMingMingImage(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.alertdialog_xinzeng, null);
+        alertDialog.setContentView(inflate);
+        alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        alertDialog.setCanceledOnTouchOutside(false);
+        TextView mTvCancel = inflate.findViewById(R.id.tv_cancel);
+        TextView mTvEnter = inflate.findViewById(R.id.tv_enter);
+        EditText mEdBenDiQuPu = inflate.findViewById(R.id.ed_bendiqupu);
+        String title = list.get(position).getName();
+        mEdBenDiQuPu.setText(title);
+        //确定
+        mTvEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEdBenDiQuPu.getText().toString();
+                if (!TextUtils.isEmpty(text)) {
+                    if (list.size() != 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            String title = list.get(i).getName();
+                            if (title.equals(text)) {
+                                classify = false;
+                                break;
+                            } else {
+                                classify = true;
+                            }
+                        }
+                        if (classify) {
+                            String path = list.get(position).getPath();
+                            boolean rename = FileUtils.rename(path, text + ".mp3");
+                            if (rename) {
+                                MusicBean imageYuePuImageBean = list.get(position);
+                                int qian = MyApplication.getWoDeYinYueFile().getPath().length() + 1;
+                                int zong = path.length();
+                                int hou = list.get(position).getName().length() + 5;
+                                int qianzhong = zong - hou;
+                                String substring = path.substring(qian, qianzhong);
+                                String file = MyApplication.getWoDeYinYueFile().getPath() + "/" + substring + "/" + text + ".mp4";
+                                imageYuePuImageBean.setName(text);
+                                imageYuePuImageBean.setPath(file);
+                                list.set(position, imageYuePuImageBean);
+                                musicAdapter.setData(list);
+                                if (alertDialog != null) {
+                                    alertDialog.dismiss();
+                                }
+                                Toast.makeText(mContext, "重命名成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "重命名失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "该名称已经存在", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "请输入名称", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //取消
+        mTvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            setResult(3, intent);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
