@@ -41,7 +41,7 @@
                 android:layout_width="@dimen/dp_70"
                 android:layout_height="@dimen/dp_70"
                 android:scaleType="fitXY"
-                android:src="@mipmap/jzxl" />
+                android:src="@mipmap/gjbz" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                 android:layout_width="@dimen/dp_70"
                 android:layout_height="@dimen/dp_70"
                 android:scaleType="fitXY"
-                android:src="@mipmap/wdyy" />
+                android:src="@mipmap/wdbz" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -117,29 +117,6 @@
                 android:layout_height="@dimen/dp_25" />
 
         </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/ll_daoruyuepu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_17"
-            android:layout_marginRight="@dimen/dp_17"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
-                android:scaleType="fitXY"
-                android:src="@mipmap/dryp" />
-
-            <ImageView
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_25"
-                android:src="@mipmap/tdryp" />
-        </LinearLayout>
-
 
     </LinearLayout>
 

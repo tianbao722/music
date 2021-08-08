@@ -9,6 +9,7 @@
     tools:context=".ui.activity.search.SearchMusicActivity">
 
     <LinearLayout
+        android:id="@+id/ll_search_yinyue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
@@ -25,10 +26,12 @@
             android:padding="@dimen/dp_10"
             android:src="@mipmap/fanhui" />
 
-        <androidx.appcompat.widget.SearchView
+        <EditText
             android:id="@+id/music_search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
             android:layout_marginTop="@dimen/dp_10"
             android:focusedByDefault="false"
             app:iconifiedByDefault="false"
@@ -45,4 +48,17 @@
         android:layout_marginTop="@dimen/dp_70"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_10" />
+
+    <LinearLayout
+        android:id="@+id/ll_search_lishi_music"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_search_yinyue">
+
+        <include layout="@layout/popupwindow_searchjilu" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mLLBenDiQuPu;
     private LinearLayout mLLXiaZaiQuPu;
     private LinearLayout mTvShiYongShuoMing;
-    private LinearLayout mLLDaoRuYuePu;
     private LinearLayout mLLWenJianGuanLi;
     private LinearLayout mLLJiePaiQi;
     private LinearLayout mLLZengZhiFuWu;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTvBenDiYinYue = findViewById(R.id.ll_bendiyinyue);
         mLLBenDiQuPu = findViewById(R.id.ll_bendiqupu);
         mLLXiaZaiQuPu = findViewById(R.id.ll_xiazaiqupu);
-        mLLDaoRuYuePu = findViewById(R.id.ll_daoruyuepu);
         mLLWenJianGuanLi = findViewById(R.id.ll_wenjianguanli);
         mTvShiYongShuoMing = findViewById(R.id.tv_caozuoshuoming);
         mLLDongtaiPu = findViewById(R.id.ll_dongtaipu);
@@ -89,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTvShiYongShuoMing.setOnClickListener(this);
         mLLZengZhiFuWu.setOnClickListener(this);
         mLLXiaZaiQuPu.setOnClickListener(this);
-        mLLDaoRuYuePu.setOnClickListener(this);
         mLLMianFeiJiaoXue.setOnClickListener(this);
         mLLWenJianGuanLi.setOnClickListener(this);
         mLLJiePaiQi.setOnClickListener(this);
@@ -157,11 +154,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ll_xiazaiyinyue://下载音乐
                 Intent intent3 = new Intent(MainActivity.this, XiaZaiYinYueActivity.class);
                 startActivity(intent3);
-                break;
-            case R.id.ll_daoruyuepu://导入曲谱
-                Intent intent4 = new Intent(MainActivity.this, DaoRuQuPuActivity.class);
-                intent4.putExtra("type", "1");
-                startActivity(intent4);
                 break;
             case R.id.ll_mianfeijiaoxue://免费教学
                 Intent intent9 = new Intent(MainActivity.this, MianFeiJiaoXueActivity.class);

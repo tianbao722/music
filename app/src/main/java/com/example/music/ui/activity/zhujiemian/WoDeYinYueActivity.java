@@ -101,8 +101,14 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     tvTotalTime.setText(totalTime);
                     if (mList != null && mList.size() > 0)
                         mTvMusicName.setText(mList.get(mCurrentPosition).getName());
-                    if (playTime.equals(totalTime)) {
+                    if (playTime.equals(totalTime) && mPattern == 0) {//列表循环
                         changeMusic(++mCurrentPosition);
+                    } else if (playTime.equals(totalTime) && mPattern == 2) {//单曲播放
+                        wlMusic.stop();
+                        btnPlayOrPause.setBackground(getResources().getDrawable(R.mipmap.icon_pause));
+                        isPause = 0;
+                    } else if (playTime.equals(totalTime) && mPattern == 1) {//单曲循环
+                        changeMusic(mCurrentPosition);
                     }
                     break;
                 default:
@@ -366,6 +372,8 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyindiao);
         TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yindiaozhi);
         TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayindiao);
+        float playSpeed = wlMusic.getPlayPitch();
+        mTvYinDiaoZhi.setText(playSpeed + "");
         //减音调
         mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -464,13 +472,18 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         TextView mTvJianYinDiao = inflate.findViewById(R.id.tv_jianyinsu);
         TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yinsuzhi);
         TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayinsu);
+        SeekBar mBarYinSu = inflate.findViewById(R.id.yinsu_seekbar);
+        mBarYinSu.setMax(15);
+        float playSpeed = wlMusic.getPlaySpeed();
+        mTvYinDiaoZhi.setText(playSpeed + "");
+        setBar(playSpeed, mBarYinSu);
         //减音速
         mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String s = mTvYinDiaoZhi.getText().toString();
                 if (wlMusic != null) {
-                    setJianYinSu(mTvYinDiaoZhi, s);
+                    setJianYinSu(mTvYinDiaoZhi, s, mBarYinSu);
                 } else {
                     Toast.makeText(mContext, "请先选择播放", Toast.LENGTH_SHORT).show();
                 }
@@ -482,112 +495,265 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String s = mTvYinDiaoZhi.getText().toString();
                 if (wlMusic != null) {
-                    setJiaYinSu(mTvYinDiaoZhi,s);
+                    setJiaYinSu(mTvYinDiaoZhi, s, mBarYinSu);
                 } else {
                     Toast.makeText(mContext, "请先选择节奏", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        //SeekBar的监听事件
+        mBarYinSu.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            //监听点击时
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Log.e("xiaobing", "开始");
+            }
+
+            //监听滑动时
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.e("xiaobing", "变化" + progress);
+                switch (progress) {
+                    case 0:
+                        mTvYinDiaoZhi.setText("0.5");
+                        setYinSu(0.5f);
+                        break;
+                    case 1:
+                        mTvYinDiaoZhi.setText("0.6");
+                        setYinSu(0.6f);
+                        break;
+                    case 2:
+                        mTvYinDiaoZhi.setText("0.7");
+                        setYinSu(0.7f);
+                        break;
+                    case 3:
+                        mTvYinDiaoZhi.setText("0.8");
+                        setYinSu(0.8f);
+                        break;
+                    case 4:
+                        mTvYinDiaoZhi.setText("0.9");
+                        setYinSu(0.9f);
+                        break;
+                    case 5:
+                        mTvYinDiaoZhi.setText("1.0");
+                        setYinSu(1.0f);
+                        break;
+                    case 6:
+                        mTvYinDiaoZhi.setText("1.1");
+                        setYinSu(1.1f);
+                        break;
+                    case 7:
+                        mTvYinDiaoZhi.setText("1.2");
+                        setYinSu(1.2f);
+                        break;
+                    case 8:
+                        mTvYinDiaoZhi.setText("1.3");
+                        setYinSu(1.3f);
+                        break;
+                    case 9:
+                        mTvYinDiaoZhi.setText("1.4");
+                        setYinSu(1.4f);
+                        break;
+                    case 10:
+                        mTvYinDiaoZhi.setText("1.5");
+                        setYinSu(1.5f);
+                        break;
+                    case 11:
+                        mTvYinDiaoZhi.setText("1.6");
+                        setYinSu(1.6f);
+                        break;
+                    case 12:
+                        mTvYinDiaoZhi.setText("1.7");
+                        setYinSu(1.7f);
+                        break;
+                    case 13:
+                        mTvYinDiaoZhi.setText("1.8");
+                        setYinSu(1.8f);
+                        break;
+                    case 14:
+                        mTvYinDiaoZhi.setText("1.9");
+                        setYinSu(1.9f);
+                        break;
+                    case 15:
+                        mTvYinDiaoZhi.setText("2.0");
+                        setYinSu(2.0f);
+                        break;
+                }
+            }
+
+            //监听停止时
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("xiaobing", "结束");
+            }
+        });
     }
+
+    private void setBar(float YinSu, SeekBar mBarYinSu) {
+        if (YinSu == 2.0f) {
+            mBarYinSu.setProgress(15);
+        } else if (YinSu == 1.9f) {
+            mBarYinSu.setProgress(14);
+        } else if (YinSu == 1.8f) {
+            mBarYinSu.setProgress(13);
+        } else if (YinSu == 1.7f) {
+            mBarYinSu.setProgress(12);
+        } else if (YinSu == 1.6f) {
+            mBarYinSu.setProgress(11);
+        } else if (YinSu == 1.5f) {
+            mBarYinSu.setProgress(10);
+        } else if (YinSu == 1.4f) {
+            mBarYinSu.setProgress(9);
+        } else if (YinSu == 1.3f) {
+            mBarYinSu.setProgress(8);
+        } else if (YinSu == 1.2f) {
+            mBarYinSu.setProgress(7);
+        } else if (YinSu == 1.1f) {
+            mBarYinSu.setProgress(6);
+        } else if (YinSu == 1.0f) {
+            mBarYinSu.setProgress(5);
+        } else if (YinSu == 0.9f) {
+            mBarYinSu.setProgress(4);
+        } else if (YinSu == 0.8f) {
+            mBarYinSu.setProgress(3);
+        } else if (YinSu == 0.7f) {
+            mBarYinSu.setProgress(2);
+        } else if (YinSu == 0.6f) {
+            mBarYinSu.setProgress(1);
+        } else if (YinSu == 0.5f) {
+            mBarYinSu.setProgress(0);
+        }
+    }
+
     //减音速
-    private void setJianYinSu(TextView yinsuzhi, String s) {
+    private void setJianYinSu(TextView yinsuzhi, String s, SeekBar mBarYinSu) {
         float YinSu = Float.parseFloat(s);
         if (YinSu == 2.0f) {
             yinsuzhi.setText("1.9");
             setYinSu(1.9f);
+            mBarYinSu.setProgress(14);
         } else if (YinSu == 1.9f) {
             yinsuzhi.setText("1.8");
             setYinSu(1.8f);
+            mBarYinSu.setProgress(13);
         } else if (YinSu == 1.8f) {
             yinsuzhi.setText("1.7");
             setYinSu(1.7f);
+            mBarYinSu.setProgress(12);
         } else if (YinSu == 1.7f) {
             yinsuzhi.setText("1.6");
             setYinSu(1.6f);
+            mBarYinSu.setProgress(11);
         } else if (YinSu == 1.6f) {
             yinsuzhi.setText("1.5");
             setYinSu(1.5f);
+            mBarYinSu.setProgress(10);
         } else if (YinSu == 1.5f) {
             yinsuzhi.setText("1.4");
             setYinSu(1.4f);
+            mBarYinSu.setProgress(9);
         } else if (YinSu == 1.4f) {
             yinsuzhi.setText("1.3");
             setYinSu(1.3f);
+            mBarYinSu.setProgress(8);
         } else if (YinSu == 1.3f) {
             yinsuzhi.setText("1.2");
             setYinSu(1.2f);
+            mBarYinSu.setProgress(7);
         } else if (YinSu == 1.2f) {
             yinsuzhi.setText("1.1");
             setYinSu(1.1f);
+            mBarYinSu.setProgress(6);
         } else if (YinSu == 1.1f) {
             yinsuzhi.setText("1.0");
             setYinSu(1.0f);
+            mBarYinSu.setProgress(5);
         } else if (YinSu == 1.0f) {
             yinsuzhi.setText("0.9");
             setYinSu(0.9f);
+            mBarYinSu.setProgress(4);
         } else if (YinSu == 0.9f) {
             yinsuzhi.setText("0.8");
             setYinSu(0.8f);
+            mBarYinSu.setProgress(3);
         } else if (YinSu == 0.8f) {
             yinsuzhi.setText("0.7");
             setYinSu(0.7f);
+            mBarYinSu.setProgress(2);
         } else if (YinSu == 0.7f) {
             yinsuzhi.setText("0.6");
             setYinSu(0.6f);
+            mBarYinSu.setProgress(1);
         } else if (YinSu == 0.6f) {
             yinsuzhi.setText("0.5");
             setYinSu(0.5f);
+            mBarYinSu.setProgress(0);
         }
     }
 
     //加音速
-    private void setJiaYinSu(TextView yinsuzhi, String s) {
+    private void setJiaYinSu(TextView yinsuzhi, String s, SeekBar mBarYinSu) {
         float YinSu = Float.parseFloat(s);
         if (YinSu == 0.5f) {
             yinsuzhi.setText("0.6");
             setYinSu(0.6f);
+            mBarYinSu.setProgress(1);
         } else if (YinSu == 0.6f) {
             yinsuzhi.setText("0.7");
             setYinSu(0.7f);
+            mBarYinSu.setProgress(2);
         } else if (YinSu == 0.7f) {
             yinsuzhi.setText("0.8");
             setYinSu(0.8f);
+            mBarYinSu.setProgress(3);
         } else if (YinSu == 0.8f) {
             yinsuzhi.setText("0.9");
             setYinSu(0.9f);
+            mBarYinSu.setProgress(4);
         } else if (YinSu == 0.9f) {
             yinsuzhi.setText("1.0");
             setYinSu(1.0f);
+            mBarYinSu.setProgress(5);
         } else if (YinSu == 1.0f) {
             yinsuzhi.setText("1.1");
             setYinSu(1.1f);
+            mBarYinSu.setProgress(6);
         } else if (YinSu == 1.1f) {
             yinsuzhi.setText("1.2");
             setYinSu(1.2f);
+            mBarYinSu.setProgress(7);
         } else if (YinSu == 1.2f) {
             yinsuzhi.setText("1.3");
             setYinSu(1.3f);
+            mBarYinSu.setProgress(8);
         } else if (YinSu == 1.3f) {
             yinsuzhi.setText("1.4");
             setYinSu(1.4f);
+            mBarYinSu.setProgress(9);
         } else if (YinSu == 1.4f) {
             yinsuzhi.setText("1.5");
             setYinSu(1.5f);
+            mBarYinSu.setProgress(10);
         } else if (YinSu == 1.5f) {
             yinsuzhi.setText("1.6");
             setYinSu(1.6f);
+            mBarYinSu.setProgress(11);
         } else if (YinSu == 1.6f) {
             yinsuzhi.setText("1.7");
             setYinSu(1.7f);
+            mBarYinSu.setProgress(12);
         } else if (YinSu == 1.7f) {
             yinsuzhi.setText("1.8");
             setYinSu(1.8f);
+            mBarYinSu.setProgress(13);
         } else if (YinSu == 1.8f) {
             yinsuzhi.setText("1.9");
             setYinSu(1.9f);
+            mBarYinSu.setProgress(14);
         } else if (YinSu == 1.9f) {
             yinsuzhi.setText("2.0");
             setYinSu(2.0f);
+            mBarYinSu.setProgress(15);
         }
     }
 
@@ -626,6 +792,12 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     }
                 }
                 changeMusic(mCurrentPosition);
+                mYinYueRecTitle.scrollToPosition(mPosition);
+                mYinYue_Rec_image.scrollToPosition(mCurrentPosition);
+                break;
+            case 3:
+                mList = getImageFileList();
+                musicAdapter.setData(mList);
                 break;
         }
     }
@@ -729,8 +901,10 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             }
         });
     }
+
     //移动文件的弹窗
     private int selectMovePosition;
+
     private void showAlertMoveFile(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         AlertDialog alertDialog = builder.create();
@@ -803,6 +977,7 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             }
         });
     }
+
     //右边音乐名字的重命名
     private void showAlertChongMingMingImage(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -998,7 +1173,7 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         });
         musicAdapter.setOnItemLongClickListener(new MusicAdapter.onItemLongClickListener() {
             @Override
-            public void onItemLongClick(int position) {
+            public void onItemLongClick(ArrayList<MusicBean> data, int position) {
                 showAlertLongImage(position);
             }
         });

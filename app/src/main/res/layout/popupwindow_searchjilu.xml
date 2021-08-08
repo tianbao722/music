@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/dp_50"
+    android:layout_marginRight="@dimen/dp_50"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="历史记录"
+            android:textColor="#000000"
+            android:textSize="@dimen/sp_8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="提示：长按删除单条记录"
+            android:textColor="#CACACA"
+            android:textSize="@dimen/sp_6" />
+    </RelativeLayout>
+
+    <com.example.music.zview.MaxHeightRecyclerView
+        android:id="@+id/rec_search_jilu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        app:maxHeightt="@dimen/dp_125" />
+
+    <TextView
+        android:id="@+id/tv_qingkong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="#EDEDED"
+        android:gravity="center"
+        android:padding="@dimen/dp_8"
+        android:text="全部删除"
+        android:textColor="#000000"
+        android:textSize="@dimen/sp_15" />
+</LinearLayout>
