@@ -632,9 +632,13 @@ public class TuPianYuePuFragment extends Fragment implements View.OnClickListene
             if (alertDialog != null && alertDialog.isShowing()) {
                 alertDialog.dismiss();
             }
-            imageFileList.clear();
             imageFileList = imageYuePuImageBeans;
             recImageYuePuAdapter.setData(imageYuePuImageBeans);
         }
+    }
+
+    public void initData() {
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute("s");
     }
 }

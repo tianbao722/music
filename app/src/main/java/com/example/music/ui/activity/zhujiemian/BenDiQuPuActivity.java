@@ -1,5 +1,6 @@
 package com.example.music.ui.activity.zhujiemian;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -168,8 +169,22 @@ public class BenDiQuPuActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.iv_shear:
                 Intent intent = new Intent(BenDiQuPuActivity.this, SearchYuePuActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            boolean userVisibleHint = tuPianYuePuFragment.getUserVisibleHint();
+            boolean userVisibleHint1 = dpfYuePuFragment.getUserVisibleHint();
+            if (userVisibleHint) {
+                tuPianYuePuFragment.initData();
+            }else if (userVisibleHint1){
+                dpfYuePuFragment.initData();
+            }
         }
     }
 }

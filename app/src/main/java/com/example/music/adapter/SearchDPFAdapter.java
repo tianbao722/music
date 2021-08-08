@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -54,6 +55,13 @@ public class SearchDPFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 onItemClickListener.onItemClick(position, list.get(position));
             }
         });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onItemLongClickListener.onItemLongClick(list, position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -91,8 +99,6 @@ public class SearchDPFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void setData(ArrayList<PDFImageBean> data) {
-        list.clear();
-        beans.clear();
         list = data;
         beans = data;
         notifyDataSetChanged();
@@ -113,4 +119,13 @@ public class SearchDPFAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         void onItemClick(int position, PDFImageBean pdfImageBean);
     }
 
+    private onItemLongClickListener onItemLongClickListener;
+
+    public void setOnItemLongClickListener(SearchDPFAdapter.onItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public interface onItemLongClickListener {
+        void onItemLongClick(ArrayList<PDFImageBean> list, int position);
+    }
 }

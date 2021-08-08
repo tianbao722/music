@@ -305,7 +305,7 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 String text = mEdBenDiQuPu.getText().toString();
                 if (!TextUtils.isEmpty(text)) {
-                    if (imageFileList.size() != 0) {
+                    if (imageFileList.size() > 0) {
                         for (int i = 0; i < imageFileList.size(); i++) {
                             String title = imageFileList.get(i).getName();
                             if (title.equals(text)) {
@@ -569,5 +569,10 @@ public class DPFYuePuFragment extends Fragment implements View.OnClickListener {
                 });
                 break;
         }
+    }
+
+    public void initData(){
+        imageFileList = getImageFileList();
+        recImageYuePuAdapter.setData(imageFileList);
     }
 }

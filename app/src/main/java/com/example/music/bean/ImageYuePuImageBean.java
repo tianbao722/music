@@ -4,15 +4,22 @@ import java.io.File;
 import java.util.List;
 
 public class ImageYuePuImageBean {
-    private String name;
-    private List<File> list;
-    private int content;
-
+    private String name;//名字
+    private List<File> list;//图片集合
+    private int content;//数量
+    private String path;//文件夹路径
 
     public ImageYuePuImageBean(String name, List<File> list, int content) {
         this.name = name;
         this.list = list;
         this.content = content;
+    }
+
+    public ImageYuePuImageBean(String name, List<File> list, int content, String path) {
+        this.name = name;
+        this.list = list;
+        this.content = content;
+        this.path = path;
     }
 
     public String getName() {
@@ -37,5 +44,13 @@ public class ImageYuePuImageBean {
 
     public void setContent(int content) {
         this.content = content;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

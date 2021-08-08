@@ -141,7 +141,7 @@ public class SPBeanUtile {
         return null;
     }
 
-    //获取Def乐谱文件夹名字集合
+    //获取PDF乐谱文件夹名字集合
     public static ArrayList<BenDiYuePuBean> getDefQuPuFileList() {
         ArrayList<BenDiYuePuBean> benDiYuePuBeans = new ArrayList<>();
         File tuPianYuePuFile = MyApplication.getDefYuePuFile();
