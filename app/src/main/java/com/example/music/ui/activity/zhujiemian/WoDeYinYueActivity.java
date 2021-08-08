@@ -373,7 +373,7 @@ public class WoDeYinYueActivity extends AppCompatActivity {
         TextView mTvYinDiaoZhi = inflate.findViewById(R.id.tv_yindiaozhi);
         TextView mTvJiaYinDiao = inflate.findViewById(R.id.tv_jiayindiao);
         float playSpeed = wlMusic.getPlayPitch();
-        mTvYinDiaoZhi.setText(playSpeed + "");
+        setYinDiaoZhi(mTvYinDiaoZhi, playSpeed);
         //减音调
         mTvJianYinDiao.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -387,6 +387,24 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     mTvYinDiaoZhi.setText(yindiao + "");
                     if (wlMusic != null) {
                         switch (yindiao) {
+                            case 1:
+                                setYinDaio(0.884f);
+                                break;
+                            case 2:
+                                setYinDaio(0.768f);
+                                break;
+                            case 3:
+                                setYinDaio(0.652f);
+                                break;
+                            case 4:
+                                setYinDaio(0.536f);
+                                break;
+                            case 5:
+                                setYinDaio(0.420f);
+                                break;
+                            case 6:
+                                setYinDaio(0.304f);
+                                break;
                             case 0:
                                 setYinDaio(1.00f);
                                 break;
@@ -424,9 +442,6 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     mTvYinDiaoZhi.setText(yindiao + "");
                     if (wlMusic != null) {
                         switch (yindiao) {
-                            case 0:
-                                setYinDaio(1.0f);
-                                break;
                             case 1:
                                 setYinDaio(0.884f);
                                 break;
@@ -445,6 +460,27 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                             case 6:
                                 setYinDaio(0.304f);
                                 break;
+                            case 0:
+                                setYinDaio(1.00f);
+                                break;
+                            case -1:
+                                setYinDaio(1.25f);
+                                break;
+                            case -2:
+                                setYinDaio(1.50f);
+                                break;
+                            case -3:
+                                setYinDaio(1.75f);
+                                break;
+                            case -4:
+                                setYinDaio(2.00f);
+                                break;
+                            case -5:
+                                setYinDaio(2.25f);
+                                break;
+                            case -6:
+                                setYinDaio(2.50f);
+                                break;
                         }
                     }
                 } else if (yindiao >= 6) {
@@ -452,6 +488,36 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setYinDiaoZhi(TextView mTvYinDiaoZhi, float playSpeed) {
+        if (playSpeed == 1.0f) {
+            mTvYinDiaoZhi.setText("0");
+        } else if (playSpeed == 0.884f) {
+            mTvYinDiaoZhi.setText("1");
+        } else if (playSpeed == 0.768f) {
+            mTvYinDiaoZhi.setText("2");
+        } else if (playSpeed == 0.652f) {
+            mTvYinDiaoZhi.setText("3");
+        } else if (playSpeed == 0.536f) {
+            mTvYinDiaoZhi.setText("4");
+        } else if (playSpeed == 0.420f) {
+            mTvYinDiaoZhi.setText("5");
+        } else if (playSpeed == 0.304f) {
+            mTvYinDiaoZhi.setText("6");
+        } else if (playSpeed == 1.25f) {
+            mTvYinDiaoZhi.setText("-1");
+        } else if (playSpeed == 1.50f) {
+            mTvYinDiaoZhi.setText("-2");
+        } else if (playSpeed == 1.75f) {
+            mTvYinDiaoZhi.setText("-3");
+        } else if (playSpeed == 2.00f) {
+            mTvYinDiaoZhi.setText("-4");
+        } else if (playSpeed == 2.25f) {
+            mTvYinDiaoZhi.setText("-5");
+        } else if (playSpeed == 2.50f) {
+            mTvYinDiaoZhi.setText("-6");
+        }
     }
 
     private void setYinDaio(float v2) {
