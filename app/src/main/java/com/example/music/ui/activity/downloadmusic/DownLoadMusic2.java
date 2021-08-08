@@ -40,6 +40,7 @@ import com.example.music.ui.activity.zhujiemian.BenDiYinYueActivity;
 import com.example.music.utils.HomeProgressDialog;
 import com.example.music.utils.SPBeanUtile;
 import com.example.music.utils.StatusBarUtil;
+import com.example.music.zview.MaxHeightRecyclerView;
 import com.lzy.okhttputils.OkHttpUtils;
 import com.lzy.okhttputils.callback.FileCallback;
 import com.lzy.okhttputils.request.BaseRequest;
@@ -133,7 +134,7 @@ public class DownLoadMusic2 extends AppCompatActivity {
         alertDialog1.setContentView(inflate);
         alertDialog1.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         alertDialog1.setCanceledOnTouchOutside(false);
-        RecyclerView mRec = inflate.findViewById(R.id.download_music_rec);
+        MaxHeightRecyclerView mRec = inflate.findViewById(R.id.download_music_rec);
         EditText mEditText = inflate.findViewById(R.id.download_music_ed_daoruqupu);
         TextView mTvMusicName = inflate.findViewById(R.id.download_tv_music_name);
         TextView mTvMusicSize = inflate.findViewById(R.id.download_tv_music_size);
@@ -336,8 +337,8 @@ public class DownLoadMusic2 extends AppCompatActivity {
                                     mList.set(i, benDiYuePuBean);
                                 }
                                 BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                                mList.add(0, benDiYuePuBean);
-                                daoRuQuPuAdaper.notifyDataSetChanged();
+                                mList.add(benDiYuePuBean);
+                                daoRuQuPuAdaper.setData(mList);
                                 if (alertDialog != null) {
                                     alertDialog.dismiss();
                                 }
@@ -352,8 +353,8 @@ public class DownLoadMusic2 extends AppCompatActivity {
                         boolean tuPiQuPuFile = SPBeanUtile.createWoDeYinYueFile(text);
                         if (tuPiQuPuFile) {
                             BenDiYuePuBean benDiYuePuBean = new BenDiYuePuBean(text, true);
-                            mList.add(0, benDiYuePuBean);
-                            daoRuQuPuAdaper.notifyDataSetChanged();
+                            mList.add( benDiYuePuBean);
+                            daoRuQuPuAdaper.setData(mList);
                             if (alertDialog != null) {
                                 alertDialog.dismiss();
                             }
