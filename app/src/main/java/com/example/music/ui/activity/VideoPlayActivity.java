@@ -145,6 +145,7 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
         mContext = this;
         StatusBarUtil.transparencyBar(this);
         initView();
+        setQuanPing();//半屏切换全屏
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -434,43 +435,43 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                     if (wlMedia != null) {
                         switch (yindiao) {
                             case 1:
-                                setYinDaio(0.917f);
+                                setYinDaio(1.25f);
                                 break;
                             case 2:
-                                setYinDaio(0.834f);
+                                setYinDaio(1.50f);
                                 break;
                             case 3:
-                                setYinDaio(0.751f);
+                                setYinDaio(1.75f);
                                 break;
                             case 4:
-                                setYinDaio(0.668f);
+                                setYinDaio(2.25f);
                                 break;
                             case 5:
-                                setYinDaio(0.585f);
+                                setYinDaio(2.00f);
                                 break;
                             case 6:
-                                setYinDaio(0.5f);
+                                setYinDaio(2.50f);
                                 break;
                             case 0:
                                 setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(1.25f);
+                                setYinDaio(0.917f);
                                 break;
                             case -2:
-                                setYinDaio(1.50f);
+                                setYinDaio(0.834f);
                                 break;
                             case -3:
-                                setYinDaio(1.75f);
+                                setYinDaio(0.751f);
                                 break;
                             case -4:
-                                setYinDaio(2.00f);
+                                setYinDaio(0.668f);
                                 break;
                             case -5:
-                                setYinDaio(2.25f);
+                                setYinDaio(0.585f);
                                 break;
                             case -6:
-                                setYinDaio(2.50f);
+                                setYinDaio(0.5f);
                                 break;
                         }
                     }
@@ -489,43 +490,43 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                     if (wlMedia != null) {
                         switch (yindiao) {
                             case 1:
-                                setYinDaio(0.917f);
+                                setYinDaio(1.25f);
                                 break;
                             case 2:
-                                setYinDaio(0.834f);
+                                setYinDaio(1.50f);
                                 break;
                             case 3:
-                                setYinDaio(0.751f);
+                                setYinDaio(1.75f);
                                 break;
                             case 4:
-                                setYinDaio(0.668f);
+                                setYinDaio(2.25f);
                                 break;
                             case 5:
-                                setYinDaio(0.585f);
+                                setYinDaio(2.00f);
                                 break;
                             case 6:
-                                setYinDaio(0.5f);
+                                setYinDaio(2.50f);
                                 break;
                             case 0:
                                 setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(1.25f);
+                                setYinDaio(0.917f);
                                 break;
                             case -2:
-                                setYinDaio(1.50f);
+                                setYinDaio(0.834f);
                                 break;
                             case -3:
-                                setYinDaio(1.75f);
+                                setYinDaio(0.751f);
                                 break;
                             case -4:
-                                setYinDaio(2.00f);
+                                setYinDaio(0.668f);
                                 break;
                             case -5:
-                                setYinDaio(2.25f);
+                                setYinDaio(0.585f);
                                 break;
                             case -6:
-                                setYinDaio(2.50f);
+                                setYinDaio(0.5f);
                                 break;
                         }
                     }
