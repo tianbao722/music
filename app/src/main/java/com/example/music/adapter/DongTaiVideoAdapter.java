@@ -60,7 +60,12 @@ public class DongTaiVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if (list != null) {
+            return list.size();
+        } else {
+            list = new ArrayList<>();
+            return list.size();
+        }
     }
 
     public void setData(ArrayList<MusicBean> imageFileList) {
