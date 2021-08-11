@@ -138,6 +138,12 @@ public class BanZouActivity extends AppCompatActivity implements View.OnClickLis
                 setResult(2, intent);
             }
         });
+        musicAdapter.setOnItemLongClickListener(new MusicAdapter.onItemLongClickListener() {
+            @Override
+            public void onItemLongClick(ArrayList<MusicBean> data, int position) {
+
+            }
+        });
     }
 
     @Override

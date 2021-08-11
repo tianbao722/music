@@ -543,28 +543,45 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     yindiao -= 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
                     if (mediaPlayer != null) {
-                        PlaybackParams params = mediaPlayer.getPlaybackParams();
                         switch (yindiao) {
+                            case 1:
+                                setYinDaio(1.25f);
+                                break;
+                            case 2:
+                                setYinDaio(1.50f);
+                                break;
+                            case 3:
+                                setYinDaio(1.75f);
+                                break;
+                            case 4:
+                                setYinDaio(2.25f);
+                                break;
+                            case 5:
+                                setYinDaio(2.00f);
+                                break;
+                            case 6:
+                                setYinDaio(2.50f);
+                                break;
                             case 0:
-                                setYinDaio(params, 1.00f);
+                                setYinDaio(1.00f);
                                 break;
                             case -1:
-                                setYinDaio(params, 1.25f);
+                                setYinDaio(0.917f);
                                 break;
                             case -2:
-                                setYinDaio(params, 1.50f);
+                                setYinDaio(0.834f);
                                 break;
                             case -3:
-                                setYinDaio(params, 1.75f);
+                                setYinDaio(0.751f);
                                 break;
                             case -4:
-                                setYinDaio(params, 2.00f);
+                                setYinDaio(0.668f);
                                 break;
                             case -5:
-                                setYinDaio(params, 2.25f);
+                                setYinDaio(0.585f);
                                 break;
                             case -6:
-                                setYinDaio(params, 2.50f);
+                                setYinDaio(0.5f);
                                 break;
                         }
                     }
@@ -583,26 +600,44 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     if (mediaPlayer != null) {
                         PlaybackParams params = mediaPlayer.getPlaybackParams();
                         switch (yindiao) {
-                            case 0:
-                                setYinDaio(params, 1.0f);
-                                break;
                             case 1:
-                                setYinDaio(params, 0.884f);
+                                setYinDaio(1.25f);
                                 break;
                             case 2:
-                                setYinDaio(params, 0.768f);
+                                setYinDaio(1.50f);
                                 break;
                             case 3:
-                                setYinDaio(params, 0.652f);
+                                setYinDaio(1.75f);
                                 break;
                             case 4:
-                                setYinDaio(params, 0.536f);
+                                setYinDaio(2.25f);
                                 break;
                             case 5:
-                                setYinDaio(params, 0.420f);
+                                setYinDaio(2.00f);
                                 break;
                             case 6:
-                                setYinDaio(params, 0.304f);
+                                setYinDaio(2.50f);
+                                break;
+                            case 0:
+                                setYinDaio(1.00f);
+                                break;
+                            case -1:
+                                setYinDaio(0.917f);
+                                break;
+                            case -2:
+                                setYinDaio(0.834f);
+                                break;
+                            case -3:
+                                setYinDaio(0.751f);
+                                break;
+                            case -4:
+                                setYinDaio(0.668f);
+                                break;
+                            case -5:
+                                setYinDaio(0.585f);
+                                break;
+                            case -6:
+                                setYinDaio(0.5f);
                                 break;
                         }
                     }
@@ -613,7 +648,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void setYinDaio(PlaybackParams params, float v2) {
+    private void setYinDaio(float v2) {
+        PlaybackParams params = mediaPlayer.getPlaybackParams();
         params.setPitch(v2);//音调
         mediaPlayer.setPlaybackParams(params);
     }
