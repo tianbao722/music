@@ -1,6 +1,7 @@
 package com.example.music.ui.activity.zhujiemian;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -59,6 +61,8 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_jie_pai_qi);
         mContext = this;
         StatusBarUtil.transparencyBar(this);
+        //禁止竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         initView();
     }
 

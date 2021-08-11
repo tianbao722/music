@@ -35,7 +35,9 @@
         <activity android:name=".ui.activity.search.SearchMusicActivity" />
         <activity android:name=".ui.activity.search.SearchYuePuActivity" />
         <activity android:name=".ui.activity.zhujiemian.LianXiGuJiActivity" />
-        <activity android:name=".ui.activity.zhujiemian.DongTaiPuActivity" />
+        <activity
+            android:name=".ui.activity.zhujiemian.DongTaiPuActivity"
+            android:screenOrientation="sensorLandscape" />
         <activity android:name=".ui.activity.zhujiemian.DaoRuQuPuActivity" />
         <activity android:name=".ui.activity.zhujiemian.XiaZaiYinYueActivity" />
         <activity android:name=".ui.activity.zhujiemian.BenDiQuPuActivity" />

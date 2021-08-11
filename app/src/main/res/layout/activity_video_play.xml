@@ -143,6 +143,7 @@
                 <ImageView
                     android:id="@+id/video_play_quanping"
                     android:layout_width="@dimen/dp_20"
+                    android:visibility="gone"
                     android:layout_height="@dimen/dp_20"
                     android:layout_marginLeft="@dimen/dp_5"
                     android:src="@mipmap/quanping" />
