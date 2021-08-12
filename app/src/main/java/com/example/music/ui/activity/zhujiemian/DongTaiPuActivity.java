@@ -2,6 +2,7 @@ package com.example.music.ui.activity.zhujiemian;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,10 +53,12 @@ import java.util.regex.Pattern;
 public class DongTaiPuActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView mIvBack;
     private TextView mTvXinZeng;
-    private TextView mTvDownLoad;
     private ImageView mIvSearch;
     private RecyclerView mRecDongTitle;
     private RecyclerView mRecDongVideo;
+    private LinearLayout mLLBenDi;
+    private LinearLayout mLLZaiXian;
+    private ConstraintLayout mConslBenDi;
     private ArrayList<BenDiYuePuBean> strings;
     private TuPianYuePuAdapter tuPianYuePuAdapter;
     private Context mContext;
@@ -67,20 +72,25 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_jie_pai_qi);
         mContext = this;
         StatusBarUtil.transparencyBar(this);
+        //禁止竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         initView();
     }
 
     private void initView() {
         mIvBack = findViewById(R.id.dong_iv_back);
         mIvSearch = findViewById(R.id.dong_iv_shear);
-        mTvDownLoad = findViewById(R.id.dong_tv_download);
         mTvXinZeng = findViewById(R.id.dong_tv_xinzeng);
         mRecDongTitle = findViewById(R.id.dong_rec_tupianyuepy);
         mRecDongVideo = findViewById(R.id.dong_rec_image_yuepu);
+        mLLBenDi = findViewById(R.id.ll_bendi);
+        mLLZaiXian = findViewById(R.id.ll_zaixian);
+        mConslBenDi = findViewById(R.id.consl_bendi);
         mIvBack.setOnClickListener(this);
         mIvSearch.setOnClickListener(this);
+        mLLZaiXian.setOnClickListener(this);
+        mLLBenDi.setOnClickListener(this);
         mTvXinZeng.setOnClickListener(this);
-        mTvDownLoad.setOnClickListener(this);
 
         //初始化动态乐谱左边title
         initRecTuPianYuePu();
@@ -181,8 +191,15 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
                     }
                 });
                 break;
-            case R.id.dong_tv_download:
-
+            case R.id.ll_bendi://本地乐谱
+                MyAsyncTask myAsyncTask = new MyAsyncTask();
+                myAsyncTask.execute("s");
+                mRecDongVideo.setVisibility(View.VISIBLE);
+                mConslBenDi.setVisibility(View.VISIBLE);
+                break;
+            case R.id.ll_zaixian://在线乐谱
+                mRecDongVideo.setVisibility(View.GONE);
+                mConslBenDi.setVisibility(View.GONE);
                 break;
         }
     }
@@ -336,9 +353,11 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
             if (alertDialog != null && alertDialog.isShowing()) {
                 alertDialog.dismiss();
             }
-            videoList.clear();
-            videoList = imageYuePuImageBeans;
-            dongTaiVideoAdapter.setData(videoList);
+            if (videoList != null) {
+                videoList.clear();
+                videoList = imageYuePuImageBeans;
+                dongTaiVideoAdapter.setData(videoList);
+            }
         }
     }
 
@@ -668,7 +687,7 @@ public class DongTaiPuActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == 2){
+        if (requestCode == 1 && resultCode == 2) {
             MyAsyncTask myAsyncTask = new MyAsyncTask();
             myAsyncTask.execute("s");
         }
