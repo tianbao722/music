@@ -12,11 +12,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_200">
+        android:layout_marginTop="@dimen/dp_170">
 
         <ImageView
-            android:layout_width="@dimen/dp_200"
-            android:layout_height="@dimen/dp_100"
+            android:layout_width="@dimen/dp_210"
+            android:layout_height="@dimen/dp_110"
             android:layout_marginRight="@dimen/dp_70"
             android:src="@mipmap/dpl"
             app:layout_constraintRight_toRightOf="parent"

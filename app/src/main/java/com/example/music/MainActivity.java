@@ -140,49 +140,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_xiazaiqupu://下载曲谱
-                Intent intent5 = new Intent(MainActivity.this, DownloadTheSongActivity.class);
-                startActivity(intent5);
-                break;
-            case R.id.ll_bendiyinyue://本地音乐
+            case R.id.ll_bendiyinyue://我的伴奏
                 Intent intent1 = new Intent(MainActivity.this, WoDeYinYueActivity.class);
                 startActivity(intent1);
-                break;
-            case R.id.ll_bendiqupu://本地曲谱
-                Intent intent2 = new Intent(MainActivity.this, BenDiQuPuActivity.class);
-                startActivity(intent2);
                 break;
             case R.id.ll_xiazaiyinyue://下载音乐
                 Intent intent3 = new Intent(MainActivity.this, XiaZaiYinYueActivity.class);
                 startActivity(intent3);
                 break;
-            case R.id.ll_mianfeijiaoxue://免费教学
-                Intent intent9 = new Intent(MainActivity.this, MianFeiJiaoXueActivity.class);
-                startActivity(intent9);
-                break;
             case R.id.ll_wenjianguanli://文件管理
                 String aPackage = getPackage();
                 openAppWithPackageName(aPackage);
                 break;
-            case R.id.ll_dongtaipu://动态乐谱
-                Intent intent6 = new Intent(MainActivity.this, DongTaiPuActivity.class);
-                startActivity(intent6);
-                break;
-            case R.id.ll_lianxiguji://练习鼓机
+            case R.id.ll_lianxiguji://鼓机伴奏
                 Intent intent7 = new Intent(MainActivity.this, LianXiGuJiActivity.class);
                 startActivity(intent7);
                 break;
             case R.id.tv_systemsetting://系统设置
                 Intent intent8 = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent8);
-                break;
-            case R.id.tv_caozuoshuoming://操作说明
-                Intent intent10 = new Intent(MainActivity.this, CaoZuoShuoMingActivity.class);
-                startActivity(intent10);
-                break;
-            case R.id.ll_zengzhifuwu://增值服务
-                Intent intent11 = new Intent(MainActivity.this, ZengZhiFuWuActivity.class);
-                startActivity(intent11);
                 break;
             case R.id.ll_jiepaiqi://节拍校音
                 String jiePaiPackage = getJiePaiPackage();

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@mipmap/activitybg"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.activity.zhujiemian.WoDeYinYueActivity">
@@ -186,13 +187,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#DBDBDB">
+            android:background="#00000000">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:background="#ffffff"
+                android:background="#00000000"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -240,7 +241,7 @@
                 android:layout_marginLeft="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_weight="7"
-                android:background="#DBDBDB" />
+                android:background="#00000000" />
 
         </LinearLayout>
     </LinearLayout>

@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DDDDDD"
+    android:background="@mipmap/activitybg"
     tools:context=".ui.activity.zhujiemian.LianXiGuJiActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/consl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff"
+        android:background="#00000000"
         android:paddingBottom="@dimen/dp_5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

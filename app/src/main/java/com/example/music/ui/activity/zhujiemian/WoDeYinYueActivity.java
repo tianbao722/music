@@ -99,8 +99,9 @@ public class WoDeYinYueActivity extends AppCompatActivity {
                     String totalTime = WlTimeUtil.secdsToDateFormat(timeBean.getTotalSecs(), timeBean.getTotalSecs());
                     tvPlayTime.setText(playTime);
                     tvTotalTime.setText(totalTime);
-                    if (mList != null && mList.size() > 0)
+                    if (mList != null && mList.size() > 0){
                         mTvMusicName.setText(mList.get(mCurrentPosition).getName());
+                    }
                     if (playTime.equals(totalTime) && mPattern == 0) {//列表循环
                         changeMusic(++mCurrentPosition);
                     } else if (playTime.equals(totalTime) && mPattern == 2) {//单曲播放
@@ -380,50 +381,86 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String s = mTvYinDiaoZhi.getText().toString();
                 yindiao = Integer.parseInt(s);
-                if (yindiao <= -6) {
+                if (yindiao <= -12) {
                     return;
                 } else {
                     yindiao -= 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
                     if (wlMusic != null) {
                         switch (yindiao) {
-                            case 1:
-                                setYinDaio(1.25f);
+                            case 12:
+                                setYinDaio(2.50f);
                                 break;
-                            case 2:
+                            case 11:
+                                setYinDaio(2.375f);
+                                break;
+                            case 10:
+                                setYinDaio(2.250f);
+                                break;
+                            case 9:
+                                setYinDaio(2.125f);
+                                break;
+                            case 8:
+                                setYinDaio(2.0f);
+                                break;
+                            case 7:
+                                setYinDaio(1.875f);
+                                break;
+                            case 6:
+                                setYinDaio(1.750f);
+                                break;
+                            case 5:
+                                setYinDaio(1.625f);
+                                break;
+                            case 4:
                                 setYinDaio(1.50f);
                                 break;
                             case 3:
-                                setYinDaio(1.75f);
+                                setYinDaio(1.375f);
                                 break;
-                            case 4:
-                                setYinDaio(2.25f);
+                            case 2:
+                                setYinDaio(1.25f);
                                 break;
-                            case 5:
-                                setYinDaio(2.00f);
-                                break;
-                            case 6:
-                                setYinDaio(2.50f);
+                            case 1:
+                                setYinDaio(1.125f);
                                 break;
                             case 0:
-                                setYinDaio(1.00f);
+                                setYinDaio(1.0f);       //  C调
                                 break;
                             case -1:
-                                setYinDaio(0.917f);
+                                setYinDaio(0.958f);
                                 break;
                             case -2:
-                                setYinDaio(0.834f);
+                                setYinDaio(0.916f);
                                 break;
                             case -3:
-                                setYinDaio(0.751f);
+                                setYinDaio(0.874f);
                                 break;
                             case -4:
-                                setYinDaio(0.668f);
+                                setYinDaio(0.832f);
                                 break;
                             case -5:
-                                setYinDaio(0.585f);
+                                setYinDaio(0.79f);
                                 break;
                             case -6:
+                                setYinDaio(0.748f);
+                                break;
+                            case -7:
+                                setYinDaio(0.708f);
+                                break;
+                            case -8:
+                                setYinDaio(0.668f);
+                                break;
+                            case -9:
+                                setYinDaio(0.628f);
+                                break;
+                            case -10:
+                                setYinDaio(0.588f);
+                                break;
+                            case -11:
+                                setYinDaio(0.548f);
+                                break;
+                            case -12:
                                 setYinDaio(0.5f);
                                 break;
                         }
@@ -437,48 +474,84 @@ public class WoDeYinYueActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String s = mTvYinDiaoZhi.getText().toString();
                 yindiao = Integer.parseInt(s);
-                if (yindiao < 6) {
+                if (yindiao < 12) {
                     yindiao += 1;
                     mTvYinDiaoZhi.setText(yindiao + "");
                     if (wlMusic != null) {
                         switch (yindiao) {
-                            case 1:
-                                setYinDaio(1.25f);
+                            case 12:
+                                setYinDaio(2.50f);
                                 break;
-                            case 2:
+                            case 11:
+                                setYinDaio(2.375f);
+                                break;
+                            case 10:
+                                setYinDaio(2.250f);
+                                break;
+                            case 9:
+                                setYinDaio(2.125f);
+                                break;
+                            case 8:
+                                setYinDaio(2.0f);
+                                break;
+                            case 7:
+                                setYinDaio(1.875f);
+                                break;
+                            case 6:
+                                setYinDaio(1.750f);
+                                break;
+                            case 5:
+                                setYinDaio(1.625f);
+                                break;
+                            case 4:
                                 setYinDaio(1.50f);
                                 break;
                             case 3:
-                                setYinDaio(1.75f);
+                                setYinDaio(1.375f);
                                 break;
-                            case 4:
-                                setYinDaio(2.25f);
+                            case 2:
+                                setYinDaio(1.250f);
                                 break;
-                            case 5:
-                                setYinDaio(2.00f);
-                                break;
-                            case 6:
-                                setYinDaio(2.50f);
+                            case 1:
+                                setYinDaio(1.125f);
                                 break;
                             case 0:
-                                setYinDaio(1.00f);
+                                setYinDaio(1.0f);
                                 break;
                             case -1:
-                                setYinDaio(0.917f);
+                                setYinDaio(0.958f);
                                 break;
                             case -2:
-                                setYinDaio(0.834f);
+                                setYinDaio(0.916f);
                                 break;
                             case -3:
-                                setYinDaio(0.751f);
+                                setYinDaio(0.874f);
                                 break;
                             case -4:
-                                setYinDaio(0.668f);
+                                setYinDaio(0.832f);
                                 break;
                             case -5:
-                                setYinDaio(0.585f);
+                                setYinDaio(0.79f);
                                 break;
                             case -6:
+                                setYinDaio(0.748f);
+                                break;
+                            case -7:
+                                setYinDaio(0.708f);
+                                break;
+                            case -8:
+                                setYinDaio(0.668f);
+                                break;
+                            case -9:
+                                setYinDaio(0.628f);
+                                break;
+                            case -10:
+                                setYinDaio(0.588f);
+                                break;
+                            case -11:
+                                setYinDaio(0.548f);
+                                break;
+                            case -12:
                                 setYinDaio(0.5f);
                                 break;
                         }
@@ -491,32 +564,56 @@ public class WoDeYinYueActivity extends AppCompatActivity {
     }
 
     private void setYinDiaoZhi(TextView mTvYinDiaoZhi, float playSpeed) {
-        if (playSpeed == 1.0f) {
-            mTvYinDiaoZhi.setText("0");
-        } else if (playSpeed == 0.884f) {
-            mTvYinDiaoZhi.setText("1");
-        } else if (playSpeed == 0.768f) {
-            mTvYinDiaoZhi.setText("2");
-        } else if (playSpeed == 0.652f) {
-            mTvYinDiaoZhi.setText("3");
-        } else if (playSpeed == 0.536f) {
-            mTvYinDiaoZhi.setText("4");
-        } else if (playSpeed == 0.420f) {
-            mTvYinDiaoZhi.setText("5");
-        } else if (playSpeed == 0.304f) {
+        if (playSpeed == 2.50f) {
+            mTvYinDiaoZhi.setText("12");
+        } else if (playSpeed == 2.375f) {
+            mTvYinDiaoZhi.setText("11");
+        } else if (playSpeed == 2.250f) {
+            mTvYinDiaoZhi.setText("10");
+        } else if (playSpeed == 2.125f) {
+            mTvYinDiaoZhi.setText("9");
+        } else if (playSpeed == 2.0f) {
+            mTvYinDiaoZhi.setText("8");
+        } else if (playSpeed == 1.875f) {
+            mTvYinDiaoZhi.setText("7");
+        } else if (playSpeed == 1.750f) {
             mTvYinDiaoZhi.setText("6");
-        } else if (playSpeed == 1.25f) {
-            mTvYinDiaoZhi.setText("-1");
+        } else if (playSpeed == 1.625f) {
+            mTvYinDiaoZhi.setText("5");
         } else if (playSpeed == 1.50f) {
+            mTvYinDiaoZhi.setText("4");
+        } else if (playSpeed == 1.375f) {
+            mTvYinDiaoZhi.setText("3");
+        } else if (playSpeed == 1.250f) {
+            mTvYinDiaoZhi.setText("2");
+        } else if (playSpeed == 1.125f) {
+            mTvYinDiaoZhi.setText("1");
+        } else if (playSpeed == 1.0f) {
+            mTvYinDiaoZhi.setText("0");
+        } else if (playSpeed == 0.958f) {
+            mTvYinDiaoZhi.setText("-1");
+        } else if (playSpeed == 0.916f) {
             mTvYinDiaoZhi.setText("-2");
-        } else if (playSpeed == 1.75f) {
+        } else if (playSpeed == 0.874f) {
             mTvYinDiaoZhi.setText("-3");
-        } else if (playSpeed == 2.00f) {
+        } else if (playSpeed == 0.832f) {
             mTvYinDiaoZhi.setText("-4");
-        } else if (playSpeed == 2.25f) {
+        } else if (playSpeed == 0.79f) {
             mTvYinDiaoZhi.setText("-5");
-        } else if (playSpeed == 2.50f) {
+        } else if (playSpeed == 0.748f) {
             mTvYinDiaoZhi.setText("-6");
+        } else if (playSpeed == 0.708f) {
+            mTvYinDiaoZhi.setText("-7");
+        } else if (playSpeed == 0.668f) {
+            mTvYinDiaoZhi.setText("-8");
+        } else if (playSpeed == 0.628f) {
+            mTvYinDiaoZhi.setText("-9");
+        } else if (playSpeed == 0.588f) {
+            mTvYinDiaoZhi.setText("-10");
+        } else if (playSpeed == 0.548f) {
+            mTvYinDiaoZhi.setText("-11");
+        } else if (playSpeed == 0.5f) {
+            mTvYinDiaoZhi.setText("-12");
         }
     }
 
